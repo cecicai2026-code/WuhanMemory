@@ -1,5 +1,7 @@
 # Agent Instructions for WuhanMemory
 
+> 当前开发目标、工作规则和分阶段计划见 `docs/kickoff/claude-code-kickoff.md`，开始工作前必须先读。
+
 本项目是基于地图和 AI 对话的旅游行程规划 Web 应用。后续代码代理进入仓库后，请先读取 `PROJECT_MEMORY.md`，再根据任务读取相关文档。
 
 ## 必读顺序
