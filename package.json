@@ -1,0 +1,21 @@
+{
+  "name": "wuhanmemory",
+  "private": true,
+  "packageManager": "pnpm@11.10.0",
+  "scripts": {
+    "dev": "corepack pnpm --filter @wuhanmemory/web dev",
+    "dev:web": "corepack pnpm --filter @wuhanmemory/web dev",
+    "dev:api": "cd apps/api && python3 -m uvicorn app.main:app --reload --port 8000",
+    "build": "corepack pnpm --filter @wuhanmemory/shared build && corepack pnpm --filter @wuhanmemory/map-core build && corepack pnpm --filter @wuhanmemory/web build",
+    "lint": "corepack pnpm --filter @wuhanmemory/shared lint && corepack pnpm --filter @wuhanmemory/map-core lint && corepack pnpm --filter @wuhanmemory/web lint",
+    "typecheck": "corepack pnpm --filter @wuhanmemory/shared typecheck && corepack pnpm --filter @wuhanmemory/map-core typecheck && corepack pnpm --filter @wuhanmemory/web typecheck",
+    "test": "corepack pnpm typecheck",
+    "test:api": "cd apps/api && python3 -m pytest",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
+    "typescript": "^6.0.3"
+  }
+}
