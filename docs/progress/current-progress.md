@@ -14,8 +14,8 @@
 - [x] ADR 0003：数据存储改用 JSON 种子文件 + SQLite，不使用 Redis。
 - [x] 环境变量模板：`apps/api/.env.example` 和 `apps/web/.env.example`。
 - [x] Cecilia 已申请并填好 key：千问、豆包（含 endpoint ID）、高德 JS key、安全密钥、Web 服务 key。只检查过格式，还没有真实调用验证。
-- [x] 设计规范草案 `docs/design/design-system.md`，方向已确认。
-- [ ] Cecilia 看过预览后确认设计规范的具体数值。
+- [x] 设计规范 `docs/design/design-system.md` v2 草案（全站黑金、参考两个网站的排版、插画体系、丝滑动效）。
+- [ ] Cecilia 确认设计规范 v2。
 - [ ] Cecilia 确认 `WuHan-Memory` 老仓库泄露过的高德 key 已重置。
 
 ## 代码现状
@@ -47,7 +47,7 @@
 
 ## 下一步
 
-板块 1：按设计规范重做界面外壳、首页展示页、地图工作台布局（`/map`）、地点档案页和景点详情页。开工时需要确认是否采用 `motion` 动画库，由 Cecilia 在 Mac 终端安装。
+板块 1：按设计规范重做界面外壳、首页展示页、地图工作台布局（`/map`）、地点档案页和景点详情页。开工时需要确认：插画题材清单和制作方式、首屏主体用哪个方案、是否采用 `motion`、`lenis`、`@fontsource` 这几个依赖（由 Cecilia 在 Mac 终端安装）。
 
 ## 开放问题
 
