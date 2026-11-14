@@ -12,12 +12,25 @@
       "title": "武汉市江汉区人民政府：江汉概况",
       "url": "https://www.jianghan.gov.cn/mljh/jbgk/201802/t20180201_11565.shtml",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.288045,
+      "lat": 30.58364,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：江汉路步行街（江汉路步行街与铭新街交叉口东20米），B001B0J07F。"
   },
   "address": {
     "value": null,

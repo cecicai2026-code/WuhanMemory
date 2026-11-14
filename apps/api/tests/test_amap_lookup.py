@@ -48,7 +48,7 @@ def test_run_writes_record_without_key(tmp_path: Path) -> None:
         return httpx.Response(200, json=FAKE_OK)
 
     client = httpx.Client(base_url="https://amap.test", transport=httpx.MockTransport(handler))
-    record, path = run([("test-place", "测试景点")], key="SECRET-TEST-KEY", out_dir=tmp_path, client=client)
+    record, path = run([("test-place", "测试景点")], key="SECRET-TEST-KEY", out_dir=tmp_path, client=client, sleep=lambda s: None)
 
     assert seen["keywords"] == "测试景点" and seen["citylimit"] == "true" and seen["city"] == "420100"
     assert record["source"]["type"] == "amap"
@@ -65,6 +65,22 @@ def test_run_keeps_going_after_error(tmp_path: Path) -> None:
         return httpx.Response(200, json=FAKE_OK)
 
     client = httpx.Client(base_url="https://amap.test", transport=httpx.MockTransport(handler))
-    record, _ = run([("a", "坏的"), ("b", "好的")], key="k", out_dir=tmp_path, client=client)
+    record, _ = run([("a", "坏的"), ("b", "好的")], key="k", out_dir=tmp_path, client=client, sleep=lambda s: None)
     assert "DAILY_QUERY_OVER_LIMIT" in record["results"][0]["error"]
     assert record["results"][1]["error"] is None
+
+
+def test_retries_once_on_qps_limit(tmp_path: Path) -> None:
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(200, json={"status": "0", "info": "CUQPS_HAS_EXCEEDED_THE_LIMIT", "infocode": "10021"})
+        return httpx.Response(200, json=FAKE_OK)
+
+    client = httpx.Client(base_url="https://amap.test", transport=httpx.MockTransport(handler))
+    waits: list[float] = []
+    record, _ = run([("a", "测试")], key="k", out_dir=tmp_path, client=client, sleep=waits.append)
+    assert calls["n"] == 2 and waits == [2.0]
+    assert record["results"][0]["error"] is None

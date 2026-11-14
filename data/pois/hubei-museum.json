@@ -19,12 +19,25 @@
       "title": "湖北省博物馆官网：博物馆简介",
       "url": "http://www.hbww.org.cn/gyjj/p/7900.html",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.365446,
+      "lat": 30.561506,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：湖北省博物馆（东湖路160号），B001B0JYXS。"
   },
   "address": {
     "value": null,

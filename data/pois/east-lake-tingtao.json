@@ -12,12 +12,25 @@
       "title": "武汉东湖生态旅游风景区管委会：东湖最新漫游地图（2026-01-22 发布）",
       "url": "https://www.whdonghu.gov.cn/ztzl_6323/wlzl/202601/t20260122_2716447.shtml",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.376688,
+      "lat": 30.564713,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：东湖听涛景区（东湖路特1号东湖生态旅游风景区西北角），B001B1ASJQ。"
   },
   "address": {
     "value": null,

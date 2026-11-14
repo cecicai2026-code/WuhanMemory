@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -31,6 +32,10 @@ from app.data_quality.rules import CITY_TZ, WUHAN_BOUNDS
 SEARCH_PATH = "/v3/place/text"
 # 武汉市的行政区划代码
 WUHAN_ADCODE = "420100"
+# 高德个人开发者的 key 每秒能发的请求数很少，两次请求之间停一下；超限时再等一会儿重试一次
+REQUEST_GAP_SECONDS = 0.5
+QPS_RETRY_SECONDS = 2.0
+QPS_LIMIT_CODES = ("CUQPS_HAS_EXCEEDED_THE_LIMIT", "10021")
 
 
 class AmapError(Exception):
@@ -115,18 +120,27 @@ def run(
     out_dir: Path,
     limit: int = 3,
     client: httpx.Client | None = None,
+    sleep=time.sleep,
 ) -> tuple[dict[str, Any], Path]:
     now = datetime.now(CITY_TZ)
     owns_client = client is None
     client = client or httpx.Client(base_url=settings.amap_base_url, timeout=15)
     results = []
     try:
-        for poi_id, keyword in targets:
-            try:
-                candidates = [asdict(c) for c in search(client, key, keyword, limit)]
-                error = None
-            except (AmapError, httpx.HTTPError) as err:
-                candidates, error = [], str(err)
+        for i, (poi_id, keyword) in enumerate(targets):
+            if i:
+                sleep(REQUEST_GAP_SECONDS)
+            candidates, error = [], None
+            for attempt in range(2):
+                try:
+                    candidates, error = [asdict(c) for c in search(client, key, keyword, limit)], None
+                    break
+                except (AmapError, httpx.HTTPError) as err:
+                    candidates, error = [], str(err)
+                    if attempt == 0 and any(code in error for code in QPS_LIMIT_CODES):
+                        sleep(QPS_RETRY_SECONDS)
+                        continue
+                    break
             results.append({"id": poi_id, "keyword": keyword, "candidates": candidates, "error": error})
     finally:
         if owns_client:

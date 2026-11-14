@@ -5,11 +5,25 @@
   "district": "江岸区",
   "category": "street",
   "tags": [],
-  "sources": [],
+  "sources": [
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    }
+  ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.299353,
+      "lat": 30.587731,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：黎黄陂路（江岸区），B0FFH4XR78。选的是黎黄陂路这条路本身的点，不是游客中心。"
   },
   "address": {
     "value": null,

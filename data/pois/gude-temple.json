@@ -5,11 +5,25 @@
   "district": "江岸区",
   "category": "temple",
   "tags": [],
-  "sources": [],
+  "sources": [
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    }
+  ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.307288,
+      "lat": 30.618717,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：古德寺(宗教活动场所)(暂停开放)（工农兵路24号），B001B1IGH4。高德上这个地点的名字带\"（暂停开放）\"，是否开放待确认。"
   },
   "address": {
     "value": null,
