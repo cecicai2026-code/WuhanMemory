@@ -65,24 +65,10 @@
 
 ## 环境变量
 
-```text
-DATABASE_URL=
-LLM_PROVIDER=mock
-LLM_FALLBACK_PROVIDER=
-LLM_PROVIDER_MODE=fixed
-QWEN_API_KEY=
-QWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-QWEN_MODEL=qwen-plus
-DOUBAO_API_KEY=
-DOUBAO_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
-DOUBAO_MODEL=
-AMAP_WEB_JS_KEY=
-AMAP_WEB_SERVICE_KEY=
-OBJECT_STORAGE_ENDPOINT=
-OBJECT_STORAGE_ACCESS_KEY=
-OBJECT_STORAGE_SECRET_KEY=
-PUBLIC_APP_URL=
-```
+分成两个文件，都不提交到 git：
+
+- `apps/api/.env`：后端使用，模板是 `apps/api/.env.example`。包含千问、豆包、高德 Web 服务 key、高德安全密钥、默认模型和 SQLite 路径。
+- `apps/web/.env.local`：前端使用，模板是 `apps/web/.env.example`。只包含高德 JS key 和前后端网址。
 
 ## 不建议的做法
 

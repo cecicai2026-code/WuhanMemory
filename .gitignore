@@ -20,3 +20,8 @@ __pycache__/
 *.log
 .dev-pids/
 .dev-logs/
+
+# 本地 SQLite 数据库（ADR 0003）
+*.db
+*.db-journal
+*.sqlite3
