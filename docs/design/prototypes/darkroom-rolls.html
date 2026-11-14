@@ -60,6 +60,8 @@
     transition: opacity .8s var(--ease) .5s, transform 1s var(--ease) .5s; }
   .entered .enter { opacity: 1; transform: none; }
   .enter .name { font-family: "Cormorant Garamond", "Songti SC", "Noto Serif SC", "STSong", serif; font-weight: 600; font-size: 34px; }
+  .curtain { position: fixed; inset: 0; background: #070504; pointer-events: none; opacity: 0; transition: opacity .5s var(--ease); }
+  .leaving .curtain { opacity: 1; }
   .enter .sub { font-size: 12px; letter-spacing: .14em; color: var(--muted); margin-top: 10px; }
 </style>
 <script type="importmap">
@@ -81,7 +83,8 @@
   <div class="scale"><div class="range" id="range"></div><div class="ticks" id="ticks"></div></div>
   <button class="btn next" id="next" aria-label="下一组景点"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
 </div>
-<div class="enter"><div class="name" id="enterName"></div><div class="sub">晾片幕 · 样片尚未制作 · 点击任意处返回</div></div>
+<div class="curtain"></div>
+<div class="enter"><div class="name" id="enterName"></div><div class="sub">进入晾片幕</div></div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -419,10 +422,14 @@ addEventListener('pointermove', e => {
   mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
   ndc.set(mouse.x, -mouse.y);
 });
-function enter() { entered = true; document.body.classList.add('entered'); $('enterName').textContent = SPOTS[sel]; $('back').textContent = '← 回到胶卷'; }
+function enter() {   /* 镜头推近看片器，然后进入晾片幕 */
+  entered = true; document.body.classList.add('entered'); $('enterName').textContent = SPOTS[sel];
+  setTimeout(() => { document.body.classList.add('leaving'); }, 900);
+  setTimeout(() => { location.href = `darkroom-line.html?spot=${sel}`; }, 1400);
+}
 function leave() { entered = false; document.body.classList.remove('entered'); $('back').textContent = '← 回到桌面'; }
 renderer.domElement.addEventListener('click', () => {
-  if (entered) return leave();
+  if (entered) return;
   if (!hovered) return;
   if (hovered !== viewer) select(hovered.userData.i);
   enter();
@@ -435,8 +442,7 @@ addEventListener('resize', () => {
 /* ---------- 每一帧 ---------- */
 const clock = new THREE.Clock();
 const damp = (cur, to, speed, dt) => cur + (to - cur) * (1 - Math.exp(-speed * dt));
-function frame() {
-  const dt = Math.min(clock.getDelta(), 0.05);
+function step(dt) {
   const prevFilm = filmX;
   filmX = damp(filmX, filmTarget(), 4.2, dt);
   const speed = Math.abs(filmX - prevFilm) / Math.max(dt, 0.001);
@@ -495,10 +501,14 @@ function frame() {
   lamp.position.x = damp(lamp.position.x, -3 + mouse.x * 2.4, 2, dt);
 
   renderer.render(scene, camera);
-  requestAnimationFrame(frame);
 }
-select(0);
+function frame() { step(Math.min(clock.getDelta(), 0.05)); requestAnimationFrame(frame); }
+/* 调试用：页面在后台时动画会暂停，用它手动推进若干秒 */
+window.__advance = s => { for (let i = 0; i < s * 60; i++) step(1 / 60); };
+select(THREE.MathUtils.clamp(parseInt(new URLSearchParams(location.search).get('spot') ?? '0', 10) || 0, 0, N - 1));
+filmX = filmTarget(); viewer.position.x = SLOT0 + sel * PITCH - filmX;
 frame();
+addEventListener('pageshow', e => { if (e.persisted) { leave(); document.body.classList.remove('leaving'); } });
 </script>
 </body>
 </html>

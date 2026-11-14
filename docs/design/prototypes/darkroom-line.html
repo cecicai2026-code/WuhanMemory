@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：晾片幕</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 8.2 节：晾片绳上的景点照片 + 显影盘里的四个主题。
+  照片是程序画的示意图，景点名只是示例清单。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .side { position: fixed; top: 56vh; }
+  .side.prev { left: 3vw; } .side.next { right: 3vw; }
+  .tag { transform: translate(-50%, 0); opacity: 0; color: var(--paper); pointer-events: none; white-space: nowrap; transition: opacity .35s var(--ease); }
+  .tag.on { opacity: 1; }
+  .topic { font-family: "Cormorant Garamond", "Songti SC", "Noto Serif SC", "STSong", serif; font-weight: 600; font-size: 22px; color: var(--paper);
+    letter-spacing: .08em; text-transform: none; transition: opacity .4s var(--ease), transform .6s var(--ease); display: inline-block; }
+  .topic.off { opacity: 0; transform: translateY(8px); }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 03 幕 — 晾片</div>
+<div class="lab tr hide-on-enter" id="count"></div>
+<div class="lab bl link" id="back">← 回到胶卷</div>
+<div class="head"><div class="no" id="no"></div><div class="title"><span id="title"></span></div><div class="sub">一句话简介 · 待补充</div></div>
+<button class="btn prev side hide-on-enter" id="prev" aria-label="上一个景点"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button>
+<button class="btn next side hide-on-enter" id="next" aria-label="下一个景点"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+<div class="lab bc hide-on-enter" style="bottom:23vh"><span id="hintA" style="transition:opacity .4s">显影盘 · 选一个主题</span></div>
+<div class="lab tag" id="tag"></div>
+<div class="enter"><div class="name" id="enterName"></div><div class="sub">纸页幕 · 样片尚未制作 · 点击任意处返回</div></div>
+<div class="curtain"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { SPOTS, TOPICS, pad, damp, tex, grain, createStage, makeTable, photo, materials, add, sh, contact, makeCanister, SERIF, MONO, rnd, reseed } from './common.js';
+
+const N = SPOTS.length, $ = id => document.getElementById(id);
+let sel = THREE.MathUtils.clamp(parseInt(new URLSearchParams(location.search).get('spot') ?? '0', 10) || 0, 0, N - 1);
+$('count').textContent = `${N} 张 · ${TOPICS.length} 个主题`;
+grain();
+
+const { renderer, scene, camera, lamp } = createStage({ fov: 52, lampPos: [-2.5, 10.5, 8.5], lampTarget: [0, 2.6, 0], lampPower: 9, lampAngle: 0.85 });
+const M = materials();
+makeTable(scene);
+const camZ = () => Math.max(10.5, 10.5 * (1.7 / (innerWidth / innerHeight)));
+const CAM = new THREE.Vector3(0, 5.4, camZ()), LOOK = new THREE.Vector3(0, 2.9, 0);
+const camPos = CAM.clone(), camLook = LOOK.clone(), lookNow = LOOK.clone();
+camera.position.copy(CAM);
+addEventListener('resize', () => { CAM.z = camZ(); });
+
+/* ---------- 墙和晾片绳 ---------- */
+const WALL_Z = -1.5, ROPE_Y = 5.15, LINE_Z = WALL_Z + 0.5, SP = 2.05;
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(70, 26), new THREE.MeshStandardMaterial({ color: 0x4a140d, roughness: 0.95 }));
+wall.position.set(0, 13, WALL_Z); wall.receiveShadow = true; scene.add(wall);
+const rope = add(scene, new THREE.CylinderGeometry(0.022, 0.022, 60, 8), new THREE.MeshStandardMaterial({ color: 0xcdbf9f, roughness: 0.9 }), 0, ROPE_Y, LINE_Z);
+rope.rotation.z = Math.PI / 2;
+
+/* ---------- 照片：每个景点一张，夹在绳子上 ---------- */
+reseed(42);
+const prints = SPOTS.map((name, i) => {
+  const g = new THREE.Group();
+  const paper = add(g, new THREE.BoxGeometry(1.5, 1.86, 0.014), M.paper, 0, -1.0, 0);
+  const pm = new THREE.MeshStandardMaterial({ map: photo(i), emissiveMap: photo(i), emissive: 0xffffff, emissiveIntensity: 0.12, roughness: 0.55 });
+  const ph = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.5), pm); ph.position.set(0, -0.93, 0.009); g.add(ph);
+  const pegMat = new THREE.MeshStandardMaterial({ color: 0xb8794a, roughness: 0.7 });
+  const peg = add(g, new THREE.BoxGeometry(0.13, 0.4, 0.13), pegMat, 0, -0.06, 0.02);
+  add(g, new THREE.BoxGeometry(0.15, 0.03, 0.15), M.steel, 0, 0.02, 0.02);
+  for (const m of [paper, ph, peg]) m.userData.print = i;
+  g.userData = { i, name, hv: 0, sv: i === sel ? 1 : 0, phase: rnd() * 6.28, tilt: (rnd() - 0.5) * 0.09, pm, pegMat, drop: 1 + i * 0 };
+  scene.add(g); return g;
+});
+const printMeshes = prints.flatMap(p => p.children.filter(c => c.userData.print !== undefined));
+
+/* ---------- 显影盘和四张主题卡 ---------- */
+const TRAY = new THREE.Vector3(-0.3, 0, 2.6), TW = 8.6, TD = 2.6;
+const tray = new THREE.Group(); tray.position.copy(TRAY); scene.add(tray);
+contact(tray, TW + 2.4, TD + 2.2);
+add(tray, new RoundedBoxGeometry(TW, 0.1, TD, 4, 0.04), M.steel, 0, 0.05, 0);
+for (const s of [-1, 1]) {
+  add(tray, new RoundedBoxGeometry(TW, 0.44, 0.16, 4, 0.07), M.steel, 0, 0.27, s * (TD / 2 - 0.08));
+  add(tray, new RoundedBoxGeometry(0.16, 0.44, TD, 4, 0.07), M.steel, s * (TW / 2 - 0.08), 0.27, 0);
+}
+const liquid = new THREE.Mesh(new THREE.PlaneGeometry(TW - 0.3, TD - 0.3),
+  new THREE.MeshPhysicalMaterial({ color: 0x3a0f08, roughness: 0.06, metalness: 0, transparent: true, opacity: 0.55, envMapIntensity: 5 }));
+liquid.rotation.x = -Math.PI / 2; liquid.position.y = 0.2; liquid.receiveShadow = true; tray.add(liquid);
+
+const cards = TOPICS.map((name, k) => {
+  const t = tex(640, 448, (g, w, h) => {
+    g.fillStyle = '#e9dfc6'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 900; i++) { g.fillStyle = `rgba(120,95,60,${Math.random() * 0.05})`; g.fillRect(Math.random() * w, Math.random() * h, 2 + Math.random() * 30, 1); }
+    g.strokeStyle = 'rgba(42,36,32,.55)'; g.lineWidth = 2; g.strokeRect(22, 22, w - 44, h - 44);
+    g.fillStyle = '#a8321f'; g.font = `34px ${MONO}`; g.fillText(pad(k + 1), 48, 86);
+    g.fillStyle = 'rgba(42,36,32,.35)'; g.fillRect(48, 112, w - 96, 2);
+    g.fillStyle = '#2a2420'; g.font = `600 104px ${SERIF}`; g.textAlign = 'center'; g.fillText(name, w / 2, 262);
+    g.fillStyle = '#6b5e4c'; g.font = `24px ${MONO}`; g.fillText('WUHAN MEMORY', w / 2, 372);
+  });
+  const g = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, color: 0x9a8a80 });
+  const face = sh(new THREE.Mesh(new THREE.BoxGeometry(1.75, 1.22, 0.02), [M.paper, M.paper, M.paper, M.paper, mat, M.paper]));
+  face.rotation.x = -Math.PI / 2; face.userData.card = k; g.add(face);
+  g.position.set(-2.95 + k * 1.97, 0.24, 0.05);
+  g.userData = { k, name, hv: 0, base: g.position.clone(), rz: [-0.07, 0.05, -0.03, 0.08][k], mat };
+  tray.add(g); return g;
+});
+const cardMeshes = cards.map(c => c.children[0]);
+
+/* 竹夹和右下角的胶卷罐（回到胶卷幕） */
+const tong = new THREE.Group(); tong.position.set(TRAY.x + 4.4, 0.5, TRAY.z + 0.9); scene.add(tong);
+for (const s of [-1, 1]) { const b = add(tong, new THREE.BoxGeometry(2.6, 0.05, 0.16), M.bamboo, 0, s * 0.04, 0); b.rotation.z = s * 0.02; }
+tong.rotation.set(0.05, 0.5, -0.1);
+const can = makeCanister('武汉', `ROLL 01 · WUHAN MEMORY · ${N} EXP`);
+can.scale.setScalar(0.6); can.position.set(6.0, 0, 1.2); can.rotation.y = -0.25; scene.add(can);
+const canMeshes = can.children.filter(c => c.isMesh && c.geometry.type === 'CylinderGeometry');
+can.userData.hv = 0;
+
+/* ---------- 状态和操作 ---------- */
+let cur = sel, entered = false, shownTitle = -1, hovered = null, wheelAcc = 0, wheelLock = 0, leaving = false;
+const mouse = new THREE.Vector2(), ndc = new THREE.Vector2(9, 9), ray = new THREE.Raycaster();
+
+function setTitle(i) {
+  if (i === shownTitle) return; shownTitle = i;
+  $('no').textContent = `第 ${pad(i + 1)} 张 / ${pad(N)}`;
+  const el = $('title'); el.className = 'out';
+  setTimeout(() => { el.textContent = SPOTS[shownTitle]; el.className = 'in'; requestAnimationFrame(() => requestAnimationFrame(() => { el.className = ''; })); }, 180);
+}
+function select(i) {
+  sel = THREE.MathUtils.clamp(i, 0, N - 1);
+  setTitle(sel);
+  $('prev').disabled = sel === 0; $('next').disabled = sel === N - 1;
+  history.replaceState(null, '', `?spot=${sel}`);
+}
+function go(url) { if (leaving) return; leaving = true; document.body.classList.add('leaving'); setTimeout(() => { location.href = url; }, 520); }
+$('prev').addEventListener('click', () => select(sel - 1));
+$('next').addEventListener('click', () => select(sel + 1));
+$('back').addEventListener('click', () => { if (entered) leave(); else go(`darkroom-rolls.html?spot=${sel}`); });
+
+addEventListener('wheel', e => {
+  if (entered) return;
+  const now = performance.now(); if (now < wheelLock) return;
+  wheelAcc += e.deltaY + e.deltaX;
+  if (Math.abs(wheelAcc) > 50) { select(sel + Math.sign(wheelAcc)); wheelAcc = 0; wheelLock = now + 280; }
+}, { passive: true });
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') return entered ? leave() : go(`darkroom-rolls.html?spot=${sel}`);
+  if (entered) return;
+  if (e.key === 'ArrowRight') select(sel + 1);
+  if (e.key === 'ArrowLeft') select(sel - 1);
+});
+addEventListener('pointermove', e => { mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1); ndc.set(mouse.x, -mouse.y); });
+let enteredCard = null;
+function enter(card) { entered = true; enteredCard = card; document.body.classList.add('entered'); $('enterName').textContent = `${SPOTS[sel]} · ${card.userData.name}`; }
+function leave() { entered = false; enteredCard = null; document.body.classList.remove('entered'); }
+renderer.domElement.addEventListener('click', e => {
+  if (entered) return leave();
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1)); pick();
+  if (!hovered) return;
+  if (hovered.type === 'print') select(hovered.i);
+  else if (hovered.type === 'card') enter(cards[hovered.k]);
+  else if (hovered.type === 'can') go(`darkroom-rolls.html?spot=${sel}`);
+});
+
+/* 鼠标指着哪个物件 */
+function pick() {
+  hovered = null;
+  if (entered) return;
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects([...printMeshes.filter(m => m.parent.visible), ...cardMeshes, ...canMeshes], false)[0];
+  if (!hit) return;
+  const u = hit.object.userData;
+  hovered = u.print !== undefined ? { type: 'print', i: u.print } : u.card !== undefined ? { type: 'card', k: u.card } : { type: 'can' };
+}
+
+/* ---------- 每一帧 ---------- */
+const clock = new THREE.Clock(); let t = 0;
+function step(dt) {
+  t += dt;
+  cur = damp(cur, sel, 4.5, dt);
+
+  pick();
+  renderer.domElement.style.cursor = hovered ? 'pointer' : 'default';
+
+  /* 照片：选中的更大、原色、向前、夹子变红；其余罩着暗房红，轻轻摆动 */
+  for (const p of prints) {
+    const u = p.userData, d = u.i - cur;
+    p.visible = Math.abs(d) < 6.2;
+    if (!p.visible) continue;
+    u.sv = damp(u.sv, u.i === sel ? 1 : 0, 6, dt);
+    u.hv = damp(u.hv, hovered?.type === 'print' && hovered.i === u.i ? 1 : 0, 9, dt);
+    u.drop = damp(u.drop, 0, 2.2, dt);
+    const S = u.sv, H = u.hv * (1 - S);
+    p.position.set(d * SP + THREE.MathUtils.clamp(d, -1, 1) * 0.5, ROPE_Y + u.drop * 3.5, LINE_Z + S * 0.75 + H * 0.5);
+    p.scale.setScalar(1 + S * 0.42 + H * 0.16);
+    p.rotation.x = Math.sin(t * 0.9 + u.phase) * 0.035 * (1 - S * 0.7) + u.drop * Math.sin(t * 5 + u.phase) * 0.5 - H * 0.12;
+    p.rotation.z = u.tilt * (1 - S) * (1 - H);
+    const lit = Math.max(S, H);
+    u.pm.color.setRGB(1, 0.4 + lit * 0.6, 0.28 + lit * 0.72);
+    u.pm.emissiveIntensity = 0.1 + lit * 0.45;
+    u.pegMat.color.setRGB(0.72 + S * 0.05, 0.47 - S * 0.34, 0.29 - S * 0.19);
+  }
+
+  /* 主题卡：和照片同样的反应。抬起、转向镜头、放大、被照亮；其余变暗 */
+  const anyCard = hovered?.type === 'card' || enteredCard;
+  cards.forEach(c => {
+    const u = c.userData, on = (hovered?.type === 'card' && hovered.k === u.k) || enteredCard === c;
+    u.hv = damp(u.hv, on ? 1 : 0, 8, dt);
+    const H = u.hv;
+    c.position.set(u.base.x, u.base.y + H * 1.15 + Math.sin(t * 1.3 + u.k) * 0.012, u.base.z + H * 0.35);
+    c.rotation.set(H * 0.82, 0, u.rz * (1 - H));
+    c.scale.setScalar(1 + H * 0.26);
+    const b = 0.6 + H * 0.4 - (anyCard && !on ? 0.16 : 0);
+    u.mat.color.setRGB(b, b * 0.95, b * 0.9);
+  });
+  const hc = hovered?.type === 'card' ? cards[hovered.k] : null;
+  $('hintA').style.opacity = hc ? 0 : 1;
+  /* 悬停在别的照片上时，在它下方显示景点名 */
+  const hp = hovered?.type === 'print' && hovered.i !== sel ? prints[hovered.i] : null;
+  if (hp) {
+    const v = new THREE.Vector3(hp.position.x, hp.position.y - 2.05 * hp.scale.y, hp.position.z).project(camera);
+    $('tag').style.left = `${(v.x * 0.5 + 0.5) * innerWidth}px`; $('tag').style.top = `${(-v.y * 0.5 + 0.5) * innerHeight + 10}px`;
+    $('tag').textContent = `${pad(hp.userData.i + 1)} · ${hp.userData.name}`;
+  }
+  $('tag').classList.toggle('on', !!hp);
+  tong.position.x = damp(tong.position.x, hc ? TRAY.x + hc.userData.base.x + 1.25 : TRAY.x + 4.4, 5, dt);
+
+  can.userData.hv = damp(can.userData.hv, hovered?.type === 'can' ? 1 : 0, 8, dt);
+  can.position.y = can.userData.hv * 0.18; can.rotation.y = -0.25 + can.userData.hv * 0.2;
+
+  /* 镜头 */
+  if (enteredCard) { const b = enteredCard.userData.base; camPos.set(TRAY.x + b.x, 4.4, TRAY.z + 4.4); camLook.set(TRAY.x + b.x, 1.4, TRAY.z); }
+  else { camPos.set(CAM.x + mouse.x * 0.55, CAM.y - mouse.y * 0.3, CAM.z); camLook.copy(LOOK); }
+  const cs = entered ? 2.4 : 3.2;
+  camera.position.set(damp(camera.position.x, camPos.x, cs, dt), damp(camera.position.y, camPos.y, cs, dt), damp(camera.position.z, camPos.z, cs, dt));
+  lookNow.set(damp(lookNow.x, camLook.x, cs, dt), damp(lookNow.y, camLook.y, cs, dt), damp(lookNow.z, camLook.z, cs, dt));
+  camera.lookAt(lookNow);
+  lamp.position.x = damp(lamp.position.x, -2.5 + mouse.x * 2.2, 2, dt);
+
+  renderer.render(scene, camera);
+}
+function frame() { step(Math.min(clock.getDelta(), 0.05)); requestAnimationFrame(frame); }
+/* 调试用：页面在后台时动画会暂停，用它手动推进若干秒 */
+window.__advance = s => { for (let i = 0; i < s * 60; i++) step(1 / 60); };
+/* 进场：照片从上方落到绳子上，离选中的越远落得越晚 */
+prints.forEach(p => { p.userData.drop = 1 + Math.abs(p.userData.i - sel) * 0.35; });
+select(sel);
+frame();
+requestAnimationFrame(() => document.body.classList.add('ready'));
+</script>
+</body>
+</html>
