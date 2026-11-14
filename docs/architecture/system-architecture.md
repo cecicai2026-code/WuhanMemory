@@ -26,14 +26,11 @@ flowchart LR
 ```text
 apps/
   web/
-    app/
+    app/            每个页面一个文件夹，页面自己的组件和样式放在一起
     components/
-    features/
-      chat/
-      itinerary/
-      map/
-      share/
-    lib/
+      ui/           基础组件（按钮、纸、印章、输入框）
+      shell/        外壳（四角标注、菜单、空页面）
+    lib/            页面清单、景点数据入口
   api/
     app/
       api/
