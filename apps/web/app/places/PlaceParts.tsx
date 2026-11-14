@@ -44,7 +44,7 @@ export function FactMeta({ fact }: { fact: PoiFact<unknown> }) {
 /** 纸上的一个条目。没有资料时写"待补充" */
 export function Entry({ label, fact, children }: { label: string; fact: PoiFact<unknown>; children?: ReactNode }) {
   return (
-    <div className={fact.status === "expired" ? s.entryExpired : undefined}>
+    <div>
       <dt>{label}</dt>
       <dd>
         {fact.status === "missing" || fact.value == null ? (
@@ -72,7 +72,7 @@ export function ListEntry<T>({
 }) {
   const shown = facts.filter((f) => f.status !== "missing" && f.value != null);
   return (
-    <div className={facts.some((f) => f.status === "expired") ? s.entryExpired : undefined}>
+    <div>
       <dt>{label}</dt>
       <dd>
         {shown.length === 0 ? (

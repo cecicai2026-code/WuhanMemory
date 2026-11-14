@@ -169,19 +169,15 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+/* 过期日期加粗。红褐色只用在"已过期"章上（设计规范 8.3），这里不用 */
 .metaExpired {
-  color: var(--expired-paper);
+  color: var(--ink);
   font-weight: 700;
 }
 .metaStamp {
   font-size: var(--size-label);
   padding: 0 6px;
   border-width: 1.5px;
-}
-/* 过期的条目：左边一道红褐色的竖线，一眼能看到 */
-.entryExpired dd {
-  padding-left: 12px;
-  border-left: 3px solid var(--expired-paper);
 }
 .items {
   display: grid;
