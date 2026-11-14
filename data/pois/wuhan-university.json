@@ -12,12 +12,25 @@
       "title": "武汉大学官网：学校简介",
       "url": "https://www.whu.edu.cn/xxgk/xxjj.htm",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+    "value": {
+      "lng": 114.364514,
+      "lat": 30.536243,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：武汉大学（珞珈山街道八一路299号），B001B0IZY1。校园很大，这个点不一定在校门，游客从哪个门进待确认。"
   },
   "address": {
     "value": "湖北省武汉市武昌区八一路 299 号",
