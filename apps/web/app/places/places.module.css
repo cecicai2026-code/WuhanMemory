@@ -55,18 +55,23 @@
   max-width: 760px;
   margin: 0 auto;
 }
-/* 四个主题的索引：贴在上沿，随时能跳 */
+/* 四个主题的索引：一块贴在上沿的深色小牌，随时能跳 */
 .themes {
   position: sticky;
-  top: 0;
+  top: 8px;
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0 28px;
-  margin-bottom: 28px;
-  padding: 4px 0;
-  background: linear-gradient(180deg, rgba(7, 5, 4, 0.9) 60%, rgba(7, 5, 4, 0));
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 28px;
+  padding: 0 24px;
+  background: rgba(7, 5, 4, 0.86);
+  border: 1px solid var(--brass-deep);
+  border-radius: 3px;
+  box-shadow: var(--shadow-object);
 }
 .sheets {
   display: grid;
@@ -119,7 +124,10 @@
   }
   .filter,
   .themes {
-    gap: 0 20px;
+    gap: 0 18px;
+  }
+  .themes {
+    padding: 0 14px;
   }
   .sheets {
     gap: 32px;

@@ -30,6 +30,11 @@
   z-index: 20;
   min-height: 72px;
 }
+/* 窄屏上左上角和菜单不换行，放不下时省略的是中间的计数 */
+.top > span:first-child {
+  flex: none;
+  white-space: nowrap;
+}
 .topRight {
   display: flex;
   align-items: center;
@@ -37,6 +42,7 @@
   min-width: 0;
 }
 .count {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -90,6 +96,7 @@
 /* ---------- 菜单 ---------- */
 .menu {
   position: relative;
+  flex: none;
 }
 .menuButton {
   display: inline-flex;
@@ -103,6 +110,7 @@
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
+  white-space: nowrap;
   color: var(--text-secondary);
   transition: color var(--t-micro);
 }

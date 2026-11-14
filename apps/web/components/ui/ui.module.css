@@ -159,13 +159,20 @@
   border-radius: 2px 3px 2px 4px;
   box-shadow: var(--shadow-object);
 }
-/* 索引卡：小一点的内边距，1px 淡墨色横线格 */
+/* 索引卡：小一点的内边距，1px 淡墨色横线格。
+   卡上的小字、标题和正文都用同一个行高，字才会落在横线上。 */
 .card {
+  --line: calc(var(--size-paper-body) * 1.8);
   padding: calc(var(--paper-pad) / 2);
+  line-height: var(--line);
   background:
-    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0) 0 calc(1.8em - 1px), rgba(107, 94, 76, 0.28) calc(1.8em - 1px) 1.8em),
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0) 0 calc(var(--line) - 1px), rgba(107, 94, 76, 0.2) calc(var(--line) - 1px) var(--line)),
     #efe6cf;
-  background-position: 0 calc(var(--paper-pad) / 2 + 0.1em);
+  background-position: 0 calc(var(--paper-pad) / 2);
+}
+.card .paperTitle,
+.card .paperMark {
+  line-height: var(--line);
 }
 /* 可以点的纸：悬停时抬起，投影变长变虚 */
 .liftable {
