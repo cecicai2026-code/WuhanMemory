@@ -6,14 +6,14 @@
 
 板块 0（准备）已完成。板块 1 在 2026-11-15 拆成两半：
 
-- **板块 1A（代码已写完，等 Cecilia 看过页面确认）**：界面外壳、地图工作台 `/map` 的布局、地点档案的普通网页版（`/places` 和 `/places/[id]`）、`/compare` 和 `/trips` 的空页面，删除旧的浅色 mock 界面。不用 three.js。
+- **板块 1A（已完成，2026-11-15 合进 main）**：界面外壳、地图工作台 `/map` 的布局、地点档案的普通网页版（`/places` 和 `/places/[id]`）、`/compare` 和 `/trips` 的空页面，删除旧的浅色 mock 界面。不用 three.js。
 - **板块 1B（板块 5 完成之后）**：把立体三幕（胶卷、晾片、纸页）和首页桌面场景搬进正式网站。
 
 拆的原因：文书里写的功能（数据质量规则、千问和豆包切换、行程校验、双模型对比）一个都还没开始，要先保证它们做出来。
 
 做的顺序：0 → 1A → 2 → 3 → 4 → 5 → 1B → 6 → 7。分板块计划见 `docs/kickoff/claude-code-kickoff.md`。
 
-板块 1A 在分支 `block-1a-shell` 上做。
+板块 1A 是在分支 `block-1a-shell` 上做的，已合进 main。
 
 ## 板块 1A 完成情况
 
@@ -26,7 +26,7 @@
 - [x] `typecheck` 通过。
 - [x] Cecilia 运行 `pnpm build`，通过。
 - [x] Claude 在浏览器里看过每个页面（电脑 1280px、平板 800px、手机 375px），改了三处样式：索引卡的横线对齐文字、手机页眉不换行、详情页的主题索引。
-- [ ] Cecilia 自己看过每个页面，确认颜色、字体和版面。
+- [x] Cecilia 同意合进 main。颜色、字体、版面以后想调可以随时提。
 
 ## 怎么看网站
 
@@ -111,8 +111,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-1. Cecilia 看过 1A 的页面并运行 `pnpm build`，有问题先改。
-2. 确认后把 `block-1a-shell` 合进 main，开始板块 2（景点数据和数据质量规则）。
+板块 2（景点数据和数据质量规则）。开工时新建分支，先由 Claude 列出步骤、Cecilia 确认后再写代码。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
