@@ -12,6 +12,20 @@
       "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
       "url": "https://lbs.amap.com/api/webservice/guide/api/search",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "sohu-2026",
+      "type": "media",
+      "title": "搜狐：武汉黄鹤楼最新旅游攻略 2026 春夏季必看（2026-04-17）",
+      "url": "https://m.sohu.com/a/1010963506_593519/",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "dahepiao-night",
+      "type": "travel-platform",
+      "title": "大河票务网：2025 夜上黄鹤楼门票（2024-07-29 发布）",
+      "url": "https://www.dahepiao.com/lvyounews1/20240627472955.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -26,34 +40,85 @@
     "note": "高德地点：黄鹤楼（蛇山西山坡特1号(地铁司门口黄鹤楼站A出口步行500m)），B001B0I4K0。"
   },
   "address": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+    "value": "武汉市武昌区蛇山西山坡特 1 号",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-night",
+    "lastCheckedAt": "2026-11-15"
   },
   "intro": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方介绍"
+    "value": "武汉的城市名片。白天是日场，晚上有光影演艺夜游《夜上黄鹤楼》，日场票和夜场票不能通用。",
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15"
   },
   "history": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+    "value": "现在的黄鹤楼是 1985 年重建落成的，之后开放了夜间游览。",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-night",
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+    "value": {
+      "allDay": false,
+      "periods": [
+        {
+          "months": null,
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "08:30",
+          "close": "18:00",
+          "lastEntry": "17:20"
+        }
+      ],
+      "closedWeekdays": [],
+      "note": "以上是日场。夜场《夜上黄鹤楼》19:30–22:00，21:30 停止入园。"
+    },
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "大河票务网把夜场写成 20:00–20:40 和 21:10–21:30 两轮，和搜狐文章不一致。"
   },
   "ticket": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方票价"
+    "value": {
+      "free": false,
+      "items": [
+        {
+          "name": "日场门票",
+          "priceCny": 70
+        },
+        {
+          "name": "夜场《夜上黄鹤楼》起价",
+          "priceCny": 120
+        }
+      ],
+      "note": "学生、老人、军人等凭证件可以半价或免票，具体标准文章没写。"
+    },
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "大河票务网写夜场成人票 150 元、1.2 米以下儿童免票，和搜狐文章不一致。"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": true,
+      "how": "黄鹤楼公园官方公众号，门票和停车位都要预约",
+      "advanceDays": null,
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "文章讲的是五一期间实行\"景点预约 + 停车预约\"，平时是否必须预约没写。"
   },
   "payment": {
     "value": null,
@@ -61,9 +126,22 @@
     "todo": "TODO(Cecilia): 支付方式要实地确认"
   },
   "transport": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+    "value": {
+      "metro": [
+        {
+          "station": "司门口黄鹤楼站",
+          "line": "5 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": "文章说出站就到；还有将近 20 条公交线路到景区。"
+    },
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "高德地点信息写的是 A 出口步行约 500 米。"
   },
   "recommendedDurationMinutes": {
     "value": null,
@@ -71,11 +149,33 @@
     "todo": "TODO(Cecilia): 按你的游玩经验填"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "春末夏初最好。上午 9–11 点人少、光线好；傍晚 5–7 点看日落晚霞；下午入园可以接着看夜场。",
+    "verification": "placeholder",
+    "sourceId": "sohu-2026",
+    "lastCheckedAt": "2026-11-15"
   },
-  "photoSpots": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "司门口红墙",
+        "description": "地铁司门口黄鹤楼站 C 出口外的红墙，改造后整体抬高了 7 米，文章称它是头号网红机位。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "sohu-2026",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "得胜桥巷口",
+        "description": "能拍到黄鹤楼和街巷市井同框。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "sohu-2026",
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
   "food": [],
   "reviews": [],
   "photos": []

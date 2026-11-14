@@ -19,6 +19,20 @@
       "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
       "url": "https://lbs.amap.com/api/webservice/guide/api/search",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "thepaper-2026",
+      "type": "media",
+      "title": "澎湃新闻：公众进入武汉大学已无需预约，带上身份证即可进校（2026-05-13）",
+      "url": "https://www.thepaper.cn/newsDetail_forward_33174524",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "bendibao-2012",
+      "type": "other",
+      "title": "本地宝：武汉旅游景点介绍：武汉大学（2012-09-20）",
+      "url": "https://m.bendibao.com/show426511_6.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -53,7 +67,7 @@
   "openingHours": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 保卫部 2026-09-20 发布的入校参观通知正文读不出来，普通游客能哪天、几点进校待确认"
+    "todo": "TODO(Cecilia): 2026-05 澎湃新闻说工作日也能进校，但没写几点；之前 2024 年的规定是周末节假日 8:30–17:30"
   },
   "ticket": {
     "value": null,
@@ -61,9 +75,17 @@
     "todo": "TODO(Cecilia): 官网没有写参观收费"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 同上，普通游客要不要预约、在哪预约待确认"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "带身份证即可进校，工作日也可以进。樱花季另有规定，每年单独公布。"
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "报道说当时学校官网还没发布新规定，预约入口仍然保留。"
   },
   "payment": {
     "value": null,
@@ -71,9 +93,14 @@
     "todo": "TODO(Cecilia): 支付方式要实地确认"
   },
   "transport": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+    "value": {
+      "metro": [],
+      "note": "游客从珞珈门（正门）或弘毅门进校。"
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
     "value": null,
@@ -81,11 +108,25 @@
     "todo": "TODO(Cecilia): 按你的游玩经验填"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "樱花季在每年 3 月下旬到 4 月上旬，这时人最多。",
+    "verification": "placeholder",
+    "sourceId": "bendibao-2012",
+    "lastCheckedAt": "2026-11-15",
+    "note": "来自 2012 年的文章。"
   },
-  "photoSpots": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "樱花大道",
+        "description": "东区樱花宿舍旁约 200 米长的樱花大道，有 1000 多株樱花。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2012",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2012 年的文章。"
+    }
+  ],
   "food": [],
   "reviews": [],
   "photos": [

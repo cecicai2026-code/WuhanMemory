@@ -33,7 +33,7 @@ def format_report(report: CheckReport, data_dir: Path, today: date) -> str:
 
     lines += [
         f"景点 {s.pois} 个，信息 {s.facts} 条：实地核实 {s.onsite}，核对过来源 {s.confirmed}，"
-        f"官网占位 {s.placeholder}，TODO {s.todo}，已过期 {s.expired}",
+        f"占位 {s.placeholder}，TODO {s.todo}，已过期 {s.expired}",
         f"照片：自己的或授权的 {s.own_photos} 张，官网占位 {s.placeholder_photos} 张"
         + ("（网站公开前必须换掉）" if s.placeholder_photos else ""),
         f"错误 {len(report.errors)} 个，警告 {len(report.warnings)} 个",

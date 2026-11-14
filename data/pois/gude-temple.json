@@ -12,6 +12,20 @@
       "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
       "url": "https://lbs.amap.com/api/webservice/guide/api/search",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "qunar-gds",
+      "type": "travel-platform",
+      "title": "去哪儿：古德寺攻略（页面没有日期，点评到 2026-01）",
+      "url": "https://touch.travel.qunar.com/poi/702056",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "maigoo-gds",
+      "type": "other",
+      "title": "买购网：汉口古德寺词条（页面没有日期）",
+      "url": "https://www.maigoo.com/citiao/79247.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -26,29 +40,63 @@
     "note": "高德地点：古德寺(宗教活动场所)(暂停开放)（工农兵路24号），B001B1IGH4。高德上这个地点的名字带\"（暂停开放）\"，是否开放待确认。"
   },
   "address": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+    "value": "湖北省武汉市江岸区工农兵路 24 号",
+    "verification": "placeholder",
+    "sourceId": "qunar-gds",
+    "lastCheckedAt": "2026-11-15",
+    "note": "买购网写\"黄浦路上滑坡 74 号\"。"
   },
   "intro": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方介绍"
+    "value": "佛殿仿照缅甸阿难陀寺建造，很有异域风格，院里有四面佛。和归元寺、宝通寺、莲溪寺并称武汉四大佛教丛林。",
+    "verification": "placeholder",
+    "sourceId": "maigoo-gds",
+    "lastCheckedAt": "2026-11-15"
   },
   "history": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+    "value": "始建于清光绪三年（1877 年）。1914 年黎元洪改名\"古德寺\"并题写寺名，1921 年开始大规模改建。2013 年列为全国重点文物保护单位。",
+    "verification": "placeholder",
+    "sourceId": "maigoo-gds",
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+    "value": {
+      "allDay": false,
+      "periods": [
+        {
+          "months": null,
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "08:30",
+          "close": "16:30",
+          "lastEntry": null
+        }
+      ],
+      "closedWeekdays": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "qunar-gds",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "高德地图上标着\"暂停开放\"，现在开不开放待确认。另有游记写 7:00–17:30。"
   },
   "ticket": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方票价"
+    "value": {
+      "free": true,
+      "items": [],
+      "note": "用户点评说要交香火钱，8 元起。"
+    },
+    "verification": "placeholder",
+    "sourceId": "maigoo-gds",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
     "value": null,
@@ -61,19 +109,35 @@
     "todo": "TODO(Cecilia): 支付方式要实地确认"
   },
   "transport": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+    "value": {
+      "metro": [
+        {
+          "station": "罗家庄站",
+          "line": "3 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": "出站步行约 1 公里。公交 30 路、电 3 路到工农兵路古德寺站，步行约 72 米。"
+    },
+    "verification": "placeholder",
+    "sourceId": "qunar-gds",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "买购网写的是 1 号线头道街站。"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 60,
+    "verification": "placeholder",
+    "sourceId": "maigoo-gds",
+    "lastCheckedAt": "2026-11-15",
+    "note": "买购网写 1–2 小时。"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "春秋两季最好，夏天炎热、冬天湿冷。",
+    "verification": "placeholder",
+    "sourceId": "qunar-gds",
+    "lastCheckedAt": "2026-11-15"
   },
   "photoSpots": [],
   "food": [],

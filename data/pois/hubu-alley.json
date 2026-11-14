@@ -12,6 +12,20 @@
       "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
       "url": "https://lbs.amap.com/api/webservice/guide/api/search",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "tuniu",
+      "type": "travel-platform",
+      "title": "途牛：户部巷攻略（页面没有日期）",
+      "url": "https://m.tuniu.com/g1799580/guide-0-0/",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "bendibao-2015",
+      "type": "other",
+      "title": "本地宝：武汉户部巷小吃攻略（2015-04-02）",
+      "url": "https://m.bendibao.com/show679929.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -26,14 +40,17 @@
     "note": "高德地点：户部巷（司门口中华路街道解放路459号），B0FFF5V6F4。"
   },
   "address": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+    "value": "武汉市武昌区司门口户部巷自由路口",
+    "verification": "placeholder",
+    "sourceId": "tuniu",
+    "lastCheckedAt": "2026-11-15",
+    "note": "本地宝写的是\"武昌区民主路户部巷巷子口\"；高德写的是\"解放路 459 号\"。"
   },
   "intro": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方介绍"
+    "value": "武昌司门口一带一条约 150 米长的百年老巷，是武汉有名的小吃街。",
+    "verification": "placeholder",
+    "sourceId": "tuniu",
+    "lastCheckedAt": "2026-11-15"
   },
   "history": {
     "value": null,
@@ -41,14 +58,21 @@
     "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
   },
   "openingHours": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+    "value": {
+      "allDay": true,
+      "periods": [],
+      "closedWeekdays": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "tuniu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "ticket": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方票价"
+    "todo": "TODO(Cecilia): 途牛页面只有\"18 元起\"的预订模块，没写进巷子要不要钱"
   },
   "reservation": {
     "value": null,
@@ -61,14 +85,22 @@
     "todo": "TODO(Cecilia): 支付方式要实地确认"
   },
   "transport": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+    "value": {
+      "metro": [],
+      "note": "公交 14、15、16、18、521、530、529、539 路到司门口站下车即到。"
+    },
+    "verification": "placeholder",
+    "sourceId": "tuniu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "本地宝 2015 年列的公交线路不一样。"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 150,
+    "verification": "placeholder",
+    "sourceId": "tuniu",
+    "lastCheckedAt": "2026-11-15",
+    "note": "途牛页面写\"2.5\"，没写单位，按小时算。"
   },
   "bestTime": {
     "value": null,
@@ -76,7 +108,92 @@
     "todo": "TODO(Cecilia): 按你的游玩经验填"
   },
   "photoSpots": [],
-  "food": [],
+  "food": [
+    {
+      "value": {
+        "name": "石婆婆热干面",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "徐嫂鲜鱼糊汤粉",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "谢家面窝",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "高胖子粥店",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "陈记红油牛肉面",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "何记豆皮",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    },
+    {
+      "value": {
+        "name": "小文煎包",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2015",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+    }
+  ],
   "reviews": [],
   "photos": []
 }
