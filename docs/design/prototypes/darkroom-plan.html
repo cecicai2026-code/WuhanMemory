@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：填单幕（用户输入）</title>
+<!--
+  设计样片，不是网站代码。规划之前的输入页：桌上一张"行程底单"，用红笔圈出想要的，右边三支铅笔选出行强度。
+  版式参考 Cecilia 提供的图（胶卷罐、横过顶部的胶片、中间一张纸、右边三支笔），物件和内容是自己的。
+  选项只是示例，照片是程序画的示意图。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<style>
+  .say { position: fixed; left: 50%; bottom: 3.6vh; width: min(560px, 46vw); transform: translateX(-50%) rotate(-.8deg); box-sizing: border-box; padding: 10px 22px 14px;
+    background: #E9DFC6; box-shadow: 0 10px 22px rgba(0,0,0,.6); display: flex; align-items: baseline; gap: 12px; }
+  .say label { font-family: "Caveat", "Ma Shan Zheng", "Kaiti SC", cursive; font-size: 24px; color: #A8321F; white-space: nowrap; }
+  .say input { flex: 1; min-width: 0; height: 36px; border: 0; border-bottom: 2px solid #2A2420; background: none; outline: none;
+    font: 17px "Courier Prime", "LXGW WenKai TC", "Kaiti SC", serif; color: #2A2420; }
+  .say input::placeholder { color: #6B5E4C; }
+  .say input:focus { border-bottom-color: #A8321F; }
+  .ptag { position: fixed; transform: translate(-50%, 0); pointer-events: none; white-space: nowrap; font-size: 12px; letter-spacing: .2em; color: var(--muted); text-shadow: 0 2px 8px #000; transition: color .3s; }
+  .ptag.on { color: var(--paper); }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">填单 — 开始规划</div>
+<div class="lab tr" id="count"></div>
+<div class="lab bl link" id="back">← 回到桌面</div>
+<div class="say"><label for="more">还想说：</label><input id="more" type="text" placeholder="比如：哪天出发、一定要去的地方…"></div>
+<a class="cta" id="go">冲洗行程</a>
+<div class="ptag" id="p0">轻松</div><div class="ptag" id="p1">适中</div><div class="ptag" id="p2">紧凑</div>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, materials, add, contact, damp, grain, photo, makeCanister, MONO, SERIF } from './common.js';
+import { THREE, ktex, sheet, paperBg, stamp, rig, interact, project, go, run, settleFonts, TYPE, HAND, INK, SOFT, RED, BLUE } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 30, lampPos: [-4, 17, 7], lampTarget: [0.4, 0, 0], lampPower: 8.5, lampAngle: 0.82 });
+const { scene, camera, lamp, renderer } = stage, M = materials();
+makeTable(scene);
+const cam = rig(stage, { pos: [0.5, 19, 8.6], look: [0.5, 0, -1.0], sway: [0.35, 0.2] });
+const ui = interact(stage);
+
+/* ---------- 用户的选择（示例的初始值） ---------- */
+const LIKES = ['历史文化', '美食', '夜景', '拍照机位', '自然风景', '老街巷', '博物馆', '江边'];
+const SHOT = [0, 3, 1, 6, 4, 7, 5, 2];                 /* 每个偏好配一张示意照片 */
+const GROUPS = { days: ['1', '2', '3', '4', '5'], who: ['一个人', '情侣', '朋友', '带老人', '带孩子'], budget: ['省一点', '适中', '宽松'], stay: ['汉口', '武昌', '汉阳', '还没定'] };
+const sel = { likes: new Set(['历史文化', '夜景']), days: '2', who: '朋友', budget: '适中', stay: '汉口' };
+let pace = 1, regions = [], hot = null;
+const DARK = '#14100d';
+
+/* ---------- 中间：行程底单。圈出来的就是选中的 ---------- */
+function circle(g, cx, cy, rw, rh) {
+  g.save(); g.strokeStyle = RED; g.lineWidth = 6; g.lineCap = 'round';
+  g.beginPath(); g.ellipse(cx, cy, rw, rh, -0.06, 0.3, Math.PI * 2 + 0.1); g.stroke();
+  g.lineWidth = 3; g.beginPath(); g.ellipse(cx + 4, cy - 3, rw * 1.04, rh * 1.07, -0.1, 1.2, Math.PI * 2 - 0.4); g.stroke();
+  g.restore();
+}
+const form = sheet(8.4, 5.6, (g, w, h) => {
+  regions = [];
+  paperBg(g, w, h, '#efe7d2');
+  g.fillStyle = DARK; g.font = `28px ${MONO}`; g.fillText('WUHAN MEMORY · 行程底单 · 圈出你想要的', 110, 96);
+  g.textAlign = 'right'; g.fillText('ROLL 01', w - 110, 96); g.textAlign = 'left';
+
+  /* 两条印样：八个偏好，可以圈多个 */
+  const FW = 282, FH = 178, SX = 110, SW = 1250, SH = 262;
+  for (let r = 0; r < 2; r++) {
+    const sy = 134 + r * 292;
+    g.fillStyle = '#14100e'; g.fillRect(SX, sy, SW, SH);
+    g.fillStyle = '#efe7d2'; for (let x = SX + 14; x < SX + SW - 10; x += 34) { g.fillRect(x, sy + 8, 16, 12); g.fillRect(x, sy + SH - 20, 16, 12); }
+    for (let c = 0; c < 4; c++) {
+      const k = r * 4 + c, name = LIKES[k], x = SX + 30 + c * (FW + 22), y = sy + 30, on = sel.likes.has(name);
+      g.drawImage(photo(SHOT[k]).image, 0, 120, 640, 404, x, y, FW, FH);
+      if (!on) { g.globalCompositeOperation = 'multiply'; g.fillStyle = '#b5553a'; g.fillRect(x, y, FW, FH); g.globalCompositeOperation = 'source-over'; g.fillStyle = 'rgba(20,6,4,.28)'; g.fillRect(x, y, FW, FH); }
+      g.fillStyle = on ? '#efe7d2' : 'rgba(239,231,210,.7)'; g.font = `22px ${MONO}`; g.fillText(`${String(k + 1).padStart(2, '0')} · ${name}`, x + 2, y + FH + 26);
+      if (hot === 'likes:' + name) { g.strokeStyle = '#e2c27e'; g.lineWidth = 4; g.strokeRect(x - 2, y - 2, FW + 4, FH + 4); }
+      if (on) circle(g, x + FW / 2, y + FH / 2, FW * 0.56, FH * 0.66);
+      regions.push({ id: 'likes:' + name, x, y, w: FW, h: FH + 34 });
+    }
+  }
+  /* 文字选项：每组圈一个 */
+  const row = (key, title, x, y, gap, perLine = 9) => {
+    g.fillStyle = DARK; g.font = `26px ${MONO}`; g.fillText(title, x, y);
+    let cx = x, cy = y + 68;
+    GROUPS[key].forEach((opt, i) => {
+      if (i && i % perLine === 0) { cx = x; cy += 82; }
+      g.font = `700 48px ${TYPE}`; const tw = g.measureText(opt).width, id = `${key}:${opt}`;
+      g.fillStyle = DARK; g.fillText(opt, cx, cy);
+      if (hot === id) { g.fillStyle = '#8a6830'; g.fillRect(cx, cy + 12, tw, 4); }
+      if (sel[key] === opt) circle(g, cx + tw / 2, cy - 14, tw / 2 + 26, 40);
+      regions.push({ id, x: cx - 16, y: cy - 58, w: tw + 32, h: 84 });
+      cx += tw + gap;
+    });
+  };
+  row('days', '玩几天', 1440, 176, 40);
+  row('who', '和谁去', 1440, 366, 40, 2);
+  row('budget', '预算', 110, 790, 70);
+  row('stay', '住在哪一带', 760, 790, 56);
+  g.fillStyle = DARK; g.font = `26px ${MONO}`; g.fillText('出行强度', 110, 990);
+  g.fillStyle = RED; g.font = `58px ${HAND}`; g.save(); g.translate(110, 1068); g.rotate(-0.02); g.fillText('用右边的铅笔选 →', 0, 0); g.restore();
+  g.fillStyle = 'rgba(107,94,76,.45)'; g.fillRect(110, 1150, w - 220, 2);
+  g.fillStyle = DARK; g.font = `30px ${TYPE}`; g.fillText('圈好了，按右下角的铜牌。行程校验通过后才会画到灯箱上。', 110, 1206);
+  stamp(g, '示例选项', w - 220, 1040, BLUE, -0.05, 30, true);
+});
+form.position.set(-1.1, 0.05, 0.45); form.rotation.y = -0.03; form.scale.setScalar(1.16); form.userData.face.color.setHex(0xd9d2c4); scene.add(form);
+const redraw = () => form.userData.tex.userData.redraw();
+const TW = form.userData.tex.image.width, TH = form.userData.tex.image.height;
+
+function count() {
+  $('count').textContent = `已圈 ${sel.likes.size} 个偏好 · ${sel.days} 天 · ${['轻松', '适中', '紧凑'][pace]}`;
+}
+function choose(id) {
+  const [key, val] = id.split(':');
+  if (key === 'likes') { sel.likes.has(val) ? sel.likes.delete(val) : sel.likes.add(val); } else sel[key] = val;
+  redraw(); count();
+}
+/* 鼠标在纸上的位置换算成贴图坐标，再找它落在哪个选项上 */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function hitForm() {
+  ndc.set(ui.mouse.x, -ui.mouse.y); ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObject(form.userData.mesh, false)[0];
+  if (!hit || !hit.uv || hit.face.materialIndex !== 4) return null;
+  const x = hit.uv.x * TW, y = (1 - hit.uv.y) * TH;
+  return regions.find(r => x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h)?.id ?? null;
+}
+renderer.domElement.addEventListener('click', e => {
+  ui.mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
+  const id = hitForm(); if (id) choose(id);
+});
+
+/* ---------- 右边：三支铅笔 = 轻松、适中、紧凑 ---------- */
+const BODY = [0x143026, 0xe9dfc6, 0xc9a45c];
+const pencils = BODY.map((color, i) => {
+  const g = new THREE.Group(), body = new THREE.MeshStandardMaterial({ color, roughness: 0.5 });
+  const p = new THREE.Group(); p.rotation.x = Math.PI / 2; g.add(p);          /* 笔身沿桌面放，笔尖朝远处 */
+  add(p, new THREE.CylinderGeometry(0.13, 0.13, 3.0, 6), body, 0, 0, 0);
+  add(p, new THREE.ConeGeometry(0.13, 0.42, 6), M.wood, 0, -1.71, 0).rotation.x = Math.PI;
+  add(p, new THREE.ConeGeometry(0.05, 0.16, 12), new THREE.MeshStandardMaterial({ color: 0xc4201a, roughness: 0.4 }), 0, -1.86, 0).rotation.x = Math.PI;
+  add(p, new THREE.CylinderGeometry(0.135, 0.135, 0.34, 16), M.brass, 0, 1.62, 0);
+  add(p, new THREE.CylinderGeometry(0.125, 0.125, 0.3, 16), new THREE.MeshStandardMaterial({ color: 0xc4201a, roughness: 0.6 }), 0, 1.92, 0);
+  p.position.y = 0.13; contact(g, 0.9, 4.4);
+  g.userData.base = new THREE.Vector3(5.9 + i * 1.05, 0, 0.5 + i * 0.25); g.userData.rot = [-0.1, -0.02, 0.07][i]; g.userData.s = i === pace ? 1 : 0;
+  g.position.copy(g.userData.base); g.rotation.y = g.userData.rot; scene.add(g);
+  const grab = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.5, 4.3), new THREE.MeshBasicMaterial()); grab.visible = false; grab.position.y = 0.25; g.add(grab);   /* 看不见的大一号点击范围 */
+  g.userData.it = ui.add(g, { onClick: () => { pace = i; count(); } });
+  return g;
+});
+
+/* ---------- 顶部：胶卷罐和拉出来的一条胶片 ---------- */
+const can = makeCanister('武汉', 'ROLL 01 · WUHAN MEMORY'); can.scale.setScalar(0.86); can.position.set(-7.5, 0, -4.0); can.rotation.y = 0.25; scene.add(can);
+const SL = 17, SHH = 2.0;
+const stripT = ktex(2048, Math.round(2048 * SHH / SL), (g, w, h) => {
+  g.fillStyle = '#a84a24'; g.fillRect(0, 0, w, h);
+  const sheen = g.createLinearGradient(0, 0, 0, h); sheen.addColorStop(0, 'rgba(255,170,110,.25)'); sheen.addColorStop(1, 'rgba(0,0,0,.3)'); g.fillStyle = sheen; g.fillRect(0, 0, w, h);
+  g.fillStyle = '#1c0705'; for (let x = 8; x < w; x += 26) { g.fillRect(x, 8, 13, 14); g.fillRect(x, h - 22, 13, 14); }
+  const fw = 210, fh = h - 76;
+  for (let k = 0; k < 9; k++) {
+    const x = 20 + k * (fw + 16);
+    g.drawImage(photo(k + 8).image, 0, 60, 640, 520, x, 38, fw, fh);
+    g.globalCompositeOperation = 'multiply'; g.fillStyle = '#c8603c'; g.fillRect(x, 38, fw, fh); g.globalCompositeOperation = 'source-over';
+    g.fillStyle = 'rgba(240,200,150,.75)'; g.font = `11px ${MONO}`; g.fillText(`WUHAN MEMORY · ${String(k + 9).padStart(2, '0')}`, x, 33);
+  }
+});
+const stripGeo = new THREE.PlaneGeometry(SL, SHH, 120, 1);
+{ const p = stripGeo.attributes.position; for (let i = 0; i < p.count; i++) p.setZ(i, 0.12 * Math.sin(p.getX(i) * 0.5 + 1)); stripGeo.computeVertexNormals(); }
+const strip = new THREE.Mesh(stripGeo, new THREE.MeshPhysicalMaterial({ map: stripT, roughness: 0.3, clearcoat: 0.8, clearcoatRoughness: 0.2, side: THREE.DoubleSide, emissive: 0x3a1408, emissiveMap: stripT, emissiveIntensity: 0.12, color: 0xb8b0a8 }));
+strip.castShadow = true; strip.rotation.x = -0.75; strip.position.set(-6.4 + SL / 2, SHH / 2 * Math.cos(0.75) + 0.02, -4.75); scene.add(strip);
+
+$('back').addEventListener('click', () => go('darkroom-desk.html'));
+$('go').addEventListener('click', () => go('darkroom-map.html'));
+$('more').addEventListener('keydown', e => { if (e.key === 'Enter') go('darkroom-map.html'); e.stopPropagation(); });
+
+const v3 = new THREE.Vector3();
+run(dt => {
+  ui.update(dt); cam.update(dt, ui.mouse, 2.8);
+  const id = hitForm();
+  if (id !== hot) { hot = id; redraw(); }
+  if (hot) renderer.domElement.style.cursor = 'pointer';
+  pencils.forEach((p, i) => {
+    const u = p.userData; u.s = damp(u.s, i === pace ? 1 : 0, 6, dt);
+    const H = u.it.hv, S = u.s;
+    p.position.set(u.base.x, S * 0.35 + H * 0.2, u.base.z - S * 0.55);
+    p.rotation.y = u.rot; p.rotation.x = -S * 0.06;
+    const [x, y] = project(p.getWorldPosition(v3).add(new THREE.Vector3(0, 0.2, 2.1)), camera);
+    const el = $('p' + i); el.style.left = `${x}px`; el.style.top = `${y + 8}px`; el.classList.toggle('on', i === pace || H > 0.5);
+  });
+  lamp.position.x = damp(lamp.position.x, -4 + ui.mouse.x * 2.2, 2, dt);
+  renderer.render(scene, camera);
+});
+count();
+settleFonts('行程底单圈出你想要的历史文化美食夜景拍照机位自然风景老街巷博物馆江边玩几天和谁去一个人情侣朋友带老孩子预算省点适中宽松住在哪汉口武昌阳还没定出行强度用右边的铅笔选示例项');
+</script>
+</body>
+</html>
