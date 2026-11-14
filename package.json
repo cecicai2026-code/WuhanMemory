@@ -12,6 +12,7 @@
     "test": "corepack pnpm typecheck",
     "test:api": "cd apps/api && .venv/bin/python -m pytest",
     "check:data": "cd apps/api && .venv/bin/python -m app.data_quality",
+    "amap:lookup": "cd apps/api && .venv/bin/python -m app.tools.amap_lookup",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {

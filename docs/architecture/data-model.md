@@ -134,6 +134,15 @@
 
 文件里出现模型没有的字段名（例如拼错）会报错，不会悄悄忽略。
 
+### 3.4 坐标怎么来
+
+坐标不能编，有两种来法：
+
+- Cecilia 用高德坐标拾取器复制，来源类型 `amap`，核实方式 `confirmed`。
+- 运行 `corepack pnpm amap:lookup 景点id=搜索词 ...`（`apps/api/app/tools/amap_lookup.py`），用高德"关键字搜索"在武汉市范围内查，列出前几个结果的名称、区、地址和坐标，原始结果存到 `data/amap-lookup/`（不进 git）。写进景点资料时来源类型 `amap`、核实方式 `placeholder`；Cecilia 在地图上看过点位后改成 `confirmed`。
+
+高德返回的坐标就是 GCJ-02，不用转换。
+
 ## 4. 过期时间的上限
 
 `expiresAt` 不能晚于 `lastCheckedAt` 加下表的天数；可以填得更早，例如节假日的临时开放时间写到假期结束那天。数值在 `apps/api/app/data_quality/rules.py` 的 `VOLATILE_MAX_DAYS`。

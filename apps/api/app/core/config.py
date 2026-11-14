@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     llm_request_timeout_seconds: int = 60
     llm_max_retries: int = 2
 
+    # 高德 Web 服务 key，只在后端用（地点搜索、路线规划）
+    amap_web_service_key: str | None = None
+    amap_base_url: str = "https://restapi.amap.com"
+
     # 景点资料（data/pois/*.json）和照片所在的目录，见 ADR 0003
     data_dir: Path = REPO_ROOT / "data"
     # SQLite 数据库文件。相对路径按 apps/api 算
