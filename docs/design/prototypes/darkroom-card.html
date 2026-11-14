@@ -110,7 +110,7 @@ const pen = makePen(); pen.position.set(-3.2, 0, 3.4); pen.rotation.y = 0.12; sc
 const ferry = makeTicket('轮渡', 'FERRY · 过江', 1.9, 1.05); ferry.position.set(-7.6, 0.03, 3.4); ferry.rotation.y = 0.35; scene.add(ferry);
 
 $('back').addEventListener('click', () => go('darkroom-desk.html'));
-$('plan').addEventListener('click', () => go('darkroom-map.html'));
+$('plan').addEventListener('click', () => go('darkroom-plan.html'));
 
 run(dt => {
   ui.update(dt); cam.update(dt, ui.mouse, 2.8);

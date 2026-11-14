@@ -114,7 +114,7 @@ const pileIt = ui.add(pile);
 function replay() { shown[0] = shown[1] = 0; }
 $('replay').addEventListener('click', replay);
 $('back').addEventListener('click', () => go('darkroom-desk.html'));
-$('plan').addEventListener('click', () => go('darkroom-map.html'));
+$('plan').addEventListener('click', () => go('darkroom-plan.html'));
 addEventListener('keydown', e => { if (e.key === 'r' || e.key === 'R') replay(); });
 
 const v3 = new THREE.Vector3();
