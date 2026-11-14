@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：桌面幕（首页）</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 9.4 节：灯亮起照出整张桌子，往下滚动时镜头依次停在四个物件上。
+  物件上的内容都是示例。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 01 幕 — 桌面</div>
+<div class="lab tr">4 件物件</div>
+<div class="lab bl">WUHAN MEMORY</div>
+<div class="hero" id="hero"><div class="kicker">WUHAN MEMORY · 暗房里的一张木桌</div><h1>武汉记忆</h1><p>用一场对话，冲洗出一份画在地图上的武汉行程。</p></div>
+
+<div class="stop r"><div class="kicker">物件 01 · 胶卷罐 → 地点档案</div><h2>一卷胶片，一座城</h2>
+  <p>在看片器里一格一格看景点。点开一格，把它晾起来，再读它的概览、游玩建议、图册和周边美食。</p><a class="note" data-go="darkroom-rolls.html">打开胶卷 →</a></div>
+<div class="stop l"><div class="kicker">物件 02 · 灯箱和地图 → 地图工作台</div><h2>说出来，画在地图上</h2>
+  <p>用日常的话说你想怎么玩。AI 生成逐日行程，用景点数据校验通过之后，才画到可以切换 2D 和 3D 的地图上。</p><a class="note" data-go="darkroom-map.html">点亮灯箱 →</a></div>
+<div class="stop r"><div class="kicker">物件 03 · 两台打字机 → 模型对比</div><h2>同一个问题，两份回答</h2>
+  <p>同一个请求同时交给千问和豆包。两份行程并排打出来，中间一张评分卡，上面的指标都是程序跑出来的。</p><a class="note" data-go="darkroom-compare.html">看它们打字 →</a></div>
+<div class="stop l"><div class="kicker">物件 04 · 笔记本 → 我的行程</div><h2>夹在本子里的印样</h2>
+  <p>生成过的行程都夹在笔记本里。可以再打开、接着改，或者寄出一张只读的分享明信片。</p><a class="note" data-go="darkroom-trips.html">翻开笔记本 →</a></div>
+
+<div class="pager">
+  <button class="btn prev" id="prev" aria-label="上一个物件"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+  <div class="range" id="range"></div>
+  <button class="btn next" id="next" aria-label="下一个物件"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+</div>
+<a class="cta" id="plan">开始规划</a>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, damp, grain, makeCanister, pad, MONO } from './common.js';
+import { THREE, paperBg, ruled, rig, interact, go, run, settleFonts, drawMap, makeLightbox, makePin, makeTypewriter, makeNotebook, makeStrip, litStrip, makePen, makeTicket,
+  STOPS, DAYCOL, TYPE, INK, SOFT } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 30, lampPos: [-3, 13, 11], lampTarget: [0.4, 0.8, 0], lampPower: 0, lampAngle: 0.8 });
+const { scene, camera, lamp, renderer } = stage;
+makeTable(scene);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(90, 24), new THREE.MeshStandardMaterial({ color: 0x120504, roughness: 1 }));
+wall.position.set(0, 12, -7); wall.receiveShadow = true; scene.add(wall);
+const WIDE = { pos: [0.4, 9.2, 20.5], look: [0.4, 2.7, 0] };
+const cam = rig(stage, { ...WIDE, sway: [0.6, 0.3] });
+const ui = interact(stage);
+
+/* ---------- 桌上的四件物件 ---------- */
+const can = makeCanister('武汉', 'ROLL 01 · WUHAN MEMORY'); can.scale.setScalar(0.92); can.position.set(-7.4, 0, -0.6); scene.add(can);
+
+const box = makeLightbox(4.9, 3.3, (g, w, h) => drawMap(g, w, h, 0)); box.position.set(-2.5, 0, 1.5); box.rotation.y = 0.14; scene.add(box);
+STOPS.forEach(p => { const pin = makePin(DAYCOL[p.day]); pin.scale.setScalar(p.day ? 0.5 : 0.7); pin.position.set((p.x - 0.5) * 4.9, 0.47, (p.y - 0.5) * 3.3); box.add(pin); });
+
+const pair = new THREE.Group(); pair.position.set(3.9, 0, -1.8); scene.add(pair);
+[['千问', '第 1 天\n黄鹤楼\n户部巷\n昙华林'], ['豆包', '第 1 天\n东湖\n湖北省博物馆\n昙华林']].forEach(([label, text], k) => {
+  const tw = makeTypewriter(label, (g, w, h) => {
+    paperBg(g, w, h); g.fillStyle = SOFT; g.font = `24px ${MONO}`; g.fillText(label, 60, 80);
+    g.fillStyle = INK; text.split('\n').forEach((ln, i) => { g.font = `${i ? '' : '700 '}64px ${TYPE}`; g.fillText(ln, 60, 200 + i * 110); });
+  });
+  tw.scale.setScalar(0.56); tw.position.set(k ? 1.65 : -1.65, 0, k ? 0.25 : 0); tw.rotation.y = k ? -0.14 : 0.1; pair.add(tw);
+});
+
+const book = makeNotebook((g, w, h) => { paperBg(g, w, h); ruled(g, w, h, 120, 92); }, (g, w, h) => { paperBg(g, w, h); ruled(g, w, h, 120, 92); });
+book.scale.setScalar(0.5); book.position.set(7.0, 0, 2.2); book.rotation.y = -0.2; scene.add(book);
+const strips = [[0, 1, 2, 4, 5], [5, 4, 2, 0]].map((s, i) => { const st = makeStrip(s, 4.1); st.position.set(-2.52, 0.37, -1.6 + i * 2.6); st.rotation.y = i ? 0.04 : -0.03; book.add(st); return st; });
+
+/* 点缀 */
+const pen = makePen(); pen.scale.setScalar(0.8); pen.position.set(2.6, 0, 1.6); pen.rotation.y = 0.5; scene.add(pen);
+const metro = makeTicket('武汉地铁', 'METRO · 单程票'); metro.scale.setScalar(0.8); metro.position.set(-5.9, 0.03, 2.6); metro.rotation.y = -0.3; scene.add(metro);
+
+/* ---------- 镜头的五个停靠点：全景，然后四件物件 ---------- */
+const near = (ox, oz, side, h = 6.0, d = 13) => ({ pos: [ox + side * 2.5, h, oz + d], look: [ox + side * 2.5, 1.5, oz] });
+const VIEWS = [
+  { name: '桌面全景', ...WIDE },
+  { name: '胶卷罐', obj: can, url: 'darkroom-rolls.html', ...near(-7.4, -0.6, 1) },
+  { name: '灯箱和地图', obj: box, url: 'darkroom-map.html', ...near(-2.5, 1.5, -1, 7.4, 11) },
+  { name: '两台打字机', obj: pair, url: 'darkroom-compare.html', ...near(3.9, -1.8, 1, 6.2, 13.5) },
+  { name: '笔记本', obj: book, url: 'darkroom-trips.html', ...near(7.0, 2.2, -1, 8.2, 9.5) },
+];
+VIEWS.slice(1).forEach(v => { v.it = ui.add(v.obj, { onClick: () => go(v.url) }); v.y0 = v.obj.position.y; });
+const stopEls = [...document.querySelectorAll('.stop')];
+let at = 0, wheelAcc = 0, wheelLock = 0, lit = 0;
+function show(i) {
+  at = Math.max(0, Math.min(VIEWS.length - 1, i));
+  const v = VIEWS[at]; cam.to(v.pos, v.look);
+  $('hero').classList.toggle('off', at !== 0);
+  stopEls.forEach((el, k) => el.classList.toggle('on', k + 1 === at));
+  $('range').innerHTML = `<b>${pad(at + 1)}</b> / ${pad(VIEWS.length)} · ${v.name}`;
+  $('prev').disabled = at === 0; $('next').disabled = at === VIEWS.length - 1;
+}
+$('prev').addEventListener('click', () => show(at - 1)); $('next').addEventListener('click', () => show(at + 1));
+$('plan').addEventListener('click', () => go('darkroom-plan.html'));
+document.querySelectorAll('[data-go]').forEach(a => a.addEventListener('click', () => go(a.dataset.go)));
+addEventListener('wheel', e => {
+  const now = performance.now(); if (now < wheelLock) return;
+  wheelAcc += e.deltaY;
+  if (Math.abs(wheelAcc) > 60) { show(at + Math.sign(wheelAcc)); wheelAcc = 0; wheelLock = now + 700; }
+}, { passive: true });
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') show(at + 1);
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') show(at - 1);
+  if (e.key === 'Enter' && VIEWS[at].url) go(VIEWS[at].url);
+});
+
+run(dt => {
+  ui.update(dt); cam.update(dt, ui.mouse, 2.2);
+  lit = damp(lit, 1, 1.3, dt); lamp.intensity = 8.2 * lit;            /* 开场：灯慢慢亮起 */
+  const lx = VIEWS[at].look[0];
+  lamp.position.x = damp(lamp.position.x, lx - 3 + ui.mouse.x * 2.4, 2, dt);
+  lamp.target.position.x = damp(lamp.target.position.x, lx, 2, dt);
+  VIEWS.slice(1).forEach((v, k) => {
+    const H = Math.max(v.it.hv, at === k + 1 ? 0.35 : 0);
+    v.obj.position.y = damp(v.obj.position.y, v.y0 + H * 0.22, 6, dt);
+  });
+  const sH = Math.max(VIEWS[4].it.hv, at === 4 ? 1 : 0); strips.forEach(s => litStrip(s, sH));
+  renderer.render(scene, camera);
+});
+show(0);
+settleFonts('第天黄鹤楼户部巷昙华林东湖湖北省博物馆千问豆包武汉地铁');
+</script>
+</body>
+</html>

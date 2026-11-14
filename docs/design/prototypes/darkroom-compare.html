@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：两台打字机幕（模型对比）</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 9.2 节：两台打字机并排打出各自的行程，中间一张评分卡。
+  行程是示例；评分卡上的印章只演示样子，数值一律留空，正式版由程序跑出。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 06 幕 — 两台打字机</div>
+<div class="lab tr">1 个请求 · 2 个模型</div>
+<div class="lab bl link" id="back">← 回到桌面</div>
+<div class="head"><div class="no">同一个请求</div><div class="title"><span>两份行程</span></div><div class="sub">「周末去武汉两天，想看黄鹤楼和东湖，少走路」</div></div>
+<div class="pager">
+  <button class="btn" id="replay" aria-label="再打一次"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v5h5"/></svg></button>
+  <div class="range" id="state"></div>
+</div>
+<a class="cta" id="plan">开始规划</a>
+<div class="lab tag" id="tag"></div>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, materials, add, damp, grain, MONO } from './common.js';
+import { THREE, RoundedBoxGeometry, sheet, paperBg, ruled, stamp, rig, interact, project, go, run, settleFonts, makeTypewriter,
+  TYPE, HAND, INK, SOFT, RED, GREEN, BLUE } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 30, lampPos: [-3, 12, 11], lampTarget: [0, 1.6, 0], lampPower: 8.2, lampAngle: 0.78 });
+const { scene, camera, lamp, renderer } = stage, M = materials();
+makeTable(scene);
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(70, 24), new THREE.MeshStandardMaterial({ color: 0x120504, roughness: 1 }));
+wall.position.set(0, 12, -6); wall.receiveShadow = true; scene.add(wall);
+const cam = rig(stage, { pos: [0, 9, 18.5], look: [0, 3.0, 0.4], sway: [0.5, 0.28] });
+const ui = interact(stage);
+
+/* ---------- 两台打字机：各自逐字打出行程 ---------- */
+const TEXT = [
+  '第 1 天\n10:00  黄鹤楼\n12:30  户部巷\n14:30  昙华林\n\n第 2 天\n10:30  湖北省博物馆\n14:00  东湖\n19:00  汉口江滩',
+  '第 1 天\n09:30  东湖\n13:00  湖北省博物馆\n16:00  昙华林\n\n第 2 天\n10:00  黄鹤楼\n12:00  户部巷',
+];
+const shown = [0, 0], drawn = [-1, -1];
+const writers = ['千问', '豆包'].map((label, k) => {
+  const tw = makeTypewriter(label, (g, w, h) => {
+    paperBg(g, w, h);
+    g.fillStyle = SOFT; g.font = `22px ${MONO}`; g.fillText(`${label} · 示例行程`, 56, 70);
+    const lines = TEXT[k].slice(0, Math.floor(shown[k])).split('\n');
+    let y = 150;
+    lines.forEach((ln, i) => {
+      const head = ln.startsWith('第');
+      g.fillStyle = INK; g.font = `${head ? '700 ' : ''}44px ${TYPE}`; g.fillText(ln, 56, y);
+      if (i === lines.length - 1) g.fillRect(56 + g.measureText(ln).width + 8, y - 36, 20, 42);   /* 光标 */
+      y += 72;
+    });
+  });
+  tw.position.set(k ? 5.3 : -5.3, 0, -1.1); tw.rotation.y = k ? -0.13 : 0.13; scene.add(tw);
+  tw.userData.it = ui.add(tw); tw.userData.name = label;
+  return tw;
+});
+
+/* ---------- 中间：立在小架子上的评分卡 ---------- */
+const METRICS = [['行程结构校验', 'ok', 'ok'], ['景点坐标都能查到', 'ok', 'no'], ['不和开放时间冲突', 'ok', 'ok'], ['每天路上总耗时', '', ''], ['满足用户提的要求', '', ''], ['回答用时', '', '']];
+const score = sheet(3.7, 4.9, (g, w, h) => {
+  paperBg(g, w, h, '#efe6cf'); ruled(g, w, h, 236, 96);
+  g.fillStyle = INK; g.font = `700 56px ${TYPE}`; g.fillText('评分卡', 50, 96);
+  g.fillStyle = SOFT; g.font = `22px ${MONO}`; g.textAlign = 'right'; g.fillText('程序计算', w - 50, 90); g.textAlign = 'left';
+  g.fillStyle = RED; g.fillRect(40, 124, w - 80, 4);
+  g.fillStyle = SOFT; g.font = `24px ${MONO}`; g.fillText('指标', 50, 190); g.textAlign = 'center'; g.fillText('千问', w - 270, 190); g.fillText('豆包', w - 110, 190); g.textAlign = 'left';
+  METRICS.forEach(([name, a, b], i) => {
+    const y = 300 + i * 96;
+    g.fillStyle = INK; g.font = `34px ${TYPE}`; g.fillText(name, 50, y);
+    [a, b].forEach((v, c) => {
+      const x = w - 270 + c * 160;
+      if (v === 'ok') stamp(g, '通过', x, y - 12, GREEN, c ? 0.05 : -0.06, 28);
+      else if (v === 'no') stamp(g, '未通过', x, y - 12, RED, -0.09, 28);
+      else { g.fillStyle = 'rgba(107,94,76,.7)'; g.fillRect(x - 36, y - 6, 72, 3); }
+    });
+  });
+  g.fillStyle = BLUE; g.font = `26px ${TYPE}`; g.fillText('印章只演示样子，数值由程序跑出', 50, h - 50);
+}, { lie: false });
+const stand = new THREE.Group(); stand.position.set(0, 0, 2.3); scene.add(stand);
+add(stand, new RoundedBoxGeometry(2.6, 0.22, 0.9, 3, 0.07), M.brassDark, 0, 0.11, -0.15);
+add(stand, new THREE.BoxGeometry(0.12, 2.6, 0.12), M.brassDark, 0, 1.2, -0.75).rotation.x = -0.5;
+score.rotation.x = -0.42; score.position.set(0, 0.2 + 2.45 * Math.cos(0.42), -0.15 - 2.45 * Math.sin(0.42) + 0.35); stand.add(score);
+const scoreIt = ui.add(score);
+
+/* 桌角的一叠卡片：历次对比 */
+const pile = new THREE.Group(); pile.position.set(8.3, 0, 2.9); pile.rotation.y = -0.3; scene.add(pile);
+for (let k = 0; k < 3; k++) { const b = add(pile, new THREE.BoxGeometry(2.6, 0.02, 1.7), M.paper, k * 0.05, 0.012 + k * 0.022, -k * 0.04); b.rotation.y = (k - 1) * 0.07; }
+const top = sheet(2.6, 1.7, (g, w, h) => {
+  paperBg(g, w, h, '#efe6cf');
+  g.fillStyle = SOFT; g.font = `24px ${MONO}`; g.fillText('历次对比', 36, 60);
+  g.fillStyle = INK; g.font = `36px ${TYPE}`; g.fillText('[日期] · [请求的前几个字]', 36, 150);
+  g.fillStyle = RED; g.font = `44px ${HAND}`; g.fillText('点击翻看 →', 36, 260);
+});
+top.position.y = 0.09; top.rotation.y = 0.05; pile.add(top);
+const pileIt = ui.add(pile);
+
+function replay() { shown[0] = shown[1] = 0; }
+$('replay').addEventListener('click', replay);
+$('back').addEventListener('click', () => go('darkroom-desk.html'));
+$('plan').addEventListener('click', () => go('darkroom-plan.html'));
+addEventListener('keydown', e => { if (e.key === 'r' || e.key === 'R') replay(); });
+
+const v3 = new THREE.Vector3();
+let t = 0;
+run(dt => {
+  t += dt; ui.update(dt); cam.update(dt, ui.mouse);
+  writers.forEach((tw, k) => {
+    /* 两台打字速度不同，各打各的 */
+    if (shown[k] < TEXT[k].length) shown[k] = Math.min(TEXT[k].length, shown[k] + dt * (k ? 17 : 21));
+    if (Math.floor(shown[k]) !== drawn[k]) { drawn[k] = Math.floor(shown[k]); tw.userData.paper.userData.tex.userData.redraw(); }
+    const typing = shown[k] < TEXT[k].length, H = tw.userData.it.hv, p = tw.userData.paper;
+    p.position.y = 3.7 + H * 0.25 + (typing ? Math.sin(t * 40 + k) * 0.006 : 0);
+    p.rotation.x = -0.22 + H * 0.1;
+    tw.userData.roll.rotation.x = shown[k] * 0.05;
+  });
+  const done = shown.map((s, k) => s >= TEXT[k].length);
+  $('state').innerHTML = done[0] && done[1] ? '<b>两份都打完了</b> · 再打一次' : '正在打字…';
+  score.position.z = -0.15 - 2.45 * Math.sin(0.42) + 0.35 + scoreIt.hv * 0.3; score.rotation.x = -0.42 + scoreIt.hv * 0.14;
+  pile.position.y = pileIt.hv * 0.2;
+  const hw = writers.find(w => ui.hovered === w.userData.it);
+  if (hw) {
+    const [x, y] = project(hw.getWorldPosition(v3).add(new THREE.Vector3(0, 6.6, 0)), camera);
+    $('tag').style.left = `${x}px`; $('tag').style.top = `${y}px`; $('tag').textContent = `${hw.userData.name} · 示例行程`;
+  }
+  $('tag').classList.toggle('on', !!hw);
+  lamp.position.x = damp(lamp.position.x, -3 + ui.mouse.x * 2.4, 2, dt);
+  renderer.render(scene, camera);
+});
+settleFonts('第天黄鹤楼户部巷昙华林湖北省博物馆东湖汉口江滩评分卡通过未点击翻看示例行程');
+</script>
+</body>
+</html>

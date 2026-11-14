@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：明信片幕（分享页）</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 2 节的分享页：一张明信片和一张三折页，只读。
+  行程是示例，照片和地图是示意图，日期、耗时、来源一律留空。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 08 幕 — 明信片</div>
+<div class="lab tr">只读 · 2 天 · 6 站</div>
+<div class="lab bl link" id="back">WUHAN MEMORY · 去桌面看看</div>
+<div class="head"><div class="no">寄给你的一份行程</div><div class="title"><span>武汉两日</span></div></div>
+<a class="cta" id="plan">我也排一份</a>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, damp, grain, photo, SERIF, MONO } from './common.js';
+import { THREE, sheet, paperBg, stamp, rig, interact, go, run, settleFonts, drawMap, makePen, makeTicket, DAYCOL, TYPE, HAND, INK, SOFT, RED, GREEN, BLUE } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 30, lampPos: [-4, 17, 7], lampTarget: [0.4, 0, 0.6], lampPower: 8.5, lampAngle: 0.8 });
+const { scene, camera, lamp, renderer } = stage;
+makeTable(scene);
+const cam = rig(stage, { pos: [0.7, 19.5, 10.6], look: [0.7, 0, 0.1], sway: [0.4, 0.22] });
+const ui = interact(stage);
+
+/* ---------- 明信片：左半是照片，右半是邮戳、邮票和几行字 ---------- */
+const card = sheet(7, 4.6, (g, w, h) => {
+  paperBg(g, w, h, '#f0e7d0');
+  const pw = w * 0.47, img = photo(0).image;
+  g.drawImage(img, 87, 0, 466, 640, 30, 30, pw - 30, h - 60);
+  g.save(); g.shadowColor = 'rgba(0,0,0,.7)'; g.shadowBlur = 18; g.fillStyle = '#e9dfc6'; g.font = `600 112px ${SERIF}`; g.fillText('武汉两日', 70, 170); g.restore();
+  g.fillStyle = 'rgba(107,94,76,.55)'; g.fillRect(pw + 34, 60, 2, h - 120);
+  const x0 = pw + 80;
+  g.save(); g.translate(x0 + 120, 180); g.rotate(-0.22); g.strokeStyle = RED; g.fillStyle = RED; g.lineWidth = 5;
+  g.beginPath(); g.arc(0, 0, 112, 0, 7); g.stroke(); g.lineWidth = 2; g.beginPath(); g.arc(0, 0, 98, 0, 7); g.stroke();
+  g.textAlign = 'center'; g.font = `19px ${MONO}`; g.fillText('WUHAN MEMORY', 0, -38); g.font = `30px ${MONO}`; g.fillText('[生成日期]', 0, 10); g.font = `600 34px ${SERIF}`; g.fillText('武 汉', 0, 60);
+  g.lineWidth = 3; for (let k = -2; k <= 2; k++) { g.beginPath(); g.moveTo(124, k * 22); g.bezierCurveTo(170, k * 22 - 14, 210, k * 22 + 14, 262, k * 22); g.stroke(); }
+  g.restore();
+  g.strokeStyle = SOFT; g.lineWidth = 3; g.setLineDash([4, 8]); g.strokeRect(w - 230, 56, 172, 212); g.setLineDash([]);
+  g.fillStyle = '#143026'; g.fillRect(w - 216, 70, 144, 184);
+  g.strokeStyle = '#c9a45c'; g.lineWidth = 5; g.beginPath();
+  for (let t = 0; t < 4; t++) { const tw = 96 - t * 22, ty = 220 - t * 34; g.moveTo(w - 144 - tw / 2, ty); g.lineTo(w - 144 + tw / 2, ty); g.moveTo(w - 144 - tw / 2 + 12, ty); g.lineTo(w - 144 - tw / 2 + 12, ty - 24); g.moveTo(w - 144 + tw / 2 - 12, ty); g.lineTo(w - 144 + tw / 2 - 12, ty - 24); }
+  g.moveTo(w - 144, 108); g.lineTo(w - 144, 84); g.stroke();
+  g.fillStyle = RED; g.font = `72px ${HAND}`; g.fillText('这是我排的武汉两天，', x0, 420); g.fillText('一起看看？', x0, 506);
+  g.font = `38px ${TYPE}`;
+  ['行程：2 天 · 6 站 · 少走路', '模型：千问 · 已通过校验', '寄自：WuhanMemory'].forEach((t, i) => { const y = 630 + i * 92; g.fillStyle = INK; g.fillText(t, x0, y); g.fillRect(x0, y + 18, w - x0 - 60, 2); });
+  g.fillStyle = SOFT; g.font = `22px ${MONO}`; g.fillText('只读 · 示例行程 · 照片是示意图', x0, h - 56);
+});
+card.position.set(-4.3, 0.05, -0.5); card.rotation.y = 0.07; scene.add(card);
+const cardIt = ui.add(card);
+
+/* ---------- 三折页：两天的路线，加一张地图 ---------- */
+const DAYS = [
+  { label: '第 1 天 · 实线', title: '武昌', rows: [['10:00', '黄鹤楼'], ['', '↓ 步行 · [耗时]'], ['12:30', '户部巷'], ['', '↓ 地铁 / 公交 · [耗时]'], ['14:30', '昙华林']] },
+  { label: '第 2 天 · 虚线', title: '东湖和江滩', rows: [['10:30', '湖北省博物馆'], ['', '↓ 步行 · [耗时]'], ['14:00', '东湖'], ['', '↓ 打车 · [耗时和费用]'], ['19:00', '汉口江滩']] },
+];
+const panels = [0, 1, 2].map(k => {
+  const p = sheet(2.9, 4.6, (g, w, h) => {
+    paperBg(g, w, h);
+    const fold = g.createLinearGradient(0, 0, w, 0); fold.addColorStop(0, k ? 'rgba(90,60,30,.22)' : 'rgba(0,0,0,0)'); fold.addColorStop(0.1, 'rgba(0,0,0,0)'); fold.addColorStop(0.9, 'rgba(0,0,0,0)'); fold.addColorStop(1, k < 2 ? 'rgba(90,60,30,.22)' : 'rgba(0,0,0,0)');
+    g.fillStyle = fold; g.fillRect(0, 0, w, h);
+    if (k < 2) {
+      const d = DAYS[k];
+      g.fillStyle = DAYCOL[k]; g.fillRect(48, 70, 70, 8);
+      g.fillStyle = SOFT; g.font = `22px ${MONO}`; g.fillText(d.label, 134, 82);
+      g.fillStyle = INK; g.font = `700 60px ${TYPE}`; g.fillText(d.title, 48, 180);
+      g.fillStyle = RED; g.fillRect(48, 212, w - 96, 4);
+      let y = 310;
+      for (const [t, n] of d.rows) {
+        if (t) { g.fillStyle = INK; g.font = `42px ${TYPE}`; g.fillText(t, 48, y); g.font = `${n.length > 5 ? 36 : 42}px ${TYPE}`; g.fillText(n, 200, y); y += 96; }
+        else { g.fillStyle = SOFT; g.font = `28px ${TYPE}`; g.fillText(n, 200, y - 24); y += 60; }
+      }
+      g.fillStyle = BLUE; g.font = `26px ${TYPE}`; g.fillText('预约和支付提示 · 待确认', 48, h - 110);
+      stamp(g, '校验通过', w - 150, h - 52, GREEN, k ? 0.05 : -0.06, 26);
+    } else {
+      g.fillStyle = SOFT; g.font = `22px ${MONO}`; g.fillText('地图 · 点位和路线', 48, 82);
+      const mw = w - 96, mh = 520;
+      g.save(); g.translate(48, 120); g.beginPath(); g.rect(0, 0, mw, mh); g.clip(); g.translate(-mw * 0.62, -mh * 0.25); drawMap(g, mw * 1.7, mh * 1.7, -1); g.restore();
+      g.strokeStyle = '#8a6830'; g.lineWidth = 8; g.strokeRect(48, 120, mw, mh);
+      g.fillStyle = SOFT; g.font = `28px ${TYPE}`; g.fillText('地图示意，正式版为高德地图', 48, 720);
+      g.fillText('来源：[景点数据来源]', 48, 790); g.fillText('更新时间：[年-月-日]', 48, 846);
+      stamp(g, '示例行程', 150, h - 70, BLUE, -0.05, 26, true);
+    }
+  });
+  p.userData.base = new THREE.Vector3(2.35 + k * 2.86, 0.18, 0.5);
+  p.position.copy(p.userData.base); p.rotation.y = -0.045; p.rotation.z = (k % 2 ? -1 : 1) * 0.09; scene.add(p);
+  p.userData.it = ui.add(p);
+  return p;
+});
+
+const pen = makePen(); pen.position.set(-3.2, 0, 3.4); pen.rotation.y = 0.12; scene.add(pen);
+const ferry = makeTicket('轮渡', 'FERRY · 过江', 1.9, 1.05); ferry.position.set(-7.6, 0.03, 3.4); ferry.rotation.y = 0.35; scene.add(ferry);
+
+$('back').addEventListener('click', () => go('darkroom-desk.html'));
+$('plan').addEventListener('click', () => go('darkroom-plan.html'));
+
+run(dt => {
+  ui.update(dt); cam.update(dt, ui.mouse, 2.8);
+  card.position.y = 0.05 + cardIt.hv * 0.45; card.rotation.x = cardIt.hv * 0.1;
+  for (const p of panels) { const H = p.userData.it.hv; p.position.y = p.userData.base.y + H * 0.5; p.rotation.x = H * 0.12; p.userData.face.color.setScalar(0.86 + H * 0.14); }
+  lamp.position.x = damp(lamp.position.x, -4 + ui.mouse.x * 2.2, 2, dt);
+  renderer.render(scene, camera);
+});
+settleFonts('这是我排的武汉两天一起看看武昌东湖和江滩黄鹤楼户部巷昙华林湖北省博物馆汉口校验通过示例行程');
+</script>
+</body>
+</html>
