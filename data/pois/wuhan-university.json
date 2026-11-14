@@ -75,5 +75,31 @@
   "photoSpots": [],
   "food": [],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "whu-early-buildings.jpg",
+      "caption": "武汉大学早期建筑群的黑白老照片：山坡上一组中式大屋顶建筑。",
+      "license": "official-placeholder",
+      "sourceUrl": "https://www.whu.edu.cn/whsh.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/54/73/A6315EF383FED4CC8FEEB518F79_E7C8A6F9_EE5E.jpg（页面\"早期建筑群\"一段下的配图，没有图注）"
+    },
+    {
+      "file": "whu-snow-aerial.jpg",
+      "caption": "雪后的武汉大学校园鸟瞰，屋顶积雪，远处是湖面。",
+      "license": "official-placeholder",
+      "author": "曹海钢",
+      "sourceUrl": "https://www.whu.edu.cn/xxgk/ljyx/a2026n/jan.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/AB/30/325957A7184D3C3506FD8A918A7_21E74B5B_214F1D.jpg（官网\"珞珈映像\"2026 年 1 月，标题\"岁末大寒至，静候春归来\"）"
+    },
+    {
+      "file": "whu-campus-aerial.jpg",
+      "caption": "秋天的武汉大学校园鸟瞰，树林中间是绿色屋顶的老建筑。",
+      "license": "official-placeholder",
+      "sourceUrl": "https://www.whu.edu.cn/xxgk/xxjj.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/new2024/images/ar1.jpg（学校简介页的配图，没有图注）"
+    }
+  ]
 }
