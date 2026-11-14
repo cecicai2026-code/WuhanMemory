@@ -7,6 +7,7 @@ import type {
   Payment,
   PaymentMethod,
   PoiFact,
+  SourceType,
   Reservation,
   Ticket,
   Transport,
@@ -93,8 +94,20 @@ export function formatDuration(minutes: number): string {
 export const VERIFICATION_TEXT: Record<Verification, string> = {
   onsite: "实地核实",
   confirmed: "核对过来源",
-  placeholder: "官网占位",
+  placeholder: "占位",
   todo: "待补充"
+};
+
+export const SOURCE_TYPE_TEXT: Record<SourceType, string> = {
+  "field-visit": "实地走访",
+  "official-site": "官网",
+  "official-wechat": "官方公众号",
+  "official-ticketing": "官方售票页面",
+  government: "政府网站",
+  amap: "高德地图",
+  media: "媒体报道",
+  "travel-platform": "旅游平台",
+  other: "其他"
 };
 
 export const STATUS_TEXT: Record<FactStatus, string> = {

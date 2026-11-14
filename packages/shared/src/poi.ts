@@ -11,7 +11,7 @@ export type Verification = "onsite" | "confirmed" | "placeholder" | "todo";
 export type FactStatus = "verified" | "pending" | "expired" | "missing";
 export type PoiStatus = "verified" | "pending" | "expired";
 
-export type SourceType = "field-visit" | "official-site" | "official-wechat" | "official-ticketing" | "government" | "amap" | "other";
+export type SourceType = "field-visit" | "official-site" | "official-wechat" | "official-ticketing" | "government" | "amap" | "media" | "travel-platform" | "other";
 
 export interface PoiSource {
   id: string;

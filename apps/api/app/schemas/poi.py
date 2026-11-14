@@ -29,6 +29,8 @@ SourceType = Literal[
     "official-ticketing",  # 官方售票或预约页面（小程序等）
     "government",  # 政府网站（区政府、文旅局、景区管委会），用于没有自己官网的街区
     "amap",  # 高德地图（坐标拾取器、地点搜索）
+    "media",  # 媒体报道（报纸、新闻网站）
+    "travel-platform",  # 旅游平台（携程、美团、马蜂窝等），准确度最低
     "other",
 ]
 

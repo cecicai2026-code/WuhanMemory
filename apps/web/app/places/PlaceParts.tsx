@@ -4,7 +4,7 @@
 import type { ReactNode } from "react";
 import type { FoodItem, PhotoSpot, PoiFact, PoiPhoto, Review } from "@wuhanmemory/shared";
 import { Paper, PaperTitle, PencilNote, Soft, Stamp } from "@/components/ui";
-import { VERIFICATION_TEXT, formatDate } from "@/lib/format-poi";
+import { SOURCE_TYPE_TEXT, VERIFICATION_TEXT, formatDate } from "@/lib/format-poi";
 import { photoUrl } from "@/lib/places";
 import s from "./places.module.css";
 
@@ -17,7 +17,7 @@ export function FactMeta({ fact }: { fact: PoiFact<unknown> }) {
       <span>{VERIFICATION_TEXT[fact.verification]}</span>
       {src && (
         <span>
-          来源：
+          来源（{SOURCE_TYPE_TEXT[src.type]}）：
           {src.url ? (
             <a href={src.url} target="_blank" rel="noreferrer">
               {src.title}
