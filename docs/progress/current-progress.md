@@ -4,7 +4,7 @@
 
 ## 当前阶段
 
-重做计划的板块 0（准备）基本完成，只差 Cecilia 对设计规范具体数值的最终确认。下一个是板块 1：新界面外壳和地点档案页。
+重做计划的板块 0（准备）已完成。下一个是板块 1：新界面外壳和地点档案三幕。
 
 分板块计划见 `docs/kickoff/claude-code-kickoff.md`。
 
@@ -14,13 +14,13 @@
 - [x] ADR 0003：数据存储改用 JSON 种子文件 + SQLite，不使用 Redis。
 - [x] 环境变量模板：`apps/api/.env.example` 和 `apps/web/.env.example`。
 - [x] Cecilia 已申请并填好 key：千问、豆包（含 endpoint ID）、高德 JS key、安全密钥、Web 服务 key。只检查过格式，还没有真实调用验证。
-- [x] 设计规范 `docs/design/design-system.md` v3 草案（"暗房桌面"风格，地点档案三幕：胶卷、晾片、纸页）。
-- [ ] Cecilia 确认设计规范 v3。
+- [x] 设计规范 `docs/design/design-system.md` v3（"暗房桌面"风格），方向已由 Cecilia 确认。
+- [x] 地点档案三幕的立体样片：`docs/design/prototypes/` 下的 `darkroom-rolls.html`、`darkroom-line.html`、`darkroom-page.html`，三幕已连通，Cecilia 已确认。
 - [ ] Cecilia 确认 `WuHan-Memory` 老仓库泄露过的高德 key 已重置。
 
 ## 代码现状
 
-仓库里的代码仍是 2026-07-05 的 Phase 1 骨架，板块 0 没有改代码。
+仓库里的网站代码仍是 2026-07-05 的 Phase 1 骨架，板块 0 没有改网站代码。`docs/design/prototypes/` 里的样片是独立的设计稿（单个网页加 three.js），不属于网站代码。
 
 保留:
 
@@ -44,6 +44,16 @@
 - `apps/api/app/core/config.py` 还没有高德和数据库的配置字段，板块 2、3 添加。
 - `docs/architecture/data-model.md` 里的表结构仍是 PostgreSQL 草案，板块 2 重写。
 - `docs/architecture/frontend-ux.md` 只更新了页面结构的提示，板块 1 同步其余内容。
+
+## 怎么看样片
+
+样片要通过本地网址打开（三个页面共用模块文件，直接双击打不开）。在 Mac 终端运行下面的命令，再用浏览器打开 `http://localhost:4173/darkroom-rolls.html`：
+
+```bash
+cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --directory docs/design/prototypes
+```
+
+看完后在终端按 Ctrl+C 停止。需要联网（加载 three.js）。
 
 ## 下一步
 
