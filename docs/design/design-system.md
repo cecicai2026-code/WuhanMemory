@@ -112,7 +112,7 @@ v3 的来由：Cecilia 提供了三张参考图（胶卷和看片器、晾片绳
 
 ## 4. 字体
 
-四种字各有固定的用途，不混用。全部是开源字体（OFL 许可），通过 `@fontsource` 安装到项目里，不依赖国外的字体服务。
+四种字各有固定的用途，不混用。全部是开源字体（OFL 许可），通过 `@fontsource` 安装到项目里，不依赖国外的字体服务。霞鹜文楷例外：`@fontsource` 里的版本只有繁体字集，改用 `lxgw-wenkai-webfont` 这个包（同一款字体，简体字集完整，按字集拆成小文件按需加载）。马善政毛笔楷书暂时不装，批注的中文用系统楷体。
 
 | 声音 | 用在哪里 | 英文和数字 | 中文 |
 |---|---|---|---|
@@ -125,7 +125,7 @@ v3 的来由：Cecilia 提供了三张参考图（胶卷和看片器、晾片绳
 --font-label: "IBM Plex Mono", "Noto Sans SC", "PingFang SC", monospace;
 --font-title: "Cormorant Garamond", "Noto Serif SC", "Songti SC", serif;
 --font-paper: "Courier Prime", "LXGW WenKai", "Kaiti SC", serif;
---font-note: "Caveat", "Ma Shan Zheng", "Kaiti SC", cursive;
+--font-note: "Caveat", "Kaiti SC", "STKaiti", cursive;
 ```
 
 ### 4.1 字号
@@ -426,6 +426,6 @@ Cecilia 还没提供的景点照片和信息，先按官方网站的内容放进
 - 物件清单和点缀贴纸的题材（6.2），由 Cecilia 确认。
 - 各幕的中文名称和文案，由 Cecilia 确定。
 - "周边美食"的数据从哪里来（8.3）。
-- `three.js`、`@react-three/fiber`、`motion`、`lenis`、`@fontsource` 各字体是否采用，板块 1 开工时确认。
+- 字体已在板块 1A 确定并安装（第 4 节）。`three.js`、`@react-three/fiber`、`motion`、`lenis` 是否采用，板块 1B 开工时确认。
 - 预览方式：Cecilia 已允许 Claude 启动只读的本地预览查看设计样片（只显示 `docs/design/prototypes` 文件夹，不安装依赖）。板块 1 的正式网站是否也这样预览，开工时再确认。
 - 幕间的物件转场（胶片格变成晾着的照片、主题卡翻成信纸）还没有样片。
