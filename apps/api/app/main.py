@@ -1,10 +1,41 @@
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
+from app.api.pois import router as pois_router
 from app.api.routes import router
 from app.core.config import settings
+from app.data_quality.rules import today_in_city
+from app.db.import_pois import import_pois
+from app.db.sqlite import connect
 
-app = FastAPI(title="WuhanMemory API", version="0.1.0")
+logger = logging.getLogger("wuhanmemory")
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    # 启动时把 data/pois/*.json 导入 SQLite（ADR 0003）
+    conn = connect(settings.database_path)
+    try:
+        report, imported = import_pois(conn, settings.data_dir, today_in_city())
+    finally:
+        conn.close()
+    logger.warning(
+        "景点导入：%d 个导入，错误 %d 个，警告 %d 个",
+        len(imported),
+        len(report.errors),
+        len(report.warnings),
+    )
+    for issue in report.errors:
+        logger.warning("%s", issue)
+    yield
+
+
+app = FastAPI(title="WuhanMemory API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -15,6 +46,15 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(pois_router)
+
+# 景点照片。自己拍的在 data/photos/，官网占位的在 data/photos-placeholder/（不进 git）
+app.mount("/media/photos", StaticFiles(directory=settings.data_dir / "photos", check_dir=False), name="photos")
+app.mount(
+    "/media/photos-placeholder",
+    StaticFiles(directory=settings.data_dir / "photos-placeholder", check_dir=False),
+    name="photos-placeholder",
+)
 
 
 @app.get("/health")
