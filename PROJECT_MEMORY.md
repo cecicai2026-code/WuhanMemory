@@ -26,7 +26,9 @@ WuhanMemory 是一个基于地图的 AI 旅游行程规划 Web 应用。用户�
 
 ## 已确定的关键方向
 
-- 前端: Next.js App Router + TypeScript，地图和行程页面优先做成单页工作台体验。
+- 界面: 按 `docs/design/design-system.md`。首页 `/` 是展示页，地图工作台在 `/map`；墨色加金色与浅色交替；系统无衬线字体和大圆角；动效参考 trevornoah.com 和 laxspace.co。
+- 环境变量: 后端 `apps/api/.env`，前端 `apps/web/.env.local`，根目录不放 `.env`。
+- 前端: Next.js App Router + TypeScript。
 - 地图: 国内 MVP 优先使用高德地图 JS API 2.0 和 Web 服务 API。地图层抽象为 provider，后续可接 Mapbox 或 Cesium。
 - 后端: FastAPI + Python，承载 AI 编排、路线规划、POI 聚合、分享页生成和异步任务。
 - 数据库: JSON 种子文件 + SQLite（ADR 0003，2026-11-14 取代原来的 PostgreSQL + PostGIS + pgvector）。景点资料以 `data/pois/*.json` 为准，启动时导入 SQLite；读写经过 repository 层，以后可以换 PostgreSQL。
