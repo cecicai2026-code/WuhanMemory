@@ -1,0 +1,206 @@
+/* 地图工作台（设计规范 9.1）：打开就能用，不需要滚动整页，不加装饰性动效。 */
+
+/* ---------- 电脑：三栏并排 ---------- */
+.bench {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr) minmax(260px, 320px);
+  gap: 28px;
+}
+.col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.tabs {
+  display: none;
+}
+
+/* 左：一张打字纸。上面是对话记录（自己滚动），底部是输入的横线 */
+.col .chat {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 28px;
+}
+.log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ask {
+  flex: none;
+  padding-top: 12px;
+}
+.askRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* 中：嵌在桌面里的灯箱，黄铜边框 */
+.lightbox {
+  flex: 1;
+  min-height: 0;
+  padding: 10px;
+  border-radius: 6px;
+  background: linear-gradient(160deg, var(--brass-bright) 0%, var(--brass) 30%, var(--brass-deep) 100%);
+  box-shadow:
+    var(--shadow-object),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.glass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid var(--black);
+  border-radius: 2px;
+  background: radial-gradient(ellipse at 50% 40%, #33241a 0%, #150e0a 75%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+.glassText {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: var(--size-paper-title);
+  color: var(--paper);
+}
+.glassNote {
+  max-width: 30em;
+  font-size: var(--size-ui);
+  color: var(--text-secondary);
+}
+
+/* 灯箱旁的拨杆。现在不能拨 */
+.lever {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding-top: 8px;
+}
+.switch {
+  position: relative;
+  width: 52px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: not-allowed;
+}
+.switch::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 17px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--black);
+  border: 1px solid var(--brass-deep);
+}
+.switch i {
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--cherry);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  filter: grayscale(0.6) brightness(0.7);
+}
+
+/* 右：一排索引卡，自己滚动 */
+.cards {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* 留出卡片歪斜和投影的位置 */
+  padding: 6px 10px 24px 4px;
+}
+.what {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ink-soft);
+}
+
+/* ---------- 平板：地图在上，对话和行程在下面并排 ---------- */
+@media (max-width: 1067px) {
+  .bench {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .mapCol {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .chatCol,
+  .planCol {
+    grid-row: 2;
+  }
+}
+
+/* ---------- 手机：地图在上，底部面板里切换对话和行程 ---------- */
+@media (max-width: 733px) {
+  .bench {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .mapCol {
+    order: 1;
+    flex: 1;
+    min-height: 140px;
+  }
+  .lever {
+    display: none; /* 手机上的 2D/3D 切换等板块 3 有地图时再放 */
+  }
+  .tabs {
+    order: 2;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 2px 8px;
+  }
+  .fold {
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-label);
+    font-size: var(--size-label);
+    letter-spacing: 0.14em;
+    color: var(--text-secondary);
+  }
+  .chatCol,
+  .planCol {
+    order: 3;
+    flex: none;
+    height: 42vh;
+    height: 42dvh;
+  }
+  .bench[data-open="false"] .chatCol,
+  .bench[data-open="false"] .planCol,
+  .bench[data-tab="plan"] .chatCol,
+  .bench[data-tab="chat"] .planCol {
+    display: none;
+  }
+  .col .chat {
+    padding: 20px;
+  }
+}
