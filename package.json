@@ -11,6 +11,7 @@
     "typecheck": "corepack pnpm --filter @wuhanmemory/shared typecheck && corepack pnpm --filter @wuhanmemory/map-core typecheck && corepack pnpm --filter @wuhanmemory/web typecheck",
     "test": "corepack pnpm typecheck",
     "test:api": "cd apps/api && python3 -m pytest",
+    "check:data": "cd apps/api && python3 -m app.data_quality",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {
