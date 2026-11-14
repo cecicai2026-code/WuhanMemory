@@ -38,7 +38,7 @@
 <button class="btn next side hide-on-enter" id="next" aria-label="下一个景点"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
 <div class="lab bc hide-on-enter" style="bottom:23vh"><span id="hintA" style="transition:opacity .4s">显影盘 · 选一个主题</span></div>
 <div class="lab tag" id="tag"></div>
-<div class="enter"><div class="name" id="enterName"></div><div class="sub">纸页幕 · 样片尚未制作 · 点击任意处返回</div></div>
+<div class="enter"><div class="name" id="enterName"></div><div class="sub">进入纸页幕</div></div>
 <div class="curtain"></div>
 
 <script type="module">
@@ -160,10 +160,13 @@ addEventListener('keydown', e => {
 });
 addEventListener('pointermove', e => { mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1); ndc.set(mouse.x, -mouse.y); });
 let enteredCard = null;
-function enter(card) { entered = true; enteredCard = card; document.body.classList.add('entered'); $('enterName').textContent = `${SPOTS[sel]} · ${card.userData.name}`; }
+function enter(card) {   /* 镜头推近这张主题卡，然后进入纸页幕 */
+  entered = true; enteredCard = card; document.body.classList.add('entered'); $('enterName').textContent = `${SPOTS[sel]} · ${card.userData.name}`;
+  setTimeout(() => go(`darkroom-page.html?spot=${sel}&topic=${card.userData.k}`), 1000);
+}
 function leave() { entered = false; enteredCard = null; document.body.classList.remove('entered'); }
 renderer.domElement.addEventListener('click', e => {
-  if (entered) return leave();
+  if (entered) return;
   ndc.set((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1)); pick();
   if (!hovered) return;
   if (hovered.type === 'print') select(hovered.i);
@@ -256,6 +259,7 @@ prints.forEach(p => { p.userData.drop = 1 + Math.abs(p.userData.i - sel) * 0.35;
 select(sel);
 frame();
 requestAnimationFrame(() => document.body.classList.add('ready'));
+addEventListener('pageshow', e => { if (e.persisted) { leaving = false; leave(); document.body.classList.remove('leaving'); } });
 </script>
 </body>
 </html>

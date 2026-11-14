@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：纸页幕</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 8.3 节：桌上的一张信纸，写着某个景点的某个主题。
+  纸上的事实性内容全部是"待补充"，照片是程序画的示意图。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<style>
+  .index { position: fixed; left: 0; right: 0; bottom: 5vh; display: flex; justify-content: center; gap: 28px; }
+  .index a { font-size: 12px; letter-spacing: .14em; color: #8F836C; cursor: pointer; padding: 10px 2px; border-bottom: 1px solid transparent;
+    transition: color .4s var(--ease), border-color .4s var(--ease), transform .45s var(--ease); }
+  .index a:hover { color: var(--paper); transform: translateY(-2px); }
+  .index a.on { color: var(--brass); border-color: var(--brass); }
+  .tag { transform: translate(-50%, 0); opacity: 0; color: var(--paper); pointer-events: none; white-space: nowrap; transition: opacity .35s var(--ease); }
+  .tag.on { opacity: 1; }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 04 幕 — 纸页</div>
+<div class="lab tr" id="where"></div>
+<div class="lab bl link" id="back">← 回到晾片</div>
+<div class="index" id="index"></div>
+<div class="lab tag" id="tag"></div>
+<div class="curtain"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { SPOTS, TOPICS, pad, damp, tex, grain, createStage, makeTable, photo, materials, add, sh, contact, SERIF, MONO } from './common.js';
+
+const N = SPOTS.length, $ = id => document.getElementById(id), q = new URLSearchParams(location.search);
+const spot = THREE.MathUtils.clamp(parseInt(q.get('spot') ?? '0', 10) || 0, 0, N - 1);
+let topic = THREE.MathUtils.clamp(parseInt(q.get('topic') ?? '0', 10) || 0, 0, TOPICS.length - 1);
+const PAPERF = '"Courier Prime","Kaiti SC","STKaiti","KaiTi",serif';
+grain();
+
+/* 纸上写什么。事实性内容一律"待补充"，由 Cecilia 提供或核实后再填 */
+const TODO = '待补充';
+const ROWS = [
+  [['简介', TODO], ['历史文化', TODO], ['地址', TODO], ['开放时间', TODO], ['票价', TODO], ['是否需要预约', TODO]],
+  [['建议游玩时长', TODO], ['适合去的时段', TODO], ['怎么去', TODO], ['支付和预约提示', TODO], ['拍照机位', TODO], ['去过的人说', TODO]],
+  [['照片', '待补充 · 现在散在桌上的是示意图']],
+  [['店名或小吃 · 一', TODO], ['店名或小吃 · 二', TODO], ['店名或小吃 · 三', TODO], ['离景点多远', TODO]],
+];
+
+const { renderer, scene, camera, lamp } = createStage({ fov: 40, lampPos: [-5, 12, 5], lampTarget: [0.4, 0, 0.4], lampPower: 5.2, lampAngle: 0.8 });
+const M = materials();
+makeTable(scene);
+const camY = () => Math.max(12.6, 12.6 * (1.6 / (innerWidth / innerHeight)));
+const CAM = new THREE.Vector3(0.9, camY(), 4.4), LOOK = new THREE.Vector3(0.9, 0, 0.75), lookNow = LOOK.clone();
+camera.position.copy(CAM);
+addEventListener('resize', () => { CAM.y = camY(); });
+
+/* ---------- 信纸：内容画在画布上，逐字"打"出来 ---------- */
+const PW = 6.0, PH = 7.6, CW = 1200, CH = 1520;
+const bg = document.createElement('canvas'); bg.width = CW; bg.height = CH;
+{ const g = bg.getContext('2d');
+  g.fillStyle = '#e9dfc6'; g.fillRect(0, 0, CW, CH);
+  for (let i = 0; i < 5000; i++) { g.fillStyle = `rgba(${110 + Math.random() * 40},${85 + Math.random() * 30},50,${Math.random() * 0.05})`; g.fillRect(Math.random() * CW, Math.random() * CH, 2 + Math.random() * 40, 1); }
+  for (let i = 0; i < 9; i++) { const x = Math.random() * CW, y = Math.random() * CH, r = 80 + Math.random() * 200, s = g.createRadialGradient(x, y, 0, x, y, r); s.addColorStop(0, 'rgba(150,115,60,.07)'); s.addColorStop(1, 'rgba(150,115,60,0)'); g.fillStyle = s; g.fillRect(x - r, y - r, r * 2, r * 2); }
+  const e = g.createRadialGradient(CW / 2, CH / 2, CH * 0.35, CW / 2, CH / 2, CH * 0.75); e.addColorStop(0, 'rgba(120,90,50,0)'); e.addColorStop(1, 'rgba(120,90,50,.22)'); g.fillStyle = e; g.fillRect(0, 0, CW, CH); }
+const paperTex = tex(CW, CH, () => {});
+let typed = 0, drawn = -1, totalChars = 0;
+function drawPaper(n) {
+  const g = paperTex.image.getContext('2d'); let left = n;
+  const take = s => { const part = s.slice(0, Math.max(0, left)); left -= s.length; return part; };
+  g.drawImage(bg, 0, 0);
+  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  g.fillStyle = '#a8321f'; g.font = `24px ${MONO}`;
+  g.fillText(take(`${SPOTS[spot]} · ${pad(topic + 1)} / ${pad(TOPICS.length)}`), 110, 150);
+  g.fillStyle = '#2a2420'; g.font = `700 92px ${PAPERF}`; g.fillText(take(TOPICS[topic]), 106, 290);
+  g.fillStyle = '#6b5e4c'; g.font = `34px ${PAPERF}`; g.fillText(take(`写给第一次去${SPOTS[spot]}的人。`), 110, 356);
+  g.fillStyle = 'rgba(42,36,32,.5)'; g.fillRect(110, 400, Math.min(1, Math.max(0, (n - 20) / 10)) * (CW - 220), 2);
+  let y = 490;
+  for (const [label, value] of ROWS[topic]) {
+    g.fillStyle = '#2a2420'; g.font = `700 44px ${PAPERF}`; const a = take(label); g.fillText(a, 110, y);
+    const lw = g.measureText(label).width;
+    const v = take(value);
+    if (v) {
+      g.fillStyle = '#44607a'; g.font = `38px "Kaiti SC","STKaiti","KaiTi",${PAPERF}`;
+      g.save(); g.translate(110 + lw + 36, y - 2); g.rotate(-0.025); g.fillText(v, 0, 0); g.restore();
+    }
+    g.strokeStyle = 'rgba(107,94,76,.45)'; g.setLineDash([3, 9]); g.lineWidth = 2;
+    if (a.length === label.length) { g.beginPath(); g.moveTo(110, y + 30); g.lineTo(CW - 110, y + 30); g.stroke(); }
+    g.setLineDash([]);
+    y += ROWS[topic].length > 4 ? 132 : 165;
+  }
+  const foot = take('来源  ——        核实日期  ——');
+  g.fillStyle = '#6b5e4c'; g.font = `24px ${MONO}`; g.fillText(foot, 110, CH - 130);
+  if (left > -1) {                                   /* 全部打完后盖一个"待确认"的章 */
+    g.save(); g.translate(CW - 250, CH - 170); g.rotate(-0.14); g.strokeStyle = 'rgba(68,96,122,.85)'; g.fillStyle = 'rgba(68,96,122,.85)';
+    g.lineWidth = 5; g.strokeRect(-110, -46, 220, 92); g.font = `600 46px ${SERIF}`; g.textAlign = 'center'; g.fillText('待确认', 0, 16); g.restore();
+  }
+  totalChars = n - left;
+  paperTex.needsUpdate = true;
+}
+const paper = new THREE.Group(); scene.add(paper);
+const sheet = sh(new THREE.Mesh(new THREE.BoxGeometry(PW, 0.016, PH), [M.paper, M.paper, new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.9, color: 0xd9d2c4 }), M.paper, M.paper, M.paper]));
+sheet.position.y = 0.02; paper.add(sheet);
+contact(paper, PW + 1.6, PH + 1.6).material.opacity = 0.55;
+paper.rotation.y = -0.045; paper.userData.enter = 1;
+
+/* ---------- 桌上的小物件：悬停会抬起 ---------- */
+const things = [];                                   /* { g, base, hv, label, onClick } */
+function thing(g, label, onClick) { const t = { g, base: g.position.clone(), rot: g.rotation.clone(), hv: 0, label, onClick }; g.traverse(o => { if (o.isMesh) o.userData.thing = t; }); things.push(t); scene.add(g); return t; }
+
+/* 钢笔 */
+const pen = new THREE.Group();
+{ const body = add(pen, new THREE.CylinderGeometry(0.1, 0.085, 2.3, 24), M.green, 0, 0, 0); body.rotation.z = Math.PI / 2;
+  const cap = add(pen, new THREE.CylinderGeometry(0.105, 0.105, 0.9, 24), M.green, 1.5, 0, 0); cap.rotation.z = Math.PI / 2;
+  for (const x of [1.04, 1.96]) { const r = add(pen, new THREE.CylinderGeometry(0.11, 0.11, 0.07, 24), M.brass, x, 0, 0); r.rotation.z = Math.PI / 2; }
+  const grip = add(pen, new THREE.CylinderGeometry(0.075, 0.06, 0.5, 24), M.black, -1.4, 0, 0); grip.rotation.z = Math.PI / 2;
+  const nib = add(pen, new THREE.ConeGeometry(0.06, 0.45, 16), M.brass, -1.87, 0, 0); nib.rotation.z = Math.PI / 2;
+  const clip = add(pen, new THREE.BoxGeometry(0.75, 0.025, 0.05), M.brass, 1.5, 0.115, 0); }
+pen.position.set(4.3, 0.14, 2.3); pen.rotation.y = 1.05;
+thing(pen, '钢笔');
+
+/* 平面贴纸：线描加平涂，带一圈白边 */
+function sticker(w, h, draw, label) {
+  const t = tex(512, Math.round(512 * h / w), (g, cw, ch) => { g.lineJoin = g.lineCap = 'round'; draw(g, cw, ch); });
+  const g = new THREE.Group();
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: t, transparent: true, alphaTest: 0.5, roughness: 0.6 }));
+  m.rotation.x = -Math.PI / 2; m.position.y = 0.03; m.castShadow = true; g.add(m);
+  contact(g, w * 1.25, h * 1.25).material.opacity = 0.5;
+  return thing(g, label);
+}
+const outline = (g, path) => { g.strokeStyle = '#f4ecd8'; g.lineWidth = 26; path(); g.stroke(); g.fillStyle = '#f4ecd8'; path(); g.fill(); };
+const stickers = [
+  sticker(2.4, 1.7, (g, w, h) => {                   /* 相机 */
+    const body = () => { g.beginPath(); g.roundRect(40, 90, w - 80, h - 130, 26); };
+    outline(g, body);
+    g.fillStyle = '#d9b867'; body(); g.fill(); g.strokeStyle = '#2a2420'; g.lineWidth = 6; body(); g.stroke();
+    g.fillStyle = '#16332a'; g.fillRect(40, 150, w - 80, 70); g.strokeRect(40, 150, w - 80, 70);
+    g.fillStyle = '#d9b867'; g.beginPath(); g.roundRect(150, 56, 120, 50, 10); g.fill(); g.stroke();
+    for (const [r, c] of [[92, '#2a2420'], [70, '#8a6830'], [46, '#16332a'], [20, '#0b0b0c']]) { g.fillStyle = c; g.beginPath(); g.arc(w / 2, h / 2 + 22, r, 0, 7); g.fill(); g.stroke(); }
+    g.fillStyle = '#c8281e'; g.beginPath(); g.roundRect(w - 150, 108, 70, 34, 6); g.fill(); g.stroke();
+  }, '相机贴纸'),
+  sticker(2.6, 1.25, (g, w, h) => {                  /* 地铁票 */
+    const body = () => { g.beginPath(); g.roundRect(30, 30, w - 60, h - 60, 18); };
+    outline(g, body);
+    g.fillStyle = '#e9dfc6'; body(); g.fill(); g.strokeStyle = '#2a2420'; g.lineWidth = 5; body(); g.stroke();
+    g.fillStyle = '#16332a'; g.fillRect(30, 60, w - 60, 46);
+    g.fillStyle = '#2a2420'; g.font = `600 52px ${SERIF}`; g.fillText('地铁 · 单程票', 60, 170);
+    g.fillStyle = '#a8321f'; g.font = `22px ${MONO}`; g.fillText('WUHAN MEMORY', 62, 208);
+    g.setLineDash([8, 10]); g.beginPath(); g.moveTo(w - 130, 40); g.lineTo(w - 130, h - 40); g.stroke(); g.setLineDash([]);
+  }, '地铁票'),
+  sticker(2.3, 1.6, (g, w, h) => {                   /* 一小段胶片 */
+    const body = () => { g.beginPath(); g.roundRect(30, 60, w - 60, h - 120, 10); };
+    outline(g, body);
+    g.fillStyle = '#b4532a'; body(); g.fill(); g.strokeStyle = '#2a2420'; g.lineWidth = 5; body(); g.stroke();
+    g.fillStyle = '#1c0705'; for (let x = 52; x < w - 60; x += 46) { g.fillRect(x, 76, 24, 28); g.fillRect(x, h - 104, 24, 28); }
+    g.fillStyle = '#2a0c08'; g.fillRect(60, 122, 180, h - 244); g.fillRect(262, 122, 180, h - 244);
+  }, '一段胶片'),
+  sticker(2.2, 2.2, (g, w, h) => {                   /* 一碗面 */
+    const bowl = () => { g.beginPath(); g.arc(w / 2, h / 2, 200, 0, 7); };
+    outline(g, bowl);
+    g.fillStyle = '#e9dfc6'; bowl(); g.fill(); g.strokeStyle = '#2a2420'; g.lineWidth = 6; bowl(); g.stroke();
+    g.fillStyle = '#c98a4a'; g.beginPath(); g.arc(w / 2, h / 2, 158, 0, 7); g.fill(); g.stroke();
+    g.strokeStyle = '#f4dfae'; g.lineWidth = 9;
+    for (let k = 0; k < 9; k++) { g.beginPath(); g.arc(w / 2 + Math.cos(k * 1.7) * 40, h / 2 + Math.sin(k * 2.3) * 40, 60 + k * 9, k, k + 2.6); g.stroke(); }
+    g.fillStyle = '#16332a'; for (let k = 0; k < 14; k++) { g.beginPath(); g.arc(w / 2 + Math.cos(k * 2.4) * (30 + k * 7), h / 2 + Math.sin(k * 2.4) * (30 + k * 7), 6, 0, 7); g.fill(); }
+    g.strokeStyle = '#8a6830'; g.lineWidth = 12; g.beginPath(); g.moveTo(w - 40, 60); g.lineTo(w / 2 + 20, h / 2 - 10); g.moveTo(w - 16, 90); g.lineTo(w / 2 + 40, h / 2 + 10); g.stroke();
+  }, '一碗面'),
+];
+const SPOS = [[-3.9, 3.1, 0.35], [-4.0, 2.4, -0.3], [-3.9, 3.0, 0.25], [-3.9, 2.9, 0]];
+stickers.forEach((t, k) => { t.g.position.set(SPOS[k][0], 0, SPOS[k][1]); t.g.rotation.y = SPOS[k][2]; t.base.copy(t.g.position); t.rot.copy(t.g.rotation); });
+
+/* 右边露出的书：点击翻到下一个主题 */
+const book = new THREE.Group();
+add(book, new RoundedBoxGeometry(4.4, 0.62, 6.2, 4, 0.06), new THREE.MeshPhysicalMaterial({ color: 0x5e130e, roughness: 0.55, clearcoat: 0.3 }), 0, 0.31, 0);
+add(book, new THREE.BoxGeometry(4.2, 0.5, 6.0), M.paper, 0.14, 0.31, 0);
+const bookTex = tex(512, 640, () => {});
+function drawBook() {
+  const g = bookTex.image.getContext('2d'), w = 512, h = 640, nx = (topic + 1) % TOPICS.length;
+  g.fillStyle = '#e9dfc6'; g.fillRect(0, 0, w, h); g.strokeStyle = '#2a2420'; g.lineWidth = 4; g.strokeRect(18, 18, w - 36, h - 36);
+  g.fillStyle = '#a8321f'; g.font = `26px ${MONO}`; g.fillText('下一页', 50, 90);
+  g.fillStyle = '#2a2420'; g.font = `600 84px ${SERIF}`; g.fillText(TOPICS[nx].slice(0, 2), 50, 250); g.fillText(TOPICS[nx].slice(2), 50, 350);
+  g.fillStyle = '#6b5e4c'; g.font = `26px ${MONO}`; g.fillText(`${pad(nx + 1)} / ${pad(TOPICS.length)}`, 50, 560);
+  bookTex.needsUpdate = true;
+}
+const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 2.4), new THREE.MeshStandardMaterial({ map: bookTex, roughness: 0.85 }));
+plate.rotation.x = -Math.PI / 2; plate.position.set(-0.9, 0.632, -0.6); book.add(plate);
+contact(book, 6.2, 8).position.x = 0.2;
+book.position.set(8.5, 0, 0.2); book.rotation.y = -0.06;
+const bookThing = thing(book, '下一页', () => setTopic((topic + 1) % TOPICS.length));
+
+/* 景点图册：散在纸上的白边照片 */
+const album = [];
+const APOS = [[-1.5, 0.9, -0.12], [0.6, 0.5, 0.1], [2.2, 1.9, -0.2], [-0.7, 2.9, 0.16], [1.3, 3.1, -0.06]];
+APOS.forEach(([x, z, r], j) => {
+  const g = new THREE.Group();
+  add(g, new THREE.BoxGeometry(1.9, 0.014, 2.3), M.paper, 0, 0.05 + j * 0.016, 0);
+  const pm = new THREE.MeshStandardMaterial({ map: photo((spot * 5 + j) % N), roughness: 0.55 });
+  const ph = new THREE.Mesh(new THREE.PlaneGeometry(1.66, 1.86), pm); ph.rotation.x = -Math.PI / 2; ph.position.set(0, 0.06 + j * 0.016, -0.1); g.add(ph);
+  g.position.set(x, 0, z); g.rotation.y = r;
+  const t = thing(g, '示意图'); t.album = true; album.push(t);
+});
+
+/* ---------- 主题切换 ---------- */
+TOPICS.forEach((name, k) => { const a = document.createElement('a'); a.textContent = `${pad(k + 1)} ${name}`; a.addEventListener('click', () => setTopic(k)); $('index').appendChild(a); });
+function setTopic(k) {
+  topic = k; typed = 0; drawn = -1;
+  history.replaceState(null, '', `?spot=${spot}&topic=${k}`);
+  [...$('index').children].forEach((a, i) => a.classList.toggle('on', i === k));
+  $('where').textContent = `${SPOTS[spot]} · ${TOPICS[k]}`;
+  stickers.forEach((t, i) => { t.g.visible = i === k; });
+  album.forEach(t => { t.g.visible = k === 2; t.drop = 1; });
+  drawBook(); paper.userData.enter = 1; bookThing.flip = 1;
+}
+let leaving = false;
+function go(url) { if (leaving) return; leaving = true; document.body.classList.add('leaving'); setTimeout(() => { location.href = url; }, 520); }
+$('back').addEventListener('click', () => go(`darkroom-line.html?spot=${spot}`));
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') go(`darkroom-line.html?spot=${spot}`);
+  if (e.key === 'ArrowRight') setTopic((topic + 1) % TOPICS.length);
+  if (e.key === 'ArrowLeft') setTopic((topic + TOPICS.length - 1) % TOPICS.length);
+});
+
+const mouse = new THREE.Vector2(), ndc = new THREE.Vector2(9, 9), ray = new THREE.Raycaster();
+let hovered = null;
+function pick() {
+  ray.setFromCamera(ndc, camera);
+  const meshes = []; for (const t of things) if (t.g.visible) t.g.traverse(o => { if (o.isMesh && o.userData.thing) meshes.push(o); });
+  hovered = ray.intersectObjects(meshes, false)[0]?.object.userData.thing ?? null;
+}
+addEventListener('pointermove', e => { mouse.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1); ndc.set(mouse.x, -mouse.y); });
+renderer.domElement.addEventListener('click', e => {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1)); pick();
+  hovered?.onClick?.();
+});
+
+/* ---------- 每一帧 ---------- */
+const clock = new THREE.Clock(); let t = 0, lastDraw = 0;
+function step(dt) {
+  t += dt;
+  pick();
+  renderer.domElement.style.cursor = hovered?.onClick ? 'pointer' : 'default';
+
+  /* 信纸落到桌上，落稳后开始打字 */
+  const pe = paper.userData.enter = damp(paper.userData.enter, 0, 3.2, dt);
+  paper.position.set(pe * 0.8, pe * 2.4, 0.3 - pe * 1.6);
+  paper.rotation.set(-pe * 0.5, -0.045 + pe * 0.3, 0);
+  if (pe < 0.08) typed += dt * 70;
+  const n = Math.floor(typed);
+  if (n !== drawn && t - lastDraw > 0.04 && (drawn < 0 || n <= totalChars + 2 || drawn <= totalChars)) { drawPaper(n); drawn = n; lastDraw = t; }
+
+  for (const th of things) {
+    if (!th.g.visible) continue;
+    th.hv = damp(th.hv, hovered === th ? 1 : 0, 9, dt);
+    th.drop = damp(th.drop ?? 0, 0, 3, dt); th.flip = damp(th.flip ?? 0, 0, 4, dt);
+    const H = th.hv, s = th.album ? 0.5 : 0.3;
+    th.g.position.set(th.base.x, th.base.y + H * s + th.drop * 3, th.base.z - H * 0.1);
+    th.g.rotation.set(th.rot.x + H * 0.08, th.rot.y * (1 - H * (th.album ? 1 : 0.4)) + th.drop * 0.6, th.rot.z + th.flip * 0.12);
+    th.g.scale.setScalar(1 + H * (th.album ? 0.3 : 0.08));
+  }
+  const tg = $('tag');
+  if (hovered) {
+    const v = hovered.g.position.clone().project(camera);
+    tg.style.left = `${(v.x * 0.5 + 0.5) * innerWidth}px`; tg.style.top = `${(-v.y * 0.5 + 0.5) * innerHeight + 54}px`;
+    tg.textContent = hovered === bookThing ? `下一页 · ${TOPICS[(topic + 1) % TOPICS.length]}` : hovered.label;
+  }
+  tg.classList.toggle('on', !!hovered);
+
+  camera.position.set(damp(camera.position.x, CAM.x + mouse.x * 0.5, 3, dt), damp(camera.position.y, CAM.y, 3, dt), damp(camera.position.z, CAM.z + mouse.y * 0.4, 3, dt));
+  camera.lookAt(lookNow);
+  lamp.position.x = damp(lamp.position.x, -5 + mouse.x * 2.2, 2, dt);
+  renderer.render(scene, camera);
+}
+function frame() { step(Math.min(clock.getDelta(), 0.05)); requestAnimationFrame(frame); }
+/* 调试用：页面在后台时动画会暂停，用它手动推进若干秒 */
+window.__advance = s => { for (let i = 0; i < s * 60; i++) step(1 / 60); };
+
+setTopic(topic);
+document.fonts.load(`40px "Courier Prime"`).catch(() => {}).finally(() => { drawn = -1; });
+frame();
+requestAnimationFrame(() => document.body.classList.add('ready'));
+</script>
+</body>
+</html>
