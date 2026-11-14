@@ -62,6 +62,28 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 看完后在终端按 Ctrl+C 停止。需要联网（加载 three.js）。
 
+## 其余页面的样片（板块 1B 的依据）
+
+2026-11-15 把分支 `design/prototype-scenes` 合进了 main。`docs/design/prototypes/` 里新增六个样片和共用的 `kit.js`、`kit.css`：
+
+| 样片 | 对应页面 |
+|---|---|
+| `darkroom-desk.html` | 首页（桌面） |
+| `darkroom-map.html` | 地图工作台（灯箱） |
+| `darkroom-compare.html` | 模型对比（两台打字机） |
+| `darkroom-trips.html` | 我的行程（笔记本） |
+| `darkroom-card.html` | 分享页（明信片） |
+| `darkroom-plan.html` | 填单（规划前的输入页，设计规范里还没有这一幕） |
+
+这六个样片 Cecilia 还没有逐个确认。板块 1B 开工时要处理：
+
+- 多处用了红色手写字（首页的入口链接、对话纸上用户的话、"再冲洗一份？"、填单的"还想说"），和设计规范"手写字只用蓝灰色、只出现在纸面上"不一致。
+- 对比样片的评分卡上有写死的"通过 / 未通过"章，只演示样子，不能带进正式网站。
+- 都没有手机版；字体用的是 Google Fonts；对话和填单的选项画在贴图上，不能用键盘操作。
+- 填单幕要不要采用、放在哪条路径，由 Cecilia 决定。
+
+工作区 `.claude/worktrees/prototype-scenes` 保留，没有删除。
+
 ## 下一步
 
 板块 1A。分几步做、每步能看到什么，开工时由 Claude 列出、Cecilia 确认后再写代码。新增依赖只装 1A 用得上的（字体），`three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
