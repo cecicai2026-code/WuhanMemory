@@ -106,6 +106,8 @@ interface PaperProps {
   tilt?: number;
   as?: "div" | "section" | "article" | "li";
   className?: string;
+  /** 页面内锚点 */
+  id?: string;
   "aria-label"?: string;
 }
 
