@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：灯箱幕（地图工作台）</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 9.1 节：灯箱里的地图 + 打字纸对话 + 每天一张索引卡。
+  地图是程序画的示意图（正式版为高德地图），对话和行程是示例，路上的耗时等数字一律不写。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 05 幕 — 灯箱</div>
+<div class="lab tr" id="count"></div>
+<div class="lab bl link" id="back">← 回到桌面</div>
+<div class="pager">
+  <button class="chip on" id="d0"><i style="color:#8a6830"></i>第 1 天</button>
+  <button class="chip" id="d1"><i style="color:#3f7f78;border-top-style:dashed"></i>第 2 天</button>
+  <button class="lever" id="lever" aria-label="切换 2D 和 3D"><span class="act">2D</span><i><b></b></i><span>3D</span></button>
+</div>
+<a class="cta" id="share">生成分享明信片</a>
+<div class="lab tag" id="tag"></div>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, materials, add, damp, grain, MONO } from './common.js';
+import { THREE, sheet, paperBg, ruled, wrap, stamp, rig, interact, project, go, run, settleFonts, drawMap, makeLightbox, makePin, makePen,
+  STOPS, DAYCOL, TYPE, HAND, INK, SOFT, RED, GREEN, BLUE } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 34, lampPos: [-4, 17, 8], lampTarget: [0, 0, 0.6], lampPower: 8.5, lampAngle: 0.82 });
+const { scene, camera, lamp, renderer } = stage, M = materials();
+makeTable(scene);
+const cam = rig(stage, { pos: [0, 19, 9.6], look: [0, 0, 0.75], sway: [0.3, 0.18] });
+const ui = interact(stage);
+let day = 0, three = false;
+
+/* ---------- 灯箱和图钉 ---------- */
+const LW = 9, LD = 6;
+const box = makeLightbox(LW, LD, (g, w, h) => drawMap(g, w, h, day)); scene.add(box);
+const pins = STOPS.map(p => {
+  const pin = makePin(DAYCOL[p.day]); pin.position.set((p.x - 0.5) * LW, 0.47, (p.y - 0.5) * LD); box.add(pin);
+  pin.userData.p = p; pin.userData.s = 0; pin.userData.base = new THREE.Color(DAYCOL[p.day]);
+  pin.userData.it = ui.add(pin, { onClick: () => setDay(p.day) });
+  return pin;
+});
+
+/* ---------- 左边：一叠打字纸，最上面一张是对话 ---------- */
+for (let k = 0; k < 2; k++) { const b = add(scene, new THREE.BoxGeometry(4.5, 0.02, 6.2), M.paper, -7.42 + k * 0.08, 0.012 + k * 0.02, 0.32 - k * 0.07); b.rotation.y = -0.03 + k * 0.05; }
+const chat = sheet(4.5, 6.2, (g, w, h) => {
+  paperBg(g, w, h);
+  g.fillStyle = SOFT; g.font = `26px ${MONO}`; g.fillText('打字纸 · 对话', 70, 96);
+  let y = 190;
+  const me = t => { g.fillStyle = RED; g.font = `54px ${HAND}`; y = wrap(g, t, 70, y, 850, 70) + 26; };
+  const ai = t => { g.fillStyle = INK; g.font = `42px ${TYPE}`; y = wrap(g, t, 70, y, 850, 62) + 30; };
+  me('周末去武汉两天，想看黄鹤楼和东湖，少走路。');
+  ai('好的。还要确认两件事：住在哪一带？能接受早起吗？');
+  me('住汉口，不想早起。');
+  g.font = `26px ${MONO}`;
+  for (const s of ['理解偏好', '搜索景点', '计算路线', '校验开放时间', '生成地图行程']) {
+    g.fillStyle = SOFT; g.fillText(s, 70, y); g.fillText('完成', 850, y);
+    g.fillStyle = 'rgba(107,94,76,.45)'; for (let x = 70 + g.measureText(s).width + 16; x < 830; x += 12) g.fillRect(x, y - 6, 4, 3);
+    y += 44;
+  }
+  y += 34;
+  ai('两天的行程排好了，校验通过后已画在灯箱里。想改就接着说。');
+  stamp(g, '示例对话', 790, y + 6, BLUE, -0.05, 30, true);
+  g.fillStyle = RED; g.font = `44px ${HAND}`; g.fillText('接着写：第二天加一个夜景…', 70, h - 128);
+  g.fillStyle = INK; g.fillRect(70, h - 104, 850, 3);
+});
+chat.position.set(-7.5, 0.06, 0.2); chat.rotation.y = 0.035; scene.add(chat);
+const chatIt = ui.add(chat);
+
+/* ---------- 右边：每天一张索引卡 ---------- */
+const ROWS = [
+  [['10:00', '黄鹤楼'], ['', '↓ 步行'], ['12:30', '户部巷'], ['', '↓ 地铁 / 公交'], ['14:30', '昙华林']],
+  [['10:30', '湖北省博物馆'], ['', '↓ 步行'], ['14:00', '东湖'], ['', '↓ 打车'], ['19:00', '汉口江滩']],
+];
+const cards = [0, 1].map(d => {
+  const c = sheet(4.4, 3.3, (g, w, h) => {
+    paperBg(g, w, h, '#efe6cf'); ruled(g, w, h, 150, 84);
+    g.fillStyle = DAYCOL[d]; g.fillRect(0, 0, 18, h);
+    g.fillStyle = RED; g.fillRect(40, 118, w - 80, 4);
+    g.fillStyle = INK; g.font = `700 50px ${TYPE}`; g.fillText(d ? '第 2 天 · 东湖和江滩' : '第 1 天 · 武昌', 54, 92);
+    stamp(g, '校验通过', w - 130, 62, GREEN, d ? 0.06 : -0.08, 30);
+    let y = 216;
+    for (const [t, n] of ROWS[d]) {
+      if (t) { g.fillStyle = INK; g.font = `46px ${TYPE}`; g.fillText(t, 54, y); g.fillText(n, 250, y); }
+      else { g.fillStyle = SOFT; g.font = `32px ${TYPE}`; g.fillText(`${n} · 耗时由高德计算`, 250, y - 6); }
+      y += 84;
+    }
+    g.fillStyle = BLUE; g.font = `30px ${TYPE}`; g.fillText('预约和支付提示 · 待确认', 54, h - 36);
+  });
+  c.position.set(7.45 + d * 0.2, 0.06, d ? 2.0 : -1.75); c.rotation.y = d ? 0.04 : -0.05; scene.add(c);
+  c.userData.s = d === day ? 1 : 0; c.userData.it = ui.add(c, { onClick: () => setDay(d) });
+  return c;
+});
+const pen = makePen(); pen.position.set(-7.2, 0, 4.5); pen.rotation.y = 0.25; scene.add(pen);
+
+/* ---------- 操作 ---------- */
+function setDay(d) {
+  day = d; box.userData.tex.userData.redraw();
+  $('d0').classList.toggle('on', d === 0); $('d1').classList.toggle('on', d === 1);
+  $('count').textContent = `模型 千问 · 第 ${d + 1} 天 / 2`;
+}
+function set3d(v) {
+  three = v; $('lever').classList.toggle('on', v);
+  const [a, b] = $('lever').querySelectorAll('span'); a.classList.toggle('act', !v); b.classList.toggle('act', v);
+  if (v) cam.to([0, 9.5, 17.5], [0, 0, 0.2]); else cam.home();
+}
+$('d0').addEventListener('click', () => setDay(0)); $('d1').addEventListener('click', () => setDay(1));
+$('lever').addEventListener('click', () => set3d(!three));
+$('back').addEventListener('click', () => go('darkroom-desk.html'));
+$('share').addEventListener('click', () => go('darkroom-card.html'));
+addEventListener('keydown', e => { if (e.key === '1') setDay(0); if (e.key === '2') setDay(1); if (e.key === '3') set3d(!three); });
+
+const v3 = new THREE.Vector3();
+run(dt => {
+  ui.update(dt); cam.update(dt, ui.mouse, 2.6);
+  chat.position.y = 0.06 + chatIt.hv * 0.3; chat.rotation.x = chatIt.hv * 0.05;
+  cards.forEach((c, d) => {
+    const u = c.userData; u.s = damp(u.s, d === day ? 1 : 0, 6, dt);
+    const S = u.s, H = u.it.hv;
+    c.position.y = 0.06 + S * 0.4 + H * 0.2; c.rotation.x = S * 0.14 + H * 0.05;
+    u.face.color.setScalar(0.48 + 0.52 * Math.max(S, H * 0.8));
+  });
+  let tagPin = null;
+  for (const pin of pins) {
+    const u = pin.userData; u.s = damp(u.s, u.p.day === day ? 1 : 0, 6, dt);
+    const H = u.it.hv, k = 0.75 + u.s * 0.45 + H * 0.3;
+    pin.scale.set(k, k * (three ? 1.9 : 1), k);
+    u.head.material.color.copy(u.base).multiplyScalar(0.3 + 0.7 * Math.max(u.s, H));
+    if (ui.hovered === u.it) tagPin = pin;
+  }
+  if (tagPin) {
+    const [x, y] = project(tagPin.getWorldPosition(v3).add(new THREE.Vector3(0, 1.1, 0)), camera);
+    $('tag').style.left = `${x}px`; $('tag').style.top = `${y - 26}px`;
+    $('tag').textContent = `D${tagPin.userData.p.day + 1}-${tagPin.userData.p.n} · ${tagPin.userData.p.name}`;
+  }
+  $('tag').classList.toggle('on', !!tagPin);
+  lamp.position.x = damp(lamp.position.x, -4 + ui.mouse.x * 2.2, 2, dt);
+  renderer.render(scene, camera);
+});
+setDay(0);
+settleFonts('周末去武汉两天想看黄鹤楼和东湖少走路住汉口不想早起接着写第二天加一个夜景好的还要确认两件事');
+</script>
+</body>
+</html>

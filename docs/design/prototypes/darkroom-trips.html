@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>样片：笔记本幕（我的行程）</title>
+<!--
+  设计样片，不是网站代码。对应设计规范 v3 第 9.3 节：摊开的笔记本，行程是夹在里面的印样。
+  行程是示例，照片是程序画的示意图，日期留空。需要联网加载 three.js。
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Cormorant+Garamond:ital,wght@1,500&family=Courier+Prime:wght@400;700&family=IBM+Plex+Mono&family=LXGW+WenKai+TC&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="kit.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div class="vignette"></div>
+<canvas class="grain" id="grain" width="256" height="256"></canvas>
+<div class="lab tl">第 07 幕 — 笔记本</div>
+<div class="lab tr" id="count"></div>
+<div class="lab bl link" id="back">← 回到桌面</div>
+<div class="head"><div class="no">夹在本子里的印样</div><div class="title"><span>我的行程</span></div></div>
+<a class="cta" id="plan">新的行程</a>
+<div class="lab tag" id="tag"></div>
+<div class="curtain"></div>
+
+<script type="module">
+import { createStage, makeTable, materials, add, damp, grain, makeCanister, MONO } from './common.js';
+import { THREE, sheet, paperBg, ruled, stamp, rig, interact, project, go, run, settleFonts, makeNotebook, makeStrip, litStrip, makePen, makeTicket,
+  TYPE, HAND, INK, SOFT, RED, BLUE } from './kit.js';
+
+const $ = id => document.getElementById(id);
+grain();
+const stage = createStage({ fov: 30, lampPos: [-4, 16, 7], lampTarget: [0, 0, 0.6], lampPower: 8.5, lampAngle: 0.8 });
+const { scene, camera, lamp, renderer } = stage, M = materials();
+makeTable(scene);
+const cam = rig(stage, { pos: [0, 16.5, 10.5], look: [0, 0, 0.2], sway: [0.4, 0.22] });
+const ui = interact(stage);
+
+/* 示例行程：每条印样是行程里景点的示意照片 */
+const TRIPS = [
+  { title: '武汉两日 · 少走路', meta: '[生成日期] · 千问 · 2 天 6 站', shots: [0, 1, 2, 4, 5, 12] },
+  { title: '武汉两日 · 先逛东湖', meta: '[生成日期] · 豆包 · 2 天 5 站', shots: [5, 4, 2, 0, 1] },
+];
+$('count').textContent = `${TRIPS.length} 份行程`;
+
+const book = makeNotebook((g, w, h) => {
+  paperBg(g, w, h); ruled(g, w, h, 120, 92);
+  TRIPS.forEach((t, i) => {
+    const y = 560 + i * 600;
+    g.fillStyle = INK; g.font = `700 50px ${TYPE}`; g.fillText(t.title, 80, y);
+    g.fillStyle = SOFT; g.font = `32px ${TYPE}`; g.fillText(t.meta, 80, y + 62);
+  });
+  stamp(g, '示例行程 · 缩略图是示意图', 330, h - 90, BLUE, -0.03, 28, true);
+}, (g, w, h) => {
+  paperBg(g, w, h); ruled(g, w, h, 120, 92);
+  g.strokeStyle = 'rgba(107,94,76,.6)'; g.lineWidth = 4; g.setLineDash([18, 14]); g.strokeRect(90, 260, w - 180, 250); g.setLineDash([]);
+  g.fillStyle = SOFT; g.font = `38px ${TYPE}`; g.textAlign = 'center'; g.fillText('这一页还空着', w / 2, 400);
+  g.fillStyle = RED; g.font = `76px ${HAND}`; g.save(); g.translate(w / 2, 720); g.rotate(-0.06); g.fillText('再冲洗一份？', 0, 0); g.restore();
+  g.textAlign = 'left';
+});
+book.rotation.y = 0.04; scene.add(book);
+
+/* 印样夹在左页上 */
+const strips = TRIPS.map((t, i) => {
+  const s = makeStrip(t.shots, 4.1);
+  const base = new THREE.Vector3(-2.52, 0.37, -1.95 + i * 2.72);
+  s.position.copy(base); s.rotation.y = i ? 0.035 : -0.03; book.add(s);
+  s.userData.base = base; s.userData.trip = t; s.userData.it = ui.add(s, { onClick: () => go('darkroom-map.html') });
+  /* 一枚黄铜回形针 */
+  add(s, new THREE.BoxGeometry(0.1, 0.03, 0.5), M.brass, -1.7, 0.03, -s.userData.h / 2 + 0.1);
+  return s;
+});
+
+/* 点缀：钢笔、地铁票、轮渡票、樱花色书签、角落里的胶卷罐 */
+const pen = makePen(); pen.position.set(7.3, 0, 1.2); pen.rotation.y = 1.1; scene.add(pen);
+const metro = makeTicket('武汉地铁', 'METRO · 单程票'); metro.position.set(-7.4, 0.03, 3.3); metro.rotation.y = 0.3; scene.add(metro);
+const ferry = makeTicket('轮渡', 'FERRY · 过江', 1.9, 1.05); ferry.position.set(-6.6, 0.06, 4.0); ferry.rotation.y = -0.15; scene.add(ferry);
+const mark = add(book, new THREE.BoxGeometry(0.5, 0.012, 2.6), new THREE.MeshStandardMaterial({ color: 0xd98a98, roughness: 0.8 }), 3.7, 0.35, -3.9); mark.rotation.y = 0.06;
+const can = makeCanister('武汉', 'ROLL 01 · WUHAN MEMORY'); can.scale.setScalar(0.55); can.position.set(-7.3, 0, -2.6); can.rotation.y = 0.3; scene.add(can);
+const canIt = ui.add(can, { onClick: () => go('darkroom-rolls.html') });
+
+$('back').addEventListener('click', () => go('darkroom-desk.html'));
+$('plan').addEventListener('click', () => go('darkroom-map.html'));
+
+const v3 = new THREE.Vector3();
+run(dt => {
+  ui.update(dt); cam.update(dt, ui.mouse, 2.8);
+  let hs = null;
+  for (const s of strips) {
+    const H = s.userData.it.hv, b = s.userData.base;
+    s.position.set(b.x, b.y + H * 0.55, b.z + H * 0.15); s.rotation.x = H * 0.2; s.scale.setScalar(1 + H * 0.08);
+    litStrip(s, H);
+    if (ui.hovered === s.userData.it) hs = s;
+  }
+  if (hs) {
+    const [x, y] = project(hs.getWorldPosition(v3).add(new THREE.Vector3(0, 0.6, -0.8)), camera);
+    $('tag').style.left = `${x}px`; $('tag').style.top = `${y - 30}px`; $('tag').textContent = `${hs.userData.trip.title} · 点开接着改`;
+  }
+  $('tag').classList.toggle('on', !!hs);
+  can.position.y = canIt.hv * 0.15; can.rotation.y = 0.3 + canIt.hv * 0.2;
+  lamp.position.x = damp(lamp.position.x, -4 + ui.mouse.x * 2.2, 2, dt);
+  renderer.render(scene, camera);
+});
+settleFonts('武汉两日少走路先逛东湖生成期千问豆包天站这一页还空着再冲洗一份示例行程缩略图是示意图');
+</script>
+</body>
+</html>
