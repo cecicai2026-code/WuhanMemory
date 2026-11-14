@@ -15,12 +15,9 @@ flowchart LR
   Tools --> Poi[POI and Content Services]
   Tools --> Routing[Routing Service]
   Tools --> Weather[Weather Service]
-  API --> DB[(PostgreSQL + PostGIS + pgvector)]
-  API --> Redis[(Redis Cache and Queue)]
-  Worker[Async Worker] --> Redis
-  Worker --> DB
-  Worker --> Poi
-  Worker --> Routing
+  Seed[(data/pois JSON 种子文件)] --> Repo[Repository 层]
+  API --> Repo
+  Repo --> DB[(SQLite：景点、行程、分享、缓存)]
   API --> ObjectStore[(Object Storage)]
 ```
 

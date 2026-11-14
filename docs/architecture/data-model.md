@@ -2,7 +2,9 @@
 
 ## 数据库
 
-主库使用 PostgreSQL，启用:
+> 2026-11-14：存储方式已按 ADR 0003 改为 JSON 种子文件 + SQLite。下面的表结构是 7 月按 PostgreSQL 写的草案，景点字段和 SQLite 表结构在板块 2 重新确定后会更新本文件。
+
+（原方案）主库使用 PostgreSQL，启用:
 
 - PostGIS: 空间数据、距离查询、路线几何。
 - pgvector: 内容向量检索。

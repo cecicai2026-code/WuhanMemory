@@ -6,6 +6,8 @@
 
 Accepted for MVP planning.
 
+2026-11-14 更新：数据库（PostgreSQL + PostGIS + pgvector）和缓存队列（Redis + async worker）两条决定已被 [ADR 0003](0003-json-seed-and-sqlite.md) 取代，其余决定仍然有效。
+
 ## 背景
 
 项目需要构建一个基于地图的 AI 旅行规划 Web 应用。核心要求包括:

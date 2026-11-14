@@ -34,8 +34,8 @@
 
 - Frontend: Next.js App Router + TypeScript。
 - Backend: FastAPI + Python。
-- Database: PostgreSQL + PostGIS + pgvector。
-- Cache and jobs: Redis + async worker。
+- Database: JSON 种子文件（`data/pois/*.json`）+ SQLite，读写经过 repository 层，见 ADR 0003。
+- Cache: 存在 SQLite 的表里，带 `checkedAt` 和 `expiresAt`；不使用 Redis 和独立 worker。
 - Map MVP: 高德地图 JS API 2.0 + 高德 Web 服务 API。
 - LLM: 豆包和 Qwen 可切换，MVP 本地默认 mock provider。
 

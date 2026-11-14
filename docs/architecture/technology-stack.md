@@ -28,8 +28,7 @@
 
 - FastAPI + Python。
 - Pydantic 定义请求、响应和 AI 结构化输出。
-- SQLAlchemy 或 SQLModel 操作数据库。
-- Alembic 做数据库迁移。
+- Python 标准库 `sqlite3` 操作数据库，SQL 只写在 repository 层。
 - SSE 或 WebSocket 支持 AI 规划状态流。
 
 选择理由:
@@ -40,10 +39,13 @@
 
 ### 数据库
 
-- PostgreSQL 作为主数据库。
-- PostGIS 存储景点坐标、路线、空间索引和距离查询。
-- pgvector 存储景点内容、历史文化、评价摘要和拍照机位的 embedding。
-- Redis 缓存外部 API 响应、规划 job 状态和速率限制计数。
+2026-11-14 起按 ADR 0003 执行：
+
+- 景点资料以 `data/pois/*.json` 为准，提交到 git。
+- 运行时使用 SQLite：启动时导入景点，行程、分享、对比结果直接写入。
+- 所有读写经过 repository 层，以后可以换成 PostgreSQL。
+- 外部 API 结果（如高德路线）缓存在 SQLite 的表里，带 `checkedAt` 和 `expiresAt`。不使用 Redis。
+- 距离用经纬度公式在 Python 里计算；候选景点按区域、类别、标签筛选。
 
 ### AI
 
@@ -58,14 +60,13 @@
 
 - Web: Vercel、Cloudflare Pages 或自托管 Node。
 - API: Docker 容器，部署到 Fly.io、Render、Railway、AWS、GCP、阿里云或腾讯云。
-- 数据库: 托管 PostgreSQL，要求支持 PostGIS 和 pgvector。
+- 数据库: 目前是本地 SQLite 文件；多人使用时按 ADR 0003 的条件重新评估 PostgreSQL。
 - 对象存储: S3 兼容存储，用于分享页静态资产、多媒体缓存和导出文件。
 
 ## 环境变量
 
 ```text
 DATABASE_URL=
-REDIS_URL=
 LLM_PROVIDER=mock
 LLM_FALLBACK_PROVIDER=
 LLM_PROVIDER_MODE=fixed
