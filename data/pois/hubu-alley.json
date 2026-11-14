@@ -26,6 +26,20 @@
       "title": "本地宝：武汉户部巷小吃攻略（2015-04-02）",
       "url": "https://m.bendibao.com/show679929.html",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "bendibao-hbx-where",
+      "type": "other",
+      "title": "本地宝：武汉户部巷在哪，怎么去？（2015-04-02）",
+      "url": "https://m.bendibao.com/show679920.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "chinatripedia-hbx",
+      "type": "travel-platform",
+      "title": "Chinatripedia：Hubu Alley, Wuhan（英文，页面没有日期）",
+      "url": "https://chinatripedia.com/hubu-alley-wuhan-ticket-price-opening-hours-location-and-food",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -53,9 +67,10 @@
     "lastCheckedAt": "2026-11-15"
   },
   "history": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+    "value": "明代形成；清代因为挨着藩台衙门（对应京城的户部衙门）而得名。",
+    "verification": "placeholder",
+    "sourceId": "bendibao-hbx-where",
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
     "value": {
@@ -70,9 +85,16 @@
     "expiresAt": "2027-02-13"
   },
   "ticket": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 途牛页面只有\"18 元起\"的预订模块，没写进巷子要不要钱"
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "chinatripedia-hbx",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "这一项只出现在页面后半部分，那部分没能逐字读到，是程序读页面时生成的摘要。"
   },
   "reservation": {
     "value": null,

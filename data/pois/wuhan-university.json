@@ -33,6 +33,13 @@
       "title": "本地宝：武汉旅游景点介绍：武汉大学（2012-09-20）",
       "url": "https://m.bendibao.com/show426511_6.html",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "ctrip-travels-whu-2022",
+      "type": "travel-platform",
+      "title": "携程游记：武汉大学樱花，黄鹤楼，美食全览（2022-07-05）",
+      "url": "https://gs.ctrip.com/html5/you/travels/145/4028013.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -125,6 +132,28 @@
       "sourceId": "bendibao-2012",
       "lastCheckedAt": "2026-11-15",
       "note": "来自 2012 年的文章。"
+    },
+    {
+      "value": {
+        "title": "樱花城堡、樱顶、珞珈广场",
+        "description": "游记列出的校内主要赏樱地点，和樱花大道一起。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-whu-2022",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2022 年的用户游记。"
+    },
+    {
+      "value": {
+        "title": "老斋舍前的樱花大道",
+        "description": "游记说老斋舍前的樱花大道是拍樱花的好位置。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-whu-2022",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2022 年的用户游记。"
     }
   ],
   "food": [],

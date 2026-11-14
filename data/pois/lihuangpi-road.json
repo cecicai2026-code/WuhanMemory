@@ -19,6 +19,13 @@
       "title": "永安旅游：黎黄陂路参观攻略 2026（页面没有日期）",
       "url": "https://www.wingontravel.com/discovery/scenic-lihuangpi-rd-18087019",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "ctrip-travels-lhp-2020",
+      "type": "travel-platform",
+      "title": "携程游记：武汉最美旅拍地之黎黄陂路（2020-11-06）",
+      "url": "https://gs.ctrip.com/html5/you/travels/145/3980959.html",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -49,7 +56,7 @@
     "verification": "placeholder",
     "sourceId": "wingon",
     "lastCheckedAt": "2026-11-15",
-    "note": "来源没有写这些建筑的年代。"
+    "note": "来源没有写这些建筑的年代。2020 年的一篇携程游记写黎黄陂路建于 1900 年、全长 604 米、保留约 17 处老建筑。"
   },
   "openingHours": {
     "value": null,
@@ -88,7 +95,19 @@
     "verification": "todo",
     "todo": "TODO(Cecilia): 按你的游玩经验填"
   },
-  "photoSpots": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "珞珈山街口的红砖老房子",
+        "description": "珞珈山街和黎黄陂路交界处，正对着一排红砖老房子。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-lhp-2020",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2020 年的用户游记。"
+    }
+  ],
   "food": [],
   "reviews": [],
   "photos": []

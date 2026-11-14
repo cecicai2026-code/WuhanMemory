@@ -19,6 +19,13 @@
       "title": "大河票务网：汉口江滩门票、开放时间、游玩攻略（2022-07-22 发布）",
       "url": "https://www.dahepiao.com/lvyounews1/20220722286191.html",
       "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "thepaper-free-2024",
+      "type": "media",
+      "title": "澎湃号·湃客：第一次到武汉游玩，10 个免费又好玩景点（2024-01-24，自媒体投稿）",
+      "url": "https://thepaper.cn/newsDetail_forward_26123772",
+      "accessedAt": "2026-11-15"
     }
   ],
   "location": {
@@ -64,9 +71,15 @@
     "note": "来源是 2022 年的文章。"
   },
   "ticket": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 大河票务网只写了团购价 28 元起和 38 元起，没说江滩本身收不收门票"
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-free-2024",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
     "value": null,
@@ -89,9 +102,10 @@
     "todo": "TODO(Cecilia): 按你的游玩经验填"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "太阳落山前到江边吹晚风；晚上有灯光秀。",
+    "verification": "placeholder",
+    "sourceId": "thepaper-free-2024",
+    "lastCheckedAt": "2026-11-15"
   },
   "photoSpots": [],
   "food": [
