@@ -106,3 +106,6 @@ export interface ShareResponse {
   slug: string;
   url: string;
 }
+
+// 景点接口（板块 2）
+export * from "./poi";

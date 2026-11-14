@@ -1,15 +1,56 @@
 /**
- * 地点档案的数据入口。
+ * 地点档案的数据入口：从后端接口 GET /api/pois、GET /api/pois/{id} 取真实景点数据。
+ * 景点资料的原始文件是 data/pois/*.json，后端启动时检查并导入 SQLite（ADR 0003）。
  *
- * 板块 1A 这里只有示例清单：10 个景点的名字和所在区，来自旧骨架的清单，
- * 还没有经过 Cecilia 核实。其余资料（简介、开放时间、票价、照片等）一条都没有，
- * 页面上会显示"待补充"，不编内容。
- *
- * 板块 2 把这个文件换成读取真实景点数据；页面只通过下面几个函数取数据，到时不用改页面。
+ * 只在服务器端调用（页面是服务器组件），后端地址不会出现在浏览器的请求里，
+ * 照片地址除外：照片由浏览器直接从后端的 /media/ 取。
  */
-import type { Status } from "@/components/ui";
+import type { PoiDetail, PoiDetailResponse, PoiList, PoiSummary } from "@wuhanmemory/shared";
 
-/** 纸页上的条目（设计规范 8.3 的表） */
+const API_BASE = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+/** 浏览器取照片用的后端地址 */
+const PUBLIC_API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+
+/** 后端连不上或返回错误 */
+export class ApiUnavailableError extends Error {}
+
+async function getJson<T>(path: string): Promise<T | null> {
+  let res: Response;
+  try {
+    // 状态和日期有关（过没过期），每次都现取，不缓存
+    res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
+  } catch {
+    throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
+  }
+  if (res.status === 404) return null;
+  if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
+  return (await res.json()) as T;
+}
+
+export async function listPlaces(): Promise<PoiList> {
+  return (await getJson<PoiList>("/api/pois")) ?? { asOf: "", pois: [] };
+}
+
+export async function getPlace(id: string): Promise<PoiDetailResponse | null> {
+  return getJson<PoiDetailResponse>(`/api/pois/${encodeURIComponent(id)}`);
+}
+
+export function photoUrl(url: string | null): string | null {
+  return url ? `${PUBLIC_API_BASE}${url}` : null;
+}
+
+/** 有哪些区、每个区几个景点，按清单里出现的顺序 */
+export function listDistricts(pois: PoiSummary[]): Array<{ name: string; count: number }> {
+  const counts = new Map<string, number>();
+  for (const p of pois) counts.set(p.district, (counts.get(p.district) ?? 0) + 1);
+  return [...counts].map(([name, count]) => ({ name, count }));
+}
+
+export function pad2(n: number): string {
+  return String(n).padStart(2, "0");
+}
+
+/** 纸页上的条目，对应 PoiDetail 的字段（设计规范 8.3 的表） */
 export type FieldKey =
   | "intro"
   | "history"
@@ -17,26 +58,14 @@ export type FieldKey =
   | "openingHours"
   | "ticket"
   | "reservation"
-  | "duration"
+  | "recommendedDurationMinutes"
   | "bestTime"
   | "transport"
   | "payment"
   | "photoSpots"
   | "reviews"
-  | "gallery"
+  | "photos"
   | "food";
-
-export interface Place {
-  id: string;
-  name: string;
-  district: string;
-  /** 已有的资料。没有的条目不出现在这里，页面显示"待补充" */
-  fields: Partial<Record<FieldKey, string>>;
-  /** 资料来源和核实日期。没有就显示"待补充" */
-  source?: string;
-  verifiedAt?: string;
-  status: Status;
-}
 
 export interface Theme {
   /** 页面内的锚点 */
@@ -63,10 +92,10 @@ export const THEMES: Theme[] = [
     id: "tips",
     name: "游玩建议",
     fields: [
-      { key: "duration", label: "建议游玩时长" },
+      { key: "recommendedDurationMinutes", label: "建议游玩时长" },
       { key: "bestTime", label: "适合去的时段" },
       { key: "transport", label: "怎么去" },
-      { key: "payment", label: "支付和预约提示" },
+      { key: "payment", label: "支付方式" },
       { key: "photoSpots", label: "拍照机位" },
       { key: "reviews", label: "去过的人说" }
     ]
@@ -74,7 +103,7 @@ export const THEMES: Theme[] = [
   {
     id: "gallery",
     name: "景点图册",
-    fields: [{ key: "gallery", label: "照片" }]
+    fields: [{ key: "photos", label: "照片" }]
   },
   {
     id: "food",
@@ -83,47 +112,4 @@ export const THEMES: Theme[] = [
   }
 ];
 
-function sample(id: string, name: string, district: string): Place {
-  return { id, name, district, fields: {}, status: "pending" };
-}
-
-/** 示例清单，只有名字和区。板块 2 换成真实数据 */
-const PLACES: Place[] = [
-  sample("yellow-crane-tower", "黄鹤楼", "武昌区"),
-  sample("hubu-alley", "户部巷", "武昌区"),
-  sample("tanhualin", "昙华林", "武昌区"),
-  sample("hankou-river-beach", "汉口江滩", "江岸区"),
-  sample("hubei-museum", "湖北省博物馆", "武昌区"),
-  sample("east-lake-tingtao", "东湖听涛景区", "武昌区"),
-  sample("wuhan-university", "武汉大学", "武昌区"),
-  sample("gude-temple", "古德寺", "江岸区"),
-  sample("jianghan-road", "江汉路步行街", "江汉区"),
-  sample("lihuangpi-road", "黎黄陂路", "江岸区")
-];
-
-/** 现在的数据是不是示例。板块 2 接入真实数据后改成 false */
-export const IS_SAMPLE = true;
-
-export function listPlaces(): Place[] {
-  return PLACES;
-}
-
-export function getPlace(id: string): Place | undefined {
-  return PLACES.find((p) => p.id === id);
-}
-
-/** 景点在整份清单里的格号，从 1 开始 */
-export function frameNo(id: string): number {
-  return PLACES.findIndex((p) => p.id === id) + 1;
-}
-
-/** 有哪些区、每个区几个景点，按清单里出现的顺序 */
-export function listDistricts(): Array<{ name: string; count: number }> {
-  const counts = new Map<string, number>();
-  for (const p of PLACES) counts.set(p.district, (counts.get(p.district) ?? 0) + 1);
-  return [...counts].map(([name, count]) => ({ name, count }));
-}
-
-export function pad2(n: number): string {
-  return String(n).padStart(2, "0");
-}
+export type { PoiDetail, PoiList, PoiSummary };

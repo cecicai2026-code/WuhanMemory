@@ -42,6 +42,37 @@
   font-size: var(--size-label);
   color: var(--ink-soft);
 }
+/* 封面照片：铺满胶片格 */
+.frameImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.frameNo,
+.frameTag {
+  z-index: 1;
+}
+.frameTag {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  padding: 0 6px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--pending-paper);
+  background: var(--paper);
+}
+/* 卡上的计数：程序数出来的待确认、待补充、已过期条数 */
+.cardCounts {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
 .foot {
   display: flex;
   align-items: center;
@@ -104,6 +135,112 @@
 }
 .sheetFoot p + p {
   margin-top: 2px;
+}
+
+/* 详情页顶上的一行说明：三种章是什么意思 */
+.legend {
+  max-width: 620px;
+  margin: 0 auto 28px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  line-height: 1.8;
+  text-align: center;
+  color: var(--text-secondary);
+}
+.value {
+  display: block;
+}
+/* 条目下的小字：核实方式、来源、核实日期、有效期 */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 14px;
+  margin-top: 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  white-space: normal;
+}
+.meta a,
+.sourceList a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.metaExpired {
+  color: var(--expired-paper);
+  font-weight: 700;
+}
+.metaStamp {
+  font-size: var(--size-label);
+  padding: 0 6px;
+  border-width: 1.5px;
+}
+/* 过期的条目：左边一道红褐色的竖线，一眼能看到 */
+.entryExpired dd {
+  padding-left: 12px;
+  border-left: 3px solid var(--expired-paper);
+}
+.items {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sourceList {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* 图册：白边照片 */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 18px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.photo {
+  margin: 0;
+  padding: 8px 8px 10px;
+  background: #f6f1e4;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
+}
+.photo img,
+.photoMissing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--paper-shade);
+}
+.photo figcaption {
+  margin-top: 6px;
+  font-size: var(--size-ui);
+  line-height: 1.5;
+}
+/* 列表为空、连不上后端时的说明纸 */
+.notice {
+  max-width: 620px;
+  margin: 0 auto;
+}
+.notice p {
+  margin: 12px 0;
+}
+.command {
+  margin: 12px 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  background: var(--paper-shade);
+  white-space: pre;
 }
 
 /* 上一个、下一个景点 */
