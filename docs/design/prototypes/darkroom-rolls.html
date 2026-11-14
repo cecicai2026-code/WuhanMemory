@@ -63,15 +63,15 @@ scene.background = new THREE.Color(0x070504);
 scene.fog = new THREE.Fog(0x070504, 22, 44);
 
 const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 0.1, 100);
-const camZ = () => Math.max(13.5, 13.5 * (1.7 / (innerWidth / innerHeight)));
-const CAM = new THREE.Vector3(0, 3.1, camZ());
-const LOOK = new THREE.Vector3(0, 1.75, 0);
+const camZ = () => Math.max(16.5, 16.5 * (1.7 / (innerWidth / innerHeight)));
+const CAM = new THREE.Vector3(0, 3.6, camZ());
+const LOOK = new THREE.Vector3(0, 2.55, 0);
 camera.position.copy(CAM);
 
 /* ---------- 灯 ---------- */
-scene.add(new THREE.HemisphereLight(0xffb48a, 0x1a0806, 0.22));
-const lamp = new THREE.SpotLight(0xffd9a8, 5.2, 0, 0.62, 0.75, 0);
-lamp.position.set(-3.5, 9, 7);
+scene.add(new THREE.HemisphereLight(0xffb48a, 0x1a0806, 0.34));
+const lamp = new THREE.SpotLight(0xffd9a8, 6.5, 0, 0.72, 0.8, 0);
+lamp.position.set(-2.5, 9, 9.5);
 lamp.target.position.set(0.4, 1.2, 0);
 lamp.castShadow = true;
 lamp.shadow.mapSize.set(2048, 2048);
@@ -161,7 +161,7 @@ const M = {
 const shadow = m => { m.castShadow = true; m.receiveShadow = true; return m; };
 
 /* ---------- 胶卷罐 ---------- */
-const can = new THREE.Group(); can.position.set(-5.3, 0, 0.3); scene.add(can);
+const can = new THREE.Group(); can.position.set(-5.0, 0, 0.3); scene.add(can);
 const labelTex = tex(2048, 835, (g, w, h) => {   /* 画布比例 = 罐身周长 : 高度 */
   g.fillStyle = '#16332a'; g.fillRect(0, 0, w, h);
   const x0 = w * 0.25;                            /* 这个位置转到正对镜头 */
@@ -193,7 +193,7 @@ const stripTex = tex(256, 256, (g, w, h) => {
 });
 stripTex.wrapS = THREE.RepeatWrapping; stripTex.repeat.set(16, 1);
 const strip = shadow(new THREE.Mesh(new THREE.PlaneGeometry(40, STRIP_H),
-  new THREE.MeshStandardMaterial({ map: stripTex, roughness: 0.35, metalness: 0.1, side: THREE.DoubleSide, emissive: 0x3a1408, emissiveIntensity: 0.6 })));
+  new THREE.MeshStandardMaterial({ map: stripTex, roughness: 0.35, metalness: 0.1, side: THREE.DoubleSide, emissive: 0x3a1408, emissiveIntensity: 0.25 })));
 strip.position.set(-4.3 + 20, STRIP_Y, STRIP_Z); scene.add(strip);
 
 const frames = SPOTS.map((name, i) => {
@@ -287,7 +287,7 @@ function frame() {
   /* 胶片格：位置跟着走片，悬停的那一格抬起、放大、褪去红色 */
   frames.forEach(f => {
     const x = (f.userData.i - progress) * PITCH;
-    f.visible = x > -4.6 && x < 14;
+    f.visible = x > -4.2 && x < 14;
     const want = hovered === f ? 1 : 0;
     f.userData.lift += (want - f.userData.lift) * Math.min(1, dt * 9);
     const L = f.userData.lift;
@@ -313,7 +313,7 @@ function frame() {
   camera.position.x += (CAM.x + mouse.x * 0.55 - camera.position.x) * k * 0.5;
   camera.position.y += (CAM.y - mouse.y * 0.3 - camera.position.y) * k * 0.5;
   camera.lookAt(LOOK);
-  lamp.position.x += (-3.5 + mouse.x * 2.2 - lamp.position.x) * k * 0.4;
+  lamp.position.x += (-2.5 + mouse.x * 2.2 - lamp.position.x) * k * 0.4;
 
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
