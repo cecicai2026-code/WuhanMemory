@@ -27,6 +27,7 @@ SourceType = Literal[
     "official-site",  # 景点官网
     "official-wechat",  # 景点官方公众号
     "official-ticketing",  # 官方售票或预约页面（小程序等）
+    "government",  # 政府网站（区政府、文旅局、景区管委会），用于没有自己官网的街区
     "amap",  # 高德地图（坐标拾取器、地点搜索）
     "other",
 ]

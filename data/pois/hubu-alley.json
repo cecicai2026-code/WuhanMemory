@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "id": "hubu-alley",
+  "name": "户部巷",
+  "district": "武昌区",
+  "category": "food-street",
+  "tags": [],
+  "sources": [],
+  "location": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+  },
+  "address": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+  },
+  "intro": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方介绍"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+  },
+  "ticket": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方票价"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}

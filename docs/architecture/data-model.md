@@ -104,8 +104,8 @@
 | 字段 | 说明 |
 |---|---|
 | `id` | 小写英文、数字和连字符，必须和文件名一致，例如 `yellow-crane-tower` |
-| `name`、`district`、`category`、`tags` | 名称、所在区、类别、标签。列表筛选和板块 5 挑候选景点用 |
-| `sources` | 本景点用到的全部来源。`type` 取 `field-visit`（实地走访）、`official-site`（官网）、`official-wechat`（官方公众号）、`official-ticketing`（官方售票或预约页面）、`amap`（高德）、`other`。不是实地走访的必须有 `url`；都必须有 `accessedAt`（查阅日期或走访日期） |
+| `name`、`district`、`category`、`tags` | 名称、所在区、类别、标签。列表筛选和板块 5 挑候选景点用。`category` 取 `landmark`（地标建筑）、`museum`、`campus`、`park`（公园湖泊）、`riverside`（江滩）、`temple`、`street`（历史街区、步行街）、`food-street`（美食街） |
+| `sources` | 本景点用到的全部来源。`type` 取 `field-visit`（实地走访）、`official-site`（官网）、`official-wechat`（官方公众号）、`official-ticketing`（官方售票或预约页面）、`government`（政府网站：区政府、文旅局、景区管委会，用于没有自己官网的街区）、`amap`（高德）、`other`。不是实地走访的必须有 `url`；都必须有 `accessedAt`（查阅日期或走访日期） |
 
 单条信息（11 项都必须出现在文件里，没有资料也要写出来，标 `todo`）：
 

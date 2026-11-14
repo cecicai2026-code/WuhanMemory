@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "jianghan-road",
+  "name": "江汉路步行街",
+  "district": "江汉区",
+  "category": "street",
+  "tags": [],
+  "sources": [
+    {
+      "id": "jianghan-gk",
+      "type": "government",
+      "title": "武汉市江汉区人民政府：江汉概况",
+      "url": "https://www.jianghan.gov.cn/mljh/jbgk/201802/t20180201_11565.shtml",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+  },
+  "address": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+  },
+  "intro": {
+    "value": "有一百多年历史的商业老街，沿街老建筑多，被称作\"武汉二十世纪建筑博物馆\"。2021 年 7 月被商务部评为\"全国示范步行街\"。",
+    "verification": "placeholder",
+    "sourceId": "jianghan-gk",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+  },
+  "ticket": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方票价"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}

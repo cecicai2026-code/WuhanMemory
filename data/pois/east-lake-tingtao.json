@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "id": "east-lake-tingtao",
+  "name": "东湖听涛景区",
+  "district": "武昌区",
+  "category": "park",
+  "tags": [],
+  "sources": [
+    {
+      "id": "donghu-map",
+      "type": "government",
+      "title": "武汉东湖生态旅游风景区管委会：东湖最新漫游地图（2026-01-22 发布）",
+      "url": "https://www.whdonghu.gov.cn/ztzl_6323/wlzl/202601/t20260122_2716447.shtml",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+  },
+  "address": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 管委会页面只写了\"东湖风景区听涛景区内\"，没有门牌地址"
+  },
+  "intro": {
+    "value": "东湖风景区里的一片景区，碧潭观鱼、长天楼、苍柏园、行吟阁、小梅岭、天圜美术馆都在这里。",
+    "verification": "placeholder",
+    "sourceId": "donghu-map",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "donghu-map",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "来源页面是 2026-01-22 发布的漫游地图，景区内是否有收费项目待确认。"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}

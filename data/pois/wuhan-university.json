@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "id": "wuhan-university",
+  "name": "武汉大学",
+  "district": "武昌区",
+  "category": "campus",
+  "tags": [],
+  "sources": [
+    {
+      "id": "whu-intro",
+      "type": "official-site",
+      "title": "武汉大学官网：学校简介",
+      "url": "https://www.whu.edu.cn/xxgk/xxjj.htm",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 等运行 corepack pnpm amap:lookup 查高德坐标"
+  },
+  "address": {
+    "value": "湖北省武汉市武昌区八一路 299 号",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "intro": {
+    "value": "教育部直属的重点综合性大学。它是学校，不是旅游景点，入校参观要按学校的规定。",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "学校溯源于 1893 年湖广总督张之洞奏请创办的自强学堂，1928 年定名为国立武汉大学。2000 年与武汉水利电力大学、武汉测绘科技大学、湖北医科大学合并，组建新的武汉大学。",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 保卫部 2026-09-20 发布的入校参观通知正文读不出来，普通游客能哪天、几点进校待确认"
+  },
+  "ticket": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 官网没有写参观收费"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 同上，普通游客要不要预约、在哪预约待确认"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}
