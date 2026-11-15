@@ -11,8 +11,8 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { SheetData } from "@/lib/scene3d/data";
-import { Grain, typingInto } from "./StageBits";
-import s from "./stage.module.css";
+import { Grain, typingInto } from "@/components/stage/StageBits";
+import s from "@/components/stage/stage.module.css";
 
 export function SheetStage({ data }: { data: SheetData }) {
   const stage = useStage();

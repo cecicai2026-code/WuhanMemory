@@ -13,8 +13,8 @@ import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { RollsData } from "@/lib/scene3d/data";
 import { pad2 } from "@/lib/places";
-import { Grain, typingInto, useSlideTitle } from "./StageBits";
-import s from "./stage.module.css";
+import { Grain, typingInto, useSlideTitle } from "@/components/stage/StageBits";
+import s from "@/components/stage/stage.module.css";
 
 const G = 5;
 /** /places/<id>，不带后面的主题 */

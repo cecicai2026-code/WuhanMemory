@@ -15,8 +15,8 @@ import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { LineData } from "@/lib/scene3d/data";
 import { pad2 } from "@/lib/places";
-import { Grain, typingInto, useSlideTitle } from "./StageBits";
-import s from "./stage.module.css";
+import { Grain, typingInto, useSlideTitle } from "@/components/stage/StageBits";
+import s from "@/components/stage/stage.module.css";
 
 /** 普通版里的链接指向哪里：/places/<id>/<主题> 或 /places/<id> */
 function linkTarget(el: EventTarget | null): { id: string; topic: string | null } | null {
