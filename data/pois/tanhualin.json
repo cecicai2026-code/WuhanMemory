@@ -4,7 +4,15 @@
   "name": "昙华林",
   "district": "武昌区",
   "category": "street",
-  "tags": [],
+  "tags": [
+    "老街",
+    "近代建筑",
+    "文艺",
+    "拍照",
+    "夜景",
+    "免费",
+    "亲子"
+  ],
   "sources": [
     {
       "id": "amap-search",
@@ -14,24 +22,45 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "qunar-thl",
-      "type": "travel-platform",
-      "title": "去哪儿：昙华林攻略（页面没有日期，点评到 2019 年）",
-      "url": "https://touch.travel.qunar.com/poi/5740265",
+      "id": "s1",
+      "type": "government",
+      "title": "昙华林历史文化街区（武汉市武昌区人民政府，2022-04-11）",
+      "url": "https://www.wuchang.gov.cn/zjwc/wcly/lyzx/wcjg/202204/t20220411_1953638.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "xinhua-2026",
-      "type": "media",
-      "title": "新华网：武汉昙华林：古城根脉里的文化焕新（2026-09-15）",
-      "url": "https://www.news.cn/local/20260915/01f720051f9a44649a6e615427fff07e/c.html",
+      "id": "s2",
+      "type": "government",
+      "title": "对区政协十四届五次会议第 138 号提案的答复（武昌区政府，2021-09-03）",
+      "url": "https://www.wuchang.gov.cn/zwgk_37/fdzdgknr/qtzdgknr/jytabl_1/qjytan/taq/202109/t20210903_1771520.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "maigoo-thl",
-      "type": "other",
-      "title": "买购网：昙华林词条（页面没有日期）",
-      "url": "https://www.maigoo.com/citiao/225159.html",
+      "id": "s3",
+      "type": "government",
+      "title": "武汉老房子活化成「顶流」（武汉市人民政府，2025-04-16）",
+      "url": "https://www.wuhan.gov.cn/sy/whyw/202504/t20250416_2567415.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "government",
+      "title": "昙华林保护更新项目入选 2026 全国城市更新创新案例（武汉市自然资源和城乡建设局，2026-07-14）",
+      "url": "https://zrzyhgh.wuhan.gov.cn/zwdt/gzdt/202607/t20260714_2820864.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "昙华林漫游攻略（携程笔记，2026-10-09 / 2026-05-01）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=388337482",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s6",
+      "type": "ugc",
+      "title": "昙华林 600 年文艺老街攻略（携程笔记，2026-05-01 / 2026-05-02）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=300637415",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -47,22 +76,33 @@
     "note": "高德地点：昙华林（粮道街道胭脂路仁济医院西侧），B001B1H7IS。"
   },
   "address": {
-    "value": "武汉市武昌区胭脂路",
-    "verification": "placeholder",
-    "sourceId": "qunar-thl",
-    "lastCheckedAt": "2026-11-15",
-    "note": "买购网写\"粮道街\"\"花园山附近\"。高德写\"粮道街道胭脂路仁济医院西侧\"。"
-  },
-  "intro": {
-    "value": "武昌古城里的历史文化街区，汇集了 50 多栋历史文化建筑。2005 年以来按\"最小干预\"的原则保护修缮。",
-    "verification": "placeholder",
-    "sourceId": "xinhua-2026",
+    "value": "武汉市武昌区昙华林（东起中山路，西至得胜桥，全长约 1200 米）",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
+  "intro": {
+    "value": "武昌老城的「活着的近代史书」，1200 米长的街上叠着 50 多栋百年建筑：教堂、医院、教会学校、名人公馆和江夏民居混在一起。现在是咖啡馆、手作店和展馆的聚集地，白天文艺、晚上亮灯更好看。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3",
+      "s4"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
+  },
   "history": {
-    "value": "明洪武四年（1371 年）武昌城扩建后逐渐形成的老街。1861 年汉口开埠后，这一带渐渐华洋杂处；1871 年美国圣公会在这里创办文华书院。",
-    "verification": "placeholder",
-    "sourceId": "maigoo-thl",
+    "value": "昙华林是明洪武四年（1371 年）武昌城扩建定型后逐渐形成的老街，距今六百多年。明清时期是郡王府邸、军队营地、官府衙门、贡院书塾聚集地；近代是英美意等国传教、办学、行医之地，1895 年英国传道士杨格非在此开设仁济医院。街区内有 52 处历史建筑（一说 59 处），被称为「街头历史博物馆」。2005 年起分三期修缮，2024 年春三期开放，52 处百年建筑全部完成升级；2025 年接待游客 1218 万人次，为国家级旅游休闲街区。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3",
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
@@ -70,10 +110,13 @@
       "allDay": true,
       "periods": [],
       "closedWeekdays": [],
-      "note": "不少老建筑不对外开放。"
+      "note": "街区全天开放；店铺多为 10:00—21:00；展馆多为 9:00—17:00。"
     },
-    "verification": "placeholder",
-    "sourceId": "qunar-thl",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "extraSourceIds": [
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-02-13"
   },
@@ -81,107 +124,210 @@
     "value": {
       "free": true,
       "items": [],
-      "note": null
+      "note": "优惠：不适用（开放式街区）；部分展馆特展 20—50 元。 免票：街区免费；翟雅阁博物馆免费，部分特展收费。 手作体验、咖啡馆、文创为自费项目。"
     },
-    "verification": "placeholder",
-    "sourceId": "maigoo-thl",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s5",
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14",
-    "note": "去哪儿页面显示\"门票 8 元起\"的预订价，没说是什么票。"
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "街区无需预约，直接进入；部分展馆（如翟雅阁）可能需预约，个别纪念馆需在官方公众号预约。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "extraSourceIds": [
+      "s6"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 街区免费，店铺各自收款，未查到统一官方说明。"
   },
   "transport": {
     "value": {
       "metro": [
         {
-          "station": "螃蟹岬站",
-          "line": "7 号线",
+          "station": "昙华林武胜门",
+          "line": "5 号线",
+          "exit": "A",
+          "walkMinutes": null
+        },
+        {
+          "station": "螃蟹岬",
+          "line": "2/7 号线",
           "exit": "E",
           "walkMinutes": null
         }
       ],
-      "note": "出站步行约 927 米。"
+      "note": "地铁 5 号线「昙华林武胜门」站 A 口出，步行约 300 米进西段（市集、网红店集中）；或地铁 2/7 号线「螃蟹岬」站 E 口出，步行约 800 米进东段（安静、老建筑多）。公交 573、717 至「中山路解放路」站。"
     },
-    "verification": "placeholder",
-    "sourceId": "qunar-thl",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "extraSourceIds": [
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15",
-    "note": "买购网和去哪儿的用户点评写的是 2 号线螃蟹岬站 A 出口。"
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": 180,
-    "verification": "placeholder",
-    "sourceId": "maigoo-thl",
+    "value": 120,
+    "verification": "confirmed",
+    "sourceId": "s6",
     "lastCheckedAt": "2026-11-15",
-    "note": "买购网写 3–4 小时；去哪儿用户点评写 2–3 小时。"
+    "note": "攻略「纯逛 2 小时、拍照+手作 4 小时」，取纯逛值。"
   },
   "bestTime": {
-    "value": "3–5 月和 9–11 月气候最适宜。",
-    "verification": "placeholder",
-    "sourceId": "maigoo-thl",
+    "value": "工作日上午 9:00—16:00 人少光好；傍晚 18:30—21:00 灯笼亮起，夜景最好看。",
+    "verification": "confirmed",
+    "sourceId": "s6",
     "lastCheckedAt": "2026-11-15",
-    "note": "去哪儿用户点评说上午很多店还没开门。"
+    "note": "游客攻略里的经验，不是官方说法。"
   },
   "photoSpots": [
     {
       "value": {
-        "title": "涂鸦墙",
-        "description": "街上有特色涂鸦墙。",
+        "title": "武胜门涂鸦墙",
+        "description": "5 号线昙华林武胜门站 A 口。地铁口巨型彩色涂鸦，正面平拍或稍微仰拍，色彩最满",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "qunar-thl",
-      "lastCheckedAt": "2026-11-15",
-      "note": "来自 2015 年的用户点评。"
+      "verification": "confirmed",
+      "sourceId": "s6",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "彩虹阶梯",
+        "description": "主街中段。马卡龙七色台阶，从下往上俯拍，把青石板和鲜花一起收进画面",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s6",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "凤凰山城墙 / 山顶观景台",
+        "description": "街区西侧山上，可乘山地小火车。俯瞰整片红瓦屋顶与武昌天际线，蓝调时刻最好",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s3",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "小昙昙邮局",
+        "description": "西段主街。寄明信片盖专属戳，门口拍复古信箱",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s6",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "翟雅阁",
+        "description": "东段。百年建筑里的艺术展览，外立面拱窗与红砖",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
     }
   ],
   "food": [
     {
       "value": {
-        "name": "徐刀刀（鲜花饼、铜锣烧）",
-        "walkMinutes": null,
-        "note": null
-      },
-      "verification": "placeholder",
-      "sourceId": "qunar-thl",
-      "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2019 年的用户点评。"
-    },
-    {
-      "value": {
-        "name": "三鲜豆皮（布瓦昙花门口斜对面）",
-        "walkMinutes": null,
-        "note": null
-      },
-      "verification": "placeholder",
-      "sourceId": "qunar-thl",
-      "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2017 年的用户点评。"
-    },
-    {
-      "value": {
         "name": "赵师傅油饼包烧麦",
-        "walkMinutes": null,
-        "note": null
+        "walkMinutes": 8,
+        "note": "隔壁粮道街总店，武汉招牌早点，步行约 5—8 分钟（按「隔壁/步行 5 分钟」口径取上限）"
       },
-      "verification": "placeholder",
-      "sourceId": "qunar-thl",
+      "verification": "confirmed",
+      "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2018 年的用户点评。"
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "徐刀刀铜锣烧 / 老武汉冰粉",
+        "walkMinutes": 0,
+        "note": "街区内小店，边走边吃"
+      },
+      "verification": "confirmed",
+      "sourceId": "s6",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "粮道街小吃",
+        "walkMinutes": 5,
+        "note": "热干面、油饼包烧麦、三鲜豆皮扎堆，价格比主街实惠"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
     }
   ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "06-tanhualin-1.jpg",
+      "caption": "昙华林夜景俯瞰",
+      "license": "third-party-placeholder",
+      "author": "今日头条 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/RF5cAZecLV",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：今日头条《武汉200多项文旅大餐陪您过大年》（2026-02）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "06-tanhualin-2.jpg",
+      "caption": "武胜门涂鸦楼",
+      "license": "third-party-placeholder",
+      "author": "@Cheano奇诺 / 湖北日报",
+      "sourceUrl": "https://aka.doubaocdn.com/l/CVLRlTyKeG",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：湖北日报（转载小红书 @Cheano奇诺）。媒体转载图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "06-tanhualin-3.jpg",
+      "caption": "一朵春天彩虹阶梯",
+      "license": "third-party-placeholder",
+      "author": "长江日报",
+      "sourceUrl": "https://aka.doubaocdn.com/l/b0obtm8nH4",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：长江日报（昙华林打卡点报道）。新闻媒体图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "06-tanhualin-4.jpg",
+      "caption": "山顶阶梯夜景",
+      "license": "third-party-placeholder",
+      "author": "今日头条 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/N1VqM2Danb",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：今日头条（昙华林图集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "06-tanhualin-5.jpg",
+      "caption": "复古电话亭与邮筒墙",
+      "license": "third-party-placeholder",
+      "author": "武汉市文化和旅游局",
+      "sourceUrl": "https://aka.doubaocdn.com/l/2HPwUJDakd",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：武汉市文化和旅游局（头条号）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }

@@ -1,6 +1,6 @@
 # LLM Provider Gateway
 
-最后更新：2026-11-15（板块 4：千问和豆包真实接入）。这份文件写的是代码现在的样子。
+最后更新：2026-11-15（板块 4：千问和豆包真实接入；板块 5：规划链路接上，试一句去掉）。这份文件写的是代码现在的样子。
 
 ## 目标
 
@@ -33,7 +33,7 @@ provider 很薄，所以测试里可以用一个假的 provider 代替它，重�
 
 ```python
 result = await gateway.complete_json(
-    task="extract_preferences",   # 这次调用的用途，只用于记录
+    task="extract_preferences",   # 这次调用的用途，只用于记录（规划链路用 extract_preferences / generate_itinerary / repair_itinerary）
     system_prompt="...",
     user_prompt="...",
     schema=TravelerPreferences,   # 可选：Pydantic 模型，输出要通过它的校验
@@ -50,7 +50,7 @@ result.record    # 这次调用的记录
 
 1. **选模型**。请求里指定了就用指定的；没指定用 `.env` 里 `LLM_PROVIDER` 的默认模型。名字不在清单里报 `unknown_provider`；没配 key 或模型名报 `not_configured`，不发请求。
 2. **发请求**。网关在系统提示词后面加一句"只输出一个 JSON 对象……"，两个模型用同一句。超过 `LLM_REQUEST_TIMEOUT_SECONDS`（默认 60 秒）算超时。
-3. **出错时**。超时、限流、对方服务器出错、网络断开会重试，最多 `LLM_MAX_RETRIES` 次（默认 2 次），间隔 1 秒、2 秒。限流时对方用 `Retry-After` 头说了等多久就等多久，最多 20 秒；没说就按 1 秒、2 秒。其他错误不重试，直接报。
+3. **出错时**。超时、限流、对方服务器出错、网络断开会重试，最多 `LLM_MAX_RETRIES` 次（默认 2 次），间隔 1 秒、2 秒。调用时可以传 `retry_on_timeout=False`，超时就不重试、直接报错：规划链路的"排行程"和"修正"这样调用（2026-11-15 Cecilia 定的，超时再试一般也超时，重试两次要让用户白等 3 分钟）。限流时对方用 `Retry-After` 头说了等多久就等多久，最多 20 秒；没说就按 1 秒、2 秒。其他错误不重试，直接报。
 4. **检查输出**。必须是一个 JSON 对象；给了 `schema` 还要通过校验。外面包着 Markdown 代码块的，先剥掉再解析。
 5. **修复**。输出不合格（不是 JSON、被截断、是空的、字段不符合 schema）时，把模型上一次的输出和哪里不对一起发回去，让它重答一次。还不合格就报 `bad_output`，最后一次的原文留在错误对象的 `raw_output` 上。
 6. **记录**。成功失败都写一条到 SQLite 的 `llm_calls`，同时写一行日志。
@@ -61,7 +61,7 @@ result.record    # 这次调用的记录
 
 1. `.env` 里的 `LLM_PROVIDER`：默认模型，`qwen` 或 `doubao`。改了要重启后端。
 2. 每次请求的 `provider` 参数：接口把前端传来的模型名原样交给网关。
-3. 界面：`/map` 对话纸上的模型选择，选的是第 2 条里的那个参数。清单来自 `GET /api/llm/providers`，没配置的模型选不了。
+3. 界面：`/map` 对话纸上的模型选择，选中的模型跟着每条消息发给后端（`POST /api/conversations/{id}/messages` 的 `provider`），规划链路里的每一次模型调用都用它。清单来自 `GET /api/llm/providers`，没配置的模型选不了。右上角的标注显示当前模型。
 
 切换只是"按名字从清单里取出另一个 provider"，提示词、输出检查、重试规则、返回的数据结构全都不变，所以业务代码不用为换模型写任何分支。
 
@@ -82,7 +82,7 @@ result.record    # 这次调用的记录
 
 错误码对照表按两家官方错误码文档写（2026-11-15 查阅），网址在 `providers.py` 开头。千问那页很长，后半部分是按摘要对的。
 
-2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。Cecilia 决定豆包保持模型默认（开着思考）。
+2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。板块 4 时 Cecilia 决定豆包保持模型默认（开着思考）。**2026-11-15（板块 5）改成关掉**（`.env` 和 `.env.example` 里 `DOUBAO_THINKING=disabled`）：在 `/map` 上用真实的规划请求试，豆包开着思考时"排行程"这一步三次请求都没在 60 秒内回答，等了 3 分钟后报超时；同一条请求千问 9.8 秒。对比脚本 `corepack pnpm plan:thinking`（三条规划请求，开和关各跑一遍完整链路）留着，以后想再比可以跑。
 
 还没在真实接口上见过的：对方说"不支持 `response_format`"时的报错原文。现在的判断依据是 400 的说明里提到这个参数。
 
@@ -98,7 +98,7 @@ result.record    # 这次调用的记录
 | `content_blocked` | 被对方的内容审核拦下 | 不会 |
 | `bad_request` | 对方认为请求有问题 | 不会 |
 | `rate_limited` | 限流 | 会，先等一会儿 |
-| `timeout` | 规定时间内没有回答 | 会 |
+| `timeout` | 规定时间内没有回答 | 会；调用时传了 `retry_on_timeout=False` 的不会（排行程、修正） |
 | `upstream_error` | 对方服务器出错或网络断开 | 会 |
 | `bad_output` | 让模型重答一次后输出仍不合格 | 已经重答过一次 |
 | `provider_error` | 对方返回的结构和预期不一样 | 不会 |
@@ -160,7 +160,7 @@ cd ~/WuhanMemory-project2 && corepack pnpm llm:smoke
 
 ## 还没做的
 
-- **工具调用**（`complete_with_tools`）：早期设计里有，代码里没有。板块 5 定规划链路时再决定要不要。
+- **工具调用**（`complete_with_tools`）：不做。板块 5 的规划链路由程序决定每一步查什么，模型只回答固定结构的 JSON，见 ADR 0004。
 - **shadow 模式**（主模型回答用户，同时让另一个模型在后台跑）：没有做。两个模型并排比较是板块 6 的对比页，用每次请求指定模型的方式实现。
 - **流式输出**：没有做。
 - 早期设计里列的 Prometheus 风格指标没有做，现在用 `llm_calls` 表。

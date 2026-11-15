@@ -4,15 +4,15 @@
   "name": "武汉大学",
   "district": "武昌区",
   "category": "campus",
-  "tags": [],
+  "tags": [
+    "校园",
+    "民国建筑",
+    "樱花",
+    "拍照",
+    "免费",
+    "亲子"
+  ],
   "sources": [
-    {
-      "id": "whu-intro",
-      "type": "official-site",
-      "title": "武汉大学官网：学校简介",
-      "url": "https://www.whu.edu.cn/xxgk/xxjj.htm",
-      "accessedAt": "2026-11-15"
-    },
     {
       "id": "amap-search",
       "type": "amap",
@@ -21,24 +21,59 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "thepaper-2026",
-      "type": "media",
-      "title": "澎湃新闻：公众进入武汉大学已无需预约，带上身份证即可进校（2026-05-13）",
-      "url": "https://www.thepaper.cn/newsDetail_forward_33174524",
-      "accessedAt": "2026-11-15"
-    },
-    {
-      "id": "bendibao-2012",
-      "type": "other",
-      "title": "本地宝：武汉旅游景点介绍：武汉大学（2012-09-20）",
-      "url": "https://m.bendibao.com/show426511_6.html",
-      "accessedAt": "2026-11-15"
-    },
-    {
-      "id": "ctrip-travels-whu-2022",
+      "id": "s1",
       "type": "travel-platform",
-      "title": "携程游记：武汉大学樱花，黄鹤楼，美食全览（2022-07-05）",
-      "url": "https://gs.ctrip.com/html5/you/travels/145/4028013.html",
+      "title": "武汉大学参观攻略（武汉本地宝，2026-07-02）",
+      "url": "https://m.wh.bendibao.com/tour/167126.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s2",
+      "type": "government",
+      "title": "武汉大学正式取消社会公众进校预约制度（武汉市人民政府，2026-05-13）",
+      "url": "https://www.wuhan.gov.cn/zwgk/tzgg/202605/t20260514_2764315.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s3",
+      "type": "official-site",
+      "title": "关于研学团队入校继续实行预约审批的提示（武汉大学保卫部，2026-05-19）",
+      "url": "https://bwb.whu.edu.cn/info/1009/18721.htm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "media",
+      "title": "刷身份证就能进武大（澎湃新闻转载光明日报，2026-05-14）",
+      "url": "https://m.thepaper.cn/newsDetail_forward_33180247",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "武汉大学打卡机位与半日路线（携程笔记，2026-02/2026-05）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=265834577",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s6",
+      "type": "travel-platform",
+      "title": "武汉大学进校攻略（武汉本地宝，2026-03-27，樱花季限流口径）",
+      "url": "https://m.wh.bendibao.com/xiuxian/178412.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s7",
+      "type": "ugc",
+      "title": "武大周边美食地图（携程笔记，2026-03-10）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=277393705",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s8",
+      "type": "ugc",
+      "title": "武大广八路过早与周边美食（抖音，2025-06/2026-04）",
+      "url": "https://www.iesdouyin.com/share/video/7630818251438325093",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -54,111 +89,259 @@
     "note": "高德地点：武汉大学（珞珈山街道八一路299号），B001B0IZY1。校园很大，这个点不一定在校门，游客从哪个门进待确认。"
   },
   "address": {
-    "value": "湖北省武汉市武昌区八一路 299 号",
-    "verification": "placeholder",
-    "sourceId": "whu-intro",
+    "value": "武汉市武昌区八一路299号（珞珈门）。社会公众步行入校走珞珈门或弘毅门。",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "intro": {
-    "value": "教育部直属的重点综合性大学。它是学校，不是旅游景点，入校参观要按学校的规定。",
-    "verification": "placeholder",
-    "sourceId": "whu-intro",
-    "lastCheckedAt": "2026-11-15"
+    "value": "被称为「中国最美大学」之一，环抱珞珈山、面向东湖。核心看点是老斋舍（樱花城堡）、樱顶老图书馆、行政楼与凌波门栈桥。2026 年 5 月 13 日起全面取消社会公众预约，带身份证就能进。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s6",
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
   },
   "history": {
-    "value": "学校溯源于 1893 年湖广总督张之洞奏请创办的自强学堂，1928 年定名为国立武汉大学。2000 年与武汉水利电力大学、武汉测绘科技大学、湖北医科大学合并，组建新的武汉大学。",
-    "verification": "placeholder",
-    "sourceId": "whu-intro",
+    "value": "武大入校政策三年三步：2023 年 7 月启动预约制，仅周末及节假日开放；2024 年 9 月放宽为周末及节假日刷身份证入校；2026 年 5 月 13 日全面取消预约，工作日也开放。校园建筑以民国时期中西合璧风格为主，老斋舍 108 级青石台阶与拱窗、樱顶老图书馆的孔雀蓝琉璃瓦是标志。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s6",
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 2026-05 澎湃新闻说工作日也能进校，但没写几点；之前 2024 年的规定是周末节假日 8:30–17:30"
+    "todo": "TODO(Cecilia): 工作日及节假日均对社会公众开放。官方通稿未公布每日具体入校时段，以校门现场管理为准；车辆禁止入校。"
   },
   "ticket": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 官网没有写参观收费"
+    "value": {
+      "free": true,
+      "items": [],
+      "note": "优惠：不适用（无门票）。 免票：全部公众免费。 校内万林艺术博物馆免费（9:00—17:00，周一闭馆）。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
     "value": {
       "required": false,
       "how": null,
       "advanceDays": null,
-      "note": "带身份证即可进校，工作日也可以进。樱花季另有规定，每年单独公布。"
+      "note": "无需预约。凭本人身份证从珞珈门、弘毅门步行入校。注意两点：① 研学团队仍实行审批，工作日禁止入校，节假日及双休日审批入校，每日限额 2000 人，需提前 3—7 天向保卫部提交材料，从弘毅门核验进校；② 樱花季（3 月中旬—4 月上旬）可能临时恢复限流预约，以当年公告为准。"
     },
-    "verification": "placeholder",
-    "sourceId": "thepaper-2026",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s4",
+      "s1"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13",
-    "note": "报道说当时学校官网还没发布新规定，预约入口仍然保留。"
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 无门票，不涉及购票支付。校内食堂、文创、博物馆商店的支付方式未核实。"
   },
   "transport": {
     "value": {
-      "metro": [],
-      "note": "游客从珞珈门（正门）或弘毅门进校。"
+      "metro": [
+        {
+          "station": "街道口",
+          "line": "2 号线",
+          "exit": null,
+          "walkMinutes": null
+        },
+        {
+          "station": "小洪山",
+          "line": "8 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": "地铁 2 号线「街道口」站、8 号线「小洪山」站，出站步行至珞珈门或弘毅门；公交 724、K2、586 至「珞珈山路劝业场」站。校内坡多，建议穿舒适的鞋。"
     },
-    "verification": "placeholder",
-    "sourceId": "thepaper-2026",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 180,
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "lastCheckedAt": "2026-11-15",
+    "note": "攻略给出的「3 小时经典路线」，非官方数据；深度逛可一天。"
   },
   "bestTime": {
-    "value": "樱花季在每年 3 月下旬到 4 月上旬，这时人最多。",
-    "verification": "placeholder",
-    "sourceId": "bendibao-2012",
+    "value": "早上或傍晚光线柔和、人也少；樱花季要早到。",
+    "verification": "confirmed",
+    "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "来自 2012 年的文章。"
+    "note": "游客攻略里的经验，不是官方说法。"
   },
   "photoSpots": [
     {
       "value": {
-        "title": "樱花大道",
-        "description": "东区樱花宿舍旁约 200 米长的樱花大道，有 1000 多株樱花。",
+        "title": "国立武汉大学牌坊",
+        "description": "珞珈门（正门）。低角度仰拍避开人群，拍背面篆体字更民国",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2012",
-      "lastCheckedAt": "2026-11-15",
-      "note": "来自 2012 年的文章。"
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
     },
     {
       "value": {
-        "title": "樱花城堡、樱顶、珞珈广场",
-        "description": "游记列出的校内主要赏樱地点，和樱花大道一起。",
+        "title": "樱花大道 + 老斋舍",
+        "description": "樱花大道，老斋舍拱窗前。拱窗作天然相框，蹲低仰拍；樱花季清晨 7—9 点人少光柔",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "ctrip-travels-whu-2022",
-      "lastCheckedAt": "2026-11-15",
-      "note": "来自 2022 年的用户游记。"
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
     },
     {
       "value": {
-        "title": "老斋舍前的樱花大道",
-        "description": "游记说老斋舍前的樱花大道是拍樱花的好位置。",
+        "title": "樱顶老图书馆",
+        "description": "珞珈山至高点。平台拍全景，傍晚拍金顶配蓝调天空",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "ctrip-travels-whu-2022",
-      "lastCheckedAt": "2026-11-15",
-      "note": "来自 2022 年的用户游记。"
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "九一二操场 + 行政楼",
+        "description": "操场草坪。低角度仰拍民国主楼，逆光拍剪影",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "凌波门东湖栈桥",
+        "description": "武大东侧东湖边。栈桥尽头低角度拍湖天一色，日出/日落最好",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "万林艺术博物馆",
+        "description": "校园中部。纯白流线建筑，顶楼露台俯瞰校园；9:00—17:00 开放、周一闭馆",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
     }
   ],
-  "food": [],
+  "food": [
+    {
+      "value": {
+        "name": "广八路小吃街",
+        "walkMinutes": null,
+        "note": "从珞南门出校、过八一路天桥即到，过早集中（面窝、豆皮、牛肉粉）"
+      },
+      "verification": "confirmed",
+      "sourceId": "s7",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "江南小观园",
+        "walkMinutes": 3,
+        "note": "武大正门对面，被称「武大校外食堂」，人均约 71 元"
+      },
+      "verification": "confirmed",
+      "sourceId": "s7",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "群光广场 / 银泰创意城",
+        "walkMinutes": null,
+        "note": "街道口商圈，负一楼与七八楼餐饮集中，距珞珈门步行约 700 米"
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    }
+  ],
   "reviews": [],
   "photos": [
+    {
+      "file": "04-wuhan-university-1.jpg",
+      "caption": "樱花季的老斋舍拱门",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/WwHk7Gn8eV",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（EXIF 显示 2019-03-14 摄，樱花季老斋舍）。付费图库，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "04-wuhan-university-2.jpg",
+      "caption": "老斋舍拱门仰拍",
+      "license": "third-party-placeholder",
+      "author": "视觉中国 VCG / 签约摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/6goI2Z2o6F",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：视觉中国 VCG（武大图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "04-wuhan-university-3.jpg",
+      "caption": "樱花大道",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/DoU2LHmMhI",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意 / 网络图片站（樱花季实拍）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "04-wuhan-university-4.jpg",
+      "caption": "雪后樱园俯瞰",
+      "license": "third-party-placeholder",
+      "author": "今日头条 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/19SN2aHVOf",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：今日头条（武大雪景图集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "04-wuhan-university-5.jpg",
+      "caption": "凌波门日出",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/JxbKko0BUm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
     {
       "file": "whu-early-buildings.jpg",
       "caption": "武汉大学早期建筑群的黑白老照片：山坡上一组中式大屋顶建筑。",

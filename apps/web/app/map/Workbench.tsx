@@ -1,40 +1,111 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
-import type { LlmProviderId, PoiSummary, Route } from "@wuhanmemory/shared";
-import { BrassButton, LineInput, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule } from "@/components/ui";
-import { MapPanel } from "./MapPanel";
-import { ModelPicker } from "./ModelPicker";
+import type { ItineraryVersion, PoiSummary, Route } from "@wuhanmemory/shared";
+import { NoteButton } from "@/components/ui";
+import { getVersion } from "@/lib/planning-client";
+import { ChatPaper } from "./ChatPaper";
+import { dayColor } from "./day-colors";
+import { ItineraryCards } from "./ItineraryCards";
+import { MapPanel, type PinOverride } from "./MapPanel";
+import { usePlannerState } from "./PlannerState";
 import { RouteFinder } from "./RouteFinder";
 import s from "./map.module.css";
 
 type Tab = "chat" | "plan";
 
 /**
- * 地图工作台的布局（设计规范 9.1）。板块 1A 只做布局：
- * 对话在板块 5 接入，行程卡在板块 5 有数据后才出现。地图（板块 3）在 MapPanel 里。
- * 模型选择（板块 4）在 ModelPicker 里。
- * 所以这里没有任何示例对话、示例行程或示例数字。
+ * 地图工作台（设计规范 9.1）：左边对话纸（ChatPaper），中间灯箱里的地图（MapPanel），右边行程卡（ItineraryCards）。
  *
- * 电脑上三栏并排。手机上地图在上，对话和行程收在底部面板里，
- * 用两个纸签切换，可以收起。tab 和 open 两个状态只在手机上起作用。
+ * 有行程时，地图上只放这一天的景点（图钉名字前加上顺序），画出这一天每段交通的折线；
+ * 多天的行程用行程卡上的"地图上看 第 N 天"切换。没通过校验的行程不画。
+ *
+ * 电脑上三栏并排。手机上地图在上，对话和行程收在底部面板里，用两个纸签切换，可以收起。
  */
 export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: string | null }) {
+  const { setValidation } = usePlannerState();
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
-  // 选中的模型（板块 4）。板块 5 发消息时把它带给后端
-  const [provider, setProvider] = useState<LlmProviderId | null>(null);
-  // "两点之间怎么走"选中的那一种交通方式，画在地图上
+  const [versionId, setVersionId] = useState<string | null>(null);
+  const [version, setVersion] = useState<ItineraryVersion | null>(null);
+  const [versionLoading, setVersionLoading] = useState(false);
+  const [versionError, setVersionError] = useState<string | null>(null);
+  // 地图上看哪一天；"all" 是全部天，每天一种颜色
+  const [shownDay, setShownDay] = useState<number | "all" | null>(null);
+  // "两点之间怎么走"（板块 3，临时）选中的那一种交通方式
   const [shownRoute, setShownRoute] = useState<Route | null>(null);
-  const routes = useMemo<MapRoute[]>(
-    () => (shownRoute ? [{ id: shownRoute.mode, dayNumber: null, lines: [{ mode: shownRoute.mode, path: shownRoute.polyline }] }] : []),
-    [shownRoute],
+
+  useEffect(() => {
+    if (!versionId) return;
+    let closed = false;
+    setVersionLoading(true);
+    setVersionError(null);
+    getVersion(versionId)
+      .then((v) => {
+        if (closed) return;
+        setVersion(v);
+        setShownDay(v.days[0]?.dayNumber ?? null);
+        setShownRoute(null);
+        setValidation(v.validation.status, v.planner.providerLabel);
+        // 手机上：排好了就切到行程
+        setTab("plan");
+      })
+      .catch((err: unknown) => {
+        if (!closed) setVersionError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!closed) setVersionLoading(false);
+      });
+    return () => {
+      closed = true;
+    };
+  }, [versionId, setValidation]);
+
+  const ok = version && version.validation.status !== "failed" ? version : null;
+  const shownDays = ok ? ok.days.filter((d) => shownDay === "all" || d.dayNumber === shownDay) : [];
+  const all = shownDay === "all";
+
+  const routes = useMemo<MapRoute[]>(() => {
+    if (shownDays.length) {
+      return shownDays.map((d) => ({
+        id: `day-${d.dayNumber}`,
+        dayNumber: d.dayNumber,
+        // 全部天：按天分色，交通方式只用线型区分；一天：按交通方式分色
+        color: all ? dayColor(d.dayNumber) : undefined,
+        lines: d.legs.filter((l) => l.route.polyline.length > 1).map((l) => ({ mode: l.route.mode, path: l.route.polyline })),
+      }));
+    }
+    return shownRoute ? [{ id: shownRoute.mode, dayNumber: null, lines: [{ mode: shownRoute.mode, path: shownRoute.polyline }] }] : [];
+    // shownDays 由 version 和 shownDay 算出来
+  }, [version, shownDay, shownRoute]);
+
+  const pins = useMemo<PinOverride[] | null>(
+    () =>
+      shownDays.length
+        ? shownDays.flatMap((d) =>
+            d.stops.map((st, i) => ({
+              id: st.poiId,
+              // 一天："2 · 黄鹤楼"；全部天："1-2 · 黄鹤楼"（第 1 天第 2 站）
+              name: `${all ? `${d.dayNumber}-` : ""}${i + 1} · ${st.name}`,
+              location: st.location,
+            })),
+          )
+        : null,
+    [version, shownDay],
   );
 
   function choose(next: Tab) {
     setTab(next);
     setOpen(true);
+  }
+
+  function reset() {
+    setVersionId(null);
+    setVersion(null);
+    setVersionError(null);
+    setShownDay(null);
+    setValidation(null);
   }
 
   return (
@@ -53,45 +124,23 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
       </div>
 
       <section className={`${s.col} ${s.chatCol}`} aria-label="对话">
-        <Paper className={s.chat}>
-          <div className={s.log}>
-            <PaperMark>打字纸 · 对话</PaperMark>
-            <PaperTitle>还没有对话</PaperTitle>
-            <Rule />
-            <p>在这里用日常的话说你想怎么玩，例如几天、想看什么、走路多不多。回复会打在这张纸上。</p>
-          </div>
-          <form className={s.ask} onSubmit={(e) => e.preventDefault()}>
-            <ModelPicker value={provider} onChange={setProvider} />
-            <LineInput id="ask" label="想怎么玩" placeholder="对话还没有接入" disabled />
-            <div className={s.askRow}>
-              <PencilNote>板块 5 接入</PencilNote>
-              <BrassButton type="submit" disabled>
-                发送
-              </BrassButton>
-            </div>
-          </form>
-        </Paper>
+        <ChatPaper onVersion={setVersionId} onReset={reset} />
       </section>
 
       <section className={`${s.col} ${s.mapCol}`} aria-label="地图">
-        <MapPanel pois={pois} poisError={poisError} routes={routes} />
+        <MapPanel pois={pois} poisError={poisError} routes={routes} pins={pins} />
       </section>
 
       <section className={`${s.col} ${s.planCol}`} aria-label="行程">
         <div className={s.cards}>
+          <ItineraryCards
+            version={version}
+            loading={versionLoading}
+            error={versionError}
+            shownDay={shownDay}
+            onShowDay={setShownDay}
+          />
           <RouteFinder pois={pois} shown={shownRoute?.mode ?? null} onShow={setShownRoute} />
-          <Paper kind="card" tilt={1}>
-            <PaperMark>索引卡 · 行程</PaperMark>
-            <PaperTitle level={3}>还没有行程</PaperTitle>
-            <p>生成行程后，这里每天一张卡。</p>
-            <ul className={s.what}>
-              <li>时间线</li>
-              <li>每段交通方式和时间</li>
-              <li>支付和预约提示</li>
-              <li>右上角是校验结果的印章</li>
-            </ul>
-            <PencilNote>板块 5 接入</PencilNote>
-          </Paper>
         </div>
       </section>
     </div>

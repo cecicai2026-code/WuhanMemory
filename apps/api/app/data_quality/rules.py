@@ -20,6 +20,7 @@ WUHAN_BOUNDS = {
 # 会变的信息，以及过期时间的上限（天）：expiresAt 不能晚于 lastCheckedAt 加这个天数。
 # 可以填得更早，例如节假日的临时开放时间写到假期结束那天。
 VOLATILE_MAX_DAYS: dict[str, int] = {
+    "operatingStatus": 90,
     "openingHours": 90,
     "reservation": 90,
     "ticket": 180,
@@ -48,6 +49,7 @@ REQUIRED_FACTS = (
 
 # 字段的中文名，报错时用
 FIELD_LABELS: dict[str, str] = {
+    "operatingStatus": "开放状态",
     "location": "坐标",
     "address": "地址",
     "intro": "简介",

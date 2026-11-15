@@ -9,7 +9,7 @@
  *   3D 是俯仰角 50 度，可以拖动。这样切换时不用重建地图。
  * - 配色：高德自带的"幻影黑"（amap://styles/dark），2026-11-15 Cecilia 选的。
  */
-import { boundsOf, type MapBounds, type MapInitOptions, type MapMode, type MapPin, type MapProvider, type MapRoute } from "@wuhanmemory/map-core";
+import { boundsOf, type MapBounds, type MapInitOptions, type MapMode, type MapPin, type MapProvider, type MapRoute, type RouteColor } from "@wuhanmemory/map-core";
 import type { AMapInfoWindow, AMapMap, AMapMarker, AMapNamespace, AMapPolyline, LngLatTuple } from "./amap-types";
 
 export const MAP_STYLE = "amap://styles/dark";
@@ -21,12 +21,19 @@ const CARD_OFFSET_Y = -46;
 /** 框住景点或路线时最多放大到这一级，免得两点很近时贴得太近 */
 const MAX_FIT_ZOOM = 16;
 
-/** 路线颜色：按交通方式分。板块 5 按天分色时再加一组 */
+/** 路线颜色：默认按交通方式分（一天的视图、两点之间的路线） */
 const LINE_STYLE = {
   walk: { color: "#e9dfc6", dashed: true }, // 纸色虚线
   transit: { color: "#e2c27e", dashed: false }, // 黄铜高光
   drive: { color: "#b4532a", dashed: false }, // 胶片橙
 } as const;
+
+/** "全部天"视图按天分色时的色值，和上面同一组颜色（globals.css 的 --paper、--brass-bright、--film） */
+const ROUTE_COLOR: Record<RouteColor, string> = {
+  brass: "#e2c27e",
+  paper: "#e9dfc6",
+  film: "#b4532a",
+};
 
 export interface AmapProviderOptions {
   jsKey: string;
@@ -167,7 +174,7 @@ export class AmapProvider implements MapProvider {
         this.lines.push(
           new AMap.Polyline({
             path: line.path.map(tuple),
-            strokeColor: style.color,
+            strokeColor: route.color ? ROUTE_COLOR[route.color] : style.color,
             strokeWeight: 5,
             strokeOpacity: 0.95,
             strokeStyle: style.dashed ? "dashed" : "solid",

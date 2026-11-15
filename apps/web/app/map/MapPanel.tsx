@@ -19,12 +19,21 @@ const SLOW_MS = 15000;
 
 type LoadState = { kind: "loading"; slow: boolean } | { kind: "ready" } | { kind: "error"; message: string };
 
+/** 有行程时只放这一天的景点，名字前加顺序 */
+export interface PinOverride {
+  id: string;
+  name: string;
+  location: PoiSummary["location"];
+}
+
 interface Props {
   pois: PoiSummary[];
   /** 景点接口出错时的说明；地图照样加载，只是没有图钉 */
   poisError: string | null;
   /** 要画在地图上的路线 */
   routes: MapRoute[];
+  /** 给了就只放这些图钉（行程里这一天的景点）；null 放全部景点 */
+  pins?: PinOverride[] | null;
 }
 
 /**
@@ -32,7 +41,7 @@ interface Props {
  * 点图钉在上方出现一张索引卡（2026-11-15 Cecilia 选的气泡方式），能跳到地点档案；
  * 旁边的拨杆切换 2D / 3D，手机上默认 2D。
  */
-export function MapPanel({ pois, poisError, routes }: Props) {
+export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const providerRef = useRef<AmapProvider | null>(null);
   const [load, setLoad] = useState<LoadState>({ kind: "loading", slow: false });
@@ -79,13 +88,15 @@ export function MapPanel({ pois, poisError, routes }: Props) {
     };
   }, []);
 
-  // 图钉：地图好了以后放上去，并框住全部景点
+  // 图钉：地图好了以后放上去，并框住全部图钉（有路线时由下面的路线来定镜头）
   useEffect(() => {
     const provider = providerRef.current;
     if (load.kind !== "ready" || !provider) return;
-    provider.setPins(pois.map((p) => ({ id: p.id, name: p.name, location: p.location })));
-    provider.fitPins();
-  }, [load, pois]);
+    provider.setPins(pins ?? pois.map((p) => ({ id: p.id, name: p.name, location: p.location })));
+    setSelected(null);
+    if (!routes.some((r) => r.lines.length)) provider.fitPins();
+    // routes 只用来判断要不要框住图钉，路线变化由下面的 effect 处理
+  }, [load, pois, pins]);
 
   useEffect(() => {
     if (load.kind === "ready") providerRef.current?.setMode(mode);

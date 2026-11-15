@@ -17,6 +17,7 @@ from app.schemas.poi import (
     Coordinates,
     FoodItem,
     OpeningHours,
+    OperatingStatus,
     Payment,
     PhotoLicense,
     PhotoSpot,
@@ -53,6 +54,8 @@ class FactOut(BaseModel, Generic[T]):
     verification: Verification
     status: FactStatus
     source: SourceOut | None
+    # 同一条信息还参考的其他来源
+    extraSources: list[SourceOut] = []
     lastCheckedAt: date | None
     expiresAt: date | None
     todo: str | None
@@ -90,6 +93,8 @@ class PoiSummaryOut(BaseModel):
     status: PoiStatus
     counts: FactCounts
     coverPhoto: PhotoOut | None
+    # 开放状态；资料里没写（正常开放）时为 null
+    operatingStatus: FactOut[OperatingStatus] | None = None
 
 
 class PoiDetailOut(PoiSummaryOut):

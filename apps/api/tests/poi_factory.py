@@ -90,6 +90,31 @@ def good_poi(poi_id: str = "good-sample") -> dict[str, Any]:
     return copy.deepcopy(poi)
 
 
+def clean_poi(poi_id: str, **changes: Any) -> dict[str, Any]:
+    """一份校验时不会产生任何警告的测试景点：用到的资料都核实过、没过期。
+    开放时间：周二到周日 09:00–17:00，最晚 16:00 入场，周一闭馆；建议游玩 120 分钟。"""
+    poi = good_poi(poi_id)
+    poi["name"] = f"测试景点{poi_id}"
+    for field in ("openingHours", "reservation"):
+        poi[field]["verification"] = "confirmed"
+    poi["payment"] = {
+        "value": {"methods": ["wechat"]},
+        "verification": "confirmed",
+        "sourceId": "official",
+        "lastCheckedAt": "2026-11-10",
+        "expiresAt": "2027-05-01",
+    }
+    for key, value in changes.items():
+        poi[key] = value
+    return poi
+
+
+def hours(value: dict[str, Any] | None, verification: str = "confirmed", expires: str = "2027-02-08") -> dict[str, Any]:
+    if value is None:
+        return {"value": None, "verification": "todo", "todo": "TODO(Cecilia): 测试"}
+    return {"value": value, "verification": verification, "sourceId": "official", "lastCheckedAt": "2026-11-10", "expiresAt": expires}
+
+
 def write_data_dir(root: Path, pois: list[dict[str, Any]], photos: dict[str, list[str]] | None = None) -> Path:
     """在 root 下建一个 data 目录：pois/*.json 和 photos/<id>/ 下的照片文件。"""
     (root / "pois").mkdir(parents=True, exist_ok=True)

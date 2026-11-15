@@ -189,3 +189,54 @@ def test_invalid_json(tmp_path: Path) -> None:
     (tmp_path / "pois").mkdir()
     (tmp_path / "pois" / "bad.json").write_text("{ 不是 json", encoding="utf-8")
     assert "bad-json" in check_data_dir(tmp_path, today).codes()
+
+
+# ---------- 开放状态、多个来源、第三方占位照片（2026-11-15 加） ----------
+
+
+def closed_status(**changes) -> dict:
+    fact = {
+        "value": {"code": "closed-temporarily", "note": "测试：修缮", "reopenExpected": "2026-12-14"},
+        "verification": "confirmed",
+        "sourceId": "official",
+        "lastCheckedAt": "2026-11-10",
+        "expiresAt": "2026-12-14",
+    }
+    fact.update(changes)
+    return fact
+
+
+def test_operating_status_is_optional_and_checked(tmp_path: Path) -> None:
+    poi = good_poi()
+    poi["operatingStatus"] = closed_status()
+    assert run(tmp_path, poi).issues == []
+
+
+def test_operating_status_needs_expiry(tmp_path: Path) -> None:
+    poi = good_poi()
+    poi["operatingStatus"] = closed_status(expiresAt=None)
+    assert "missing-expires-at" in {i.code for i in run(tmp_path, poi).errors}
+
+
+def test_extra_source_must_exist(tmp_path: Path) -> None:
+    poi = good_poi()
+    poi["intro"]["extraSourceIds"] = ["nowhere"]
+    assert "unknown-source" in {i.code for i in run(tmp_path, poi).errors}
+
+
+def test_third_party_placeholder_photo(tmp_path: Path) -> None:
+    photo = {
+        "file": "stock.jpg",
+        "caption": "测试图库预览图",
+        "license": "third-party-placeholder",
+        "sourceUrl": "https://example.com/stock",
+        "retrievedAt": "2026-11-10",
+    }
+    poi = good_poi()
+    poi["photos"].append(dict(photo))
+    assert "bad-photo" in {i.code for i in run(tmp_path, poi).errors}  # 没写出处和授权情况
+
+    poi = good_poi()
+    poi["photos"].append({**photo, "licenseNote": "测试图库，商用需授权"})
+    report = run(tmp_path, poi)
+    assert report.ok and report.stats.placeholder_photos == 1

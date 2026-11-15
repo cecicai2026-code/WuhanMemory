@@ -27,6 +27,8 @@ def _iter_facts(poi: PoiFile):
         fact = getattr(poi, name)
         if fact is not None:
             yield name, fact
+    if poi.operatingStatus is not None:
+        yield "operatingStatus", poi.operatingStatus
     for i, fact in enumerate(poi.photoSpots):
         yield f"photoSpots[{i}]", fact
     for i, fact in enumerate(poi.food):

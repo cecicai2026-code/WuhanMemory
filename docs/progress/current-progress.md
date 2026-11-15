@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 4 完成）
+最后更新: 2026-11-15（板块 5 进行中：代码写完，等 Cecilia 在界面上试）
 
 ## 当前阶段
 
@@ -21,6 +21,35 @@
 
 **板块 4（已完成，2026-11-15 合进 main）**：千问和豆包通过 `LLMGateway` 真实调用和切换（超时、重试、限流等待、输出修复、调用记录），接口 `GET /api/llm/providers`，冒烟测试脚本，`/map` 上的模型选择和临时的"试一句"。分支 `block-4-llm-gateway` 保留。
 
+**板块 5（进行中，分支 `block-5-planning`）**：AI 规划链路和行程校验。代码和单元测试写完了；等 Cecilia 启动前后端在 `/map` 上试真实请求、截图，运行豆包思考对比和 `pnpm build`。
+
+## 板块 5 完成情况
+
+- [x] 开工前讲清楚整条链路（每步的输入输出、哪些交给模型、哪些由程序做）、每条校验规则、分几步做。Cecilia 确认，9 个设计选择都按推荐（2026-11-15）：进度用轮询；交通方式由程序按规则定（步行 15 分钟以内走路，否则按偏好，没公交方案改步行）；天数必须问、日期问一次、其余用默认值并写明；tags 全空，先用"类别 → 兴趣"对照表；每天上限轻松 8、适中 10、紧凑 12 小时，08:00 到 22:00；空档短于真实交通时间是错误、余量不到 10 分钟是警告；修正后仍不通过只显示问题清单；未通过的版本也存；闭馆日严格算错误并显示备注。
+- [x] 第 1 步：`validate_itinerary`（`apps/api/app/services/planning/validate.py`）和 30 个单元测试，先写、先通过，再接进链路。点名的 7 种情况（闭馆、超过最晚入场、时间重叠、交通时间不够、景点不存在、数据过期、开放时间缺失）都有测试。
+- [x] 第 2 步：SQLite 表 `conversations`、`conversation_messages`、`itineraries`、`itinerary_versions`，版本只能新增，带模型、校验结果、修正轮数。
+- [x] 第 3 步：规划链路（`pipeline.py`）：抽偏好、反问、筛候选、生成、查交通、校验、修正一次、保存。19 个测试用假模型和假高德。
+- [x] 第 4 步：接口 `POST /api/conversations/{id}/messages`（带模型）、`GET /api/planning-jobs/{id}`、`GET /api/itinerary-versions/{id}`、`GET /api/conversations/{id}`；去掉 `POST /api/llm/ping`。
+- [x] 第 5 步：`/map` 的对话纸、规划进度、行程卡、校验结果、地图上的每日路线、右上角的当前模型和校验结果；去掉"试一句"。前端类型检查通过。
+- [x] 第 6 步：豆包深度思考对比脚本 `corepack pnpm plan:thinking`（还没跑，要 Cecilia 在终端运行）。
+- [x] 第 7 步：文档：`ai-planning-pipeline.md` 按代码重写，`api-contracts.md`"对话和规划"一节，`data-model.md` 第 12 节，`llm-provider-gateway.md`、`frontend-ux.md`、`system-architecture.md`，新增 ADR 0004（规划由程序编排，不用工具调用），ADR 0002 追加更新。
+- [x] 后端测试 255 个通过，都不调用真实接口。用真实的 10 个景点资料、假模型、假路线离线跑了一遍：0 错误、18 条警告，几乎都是资料占位或缺失。
+- [x] Cecilia 在 `/map` 上试了真实请求（2026-11-15，Claude 在浏览器面板里一起看）：千问 `qwen-plus` 先反问日期，排两天的行程第一版有 3 处错误，修正一次后 0 错误、21 条警告（抽偏好 1.6 秒、排行程 9.8 秒、修正 9.0 秒）；豆包开着深度思考时排行程三次都超过 60 秒，3 分钟后报超时。看页面后修了三处：刷新后接着显示规划进度；右上角分清选中的模型和排这份行程的模型；修正时提醒空档留"真实交通时间 + 10 分钟"。
+- [x] 豆包深度思考：Cecilia 决定关掉（2026-11-15），`.env` 和 `.env.example` 里 `DOUBAO_THINKING=disabled`。对比脚本第一次运行因为 pnpm 把 `--` 原样传进去而报错，已修；关掉之前没有跑完对比。
+- [x] Cecilia 重启后端，关掉思考后用豆包再试（2026-11-15）：约 21 秒（抽偏好 3.7 秒、排行程 9.8 秒、修正 6.6 秒），第一版 3 处错误，修正一次后 0 错误、19 条警告，全是资料占位、缺失、建议时长未知、日期未定；新的修正提示词起作用，四段交通都留够了余量。对比脚本停掉之前跑完了前两条请求：开着思考约 170 秒和 121 秒（排行程 136 秒和 112 秒），关着约 25 秒和 12 秒。
+- [x] "类别 → 兴趣"对照表：Cecilia 决定（2026-11-15）先按现在的表合并，板块 5B 改候选和方案侧重时一起改。
+- [x] Cecilia 运行 `pnpm build`，通过（2026-11-15）。
+- [x] 工作区里另一个对话做的改动（景点开放状态、一条信息多个来源、ugc 来源、第三方占位照片），Cecilia 决定一起提交进板块 5（2026-11-15）；那个对话随后又提交了格式的测试和"10 个景点换成豆包整理的资料包"。换资料后后端测试 265 个通过，`check:data` 错误 0、警告 0；用新资料离线校验一份两天的行程，古德寺报"暂停开放"，警告只剩支付方式、黄鹤楼游玩时长、古德寺开放时间这些真缺的。
+- [ ] 合进 main。
+
+板块 5 留给后面的事和要 Cecilia 定的（2026-11-15 Cecilia 回答了四件）：
+
+- [x] 超时重试：排行程和修正超时直接报错，不重试；限流、对方出错照样重试。已改（网关多了 `retry_on_timeout` 参数）。
+- [x] "两点之间怎么走"（板块 3 的临时工具）：先留着。
+- [x] 地图加"全部"视图：每天一种颜色，Cecilia 选了黄铜、纸色、胶片橙轮换，交通方式用线型区分，图钉写"天-站"，旁边有图例。Claude 在浏览器面板里用豆包那份两天的行程看过，切回一天时恢复按交通方式分色。设计规范 9.1 已改。
+- [x] "类别 → 兴趣"对照表：移到板块 5B 一起改。
+- 规划任务只在内存里，后端重启后正在跑的任务会丢（已经存进数据库的结果不丢；重启时 uvicorn 会等正在跑的任务结束）。
+
 ## 板块 4 完成情况
 
 - [x] 开工前讲清楚网关现状、缺什么、两家接口的差别；Cecilia 用临时脚本验证了千问 key、豆包 key 和豆包接入点都能用（2026-11-15：千问 `qwen-plus` 约 0.6 秒；豆包接入点对应 `doubao-seed-2-1-pro-260915`，默认开着深度思考；两家都接受 JSON 输出模式）。
@@ -39,9 +68,9 @@
 
 板块 4 留给后面的事：
 
-- "试一句"和接口 `POST /api/llm/ping` 是临时的，板块 5 接上对话后去掉；选中的模型改为跟着每条消息发给后端（`Workbench.tsx` 里的 `provider` 状态已经留好）。
-- 设计规范第 7 节说四角标注里显示"当前模型"，这次没做，板块 5 有了对话再加。
-- 豆包的深度思考开着还是关着，板块 5 有了真实的规划提示词后用实际效果再比一次。
+- （板块 5 已做）"试一句"和接口 `POST /api/llm/ping` 去掉了；选中的模型跟着每条消息发给后端。
+- （板块 5 已做）四角标注里显示当前模型。
+- 豆包的深度思考开着还是关着：板块 5 写了对比脚本 `corepack pnpm plan:thinking`，等 Cecilia 跑。
 - 对方说"不支持 JSON 输出模式"时的报错原文还没在真实接口上见过，退路是按文档推断写的。
 - 千问官方错误码那一页很长，后半部分只对了摘要。
 - 看页面时浏览器控制台出现过一次高德的报错 `Invalid Object: LngLat(NaN, NaN)`，发生在地图还在加载时改窗口大小的那一次；之后 4 次正常打开没有再出现。是板块 3 的地图代码，这次没查。
@@ -145,11 +174,11 @@ cd ~/WuhanMemory-project2 && corepack pnpm llm:smoke
 - [x] Cecilia 已申请并填好 key：千问、豆包（含 endpoint ID）、高德 JS key、安全密钥、Web 服务 key。只检查过格式，还没有真实调用验证。
 - [x] 设计规范 `docs/design/design-system.md` v3（"暗房桌面"风格），方向已由 Cecilia 确认。
 - [x] 地点档案三幕的立体样片：`docs/design/prototypes/` 下的 `darkroom-rolls.html`、`darkroom-line.html`、`darkroom-page.html`，三幕已连通，Cecilia 已确认。
-- [ ] Cecilia 确认 `WuHan-Memory` 老仓库泄露过的高德 key 已重置。
+- [x] Cecilia 确认 `WuHan-Memory` 老仓库泄露过的高德 key 已重置（2026-11-15 告知）。
 
 ## 代码现状
 
-前端（`apps/web`）在板块 1A 重写过，结构见 `docs/architecture/frontend-ux.md` 的"前端代码结构"。后端的景点、路线、模型网关已在板块 2、3、4 重写；对话、规划、行程、分享接口还是空的（板块 5、7）。`docs/design/prototypes/` 里的样片是独立的设计稿（单个网页加 three.js），不属于网站代码。
+前端（`apps/web`）在板块 1A 重写过，结构见 `docs/architecture/frontend-ux.md` 的"前端代码结构"。后端的景点、路线、模型网关已在板块 2、3、4 重写；对话、规划、行程版本在板块 5（`app/services/planning/`、`app/api/planning.py`）；分享接口还是空的（板块 7）。`docs/design/prototypes/` 里的样片是独立的设计稿（单个网页加 three.js），不属于网站代码。
 
 保留:
 
@@ -162,7 +191,7 @@ cd ~/WuhanMemory-project2 && corepack pnpm llm:smoke
 
 - `app/schemas/poi.py`（景点文件格式）、`app/data_quality/`（规则和检查）、`app/db/`（SQLite 和导入）、`app/repositories/`（repository 层）、`app/api/pois.py`（景点接口）、`app/services/poi_view.py`（算状态）。
 - 编出来的 mock 行程数据、`mock_planner.py` 已删除（板块 2）。`routes.py` 里的对话、规划、行程、分享接口在板块 5、7 重写。
-- `app/schemas/itinerary.py` 里的 `MapPoi` 还是旧字段，板块 5 改成引用景点数据。
+- `app/schemas/itinerary.py` 在板块 5 重写成行程版本的快照结构，旧的 `MapPoi` 删掉了。
 
 保留但暂不使用: `infra/docker/docker-compose.yml`、`infra/migrations/0001_initial_schema.sql`。
 
@@ -207,7 +236,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 5：AI 规划链路和行程校验（核心）。开工前新建分支。规划链路调用模型时只通过 `get_llm_gateway()` 拿到的 `LLMGateway`；板块 4 留下的几件事见上面"板块 4 留给后面的事"。
+板块 5 收尾：Cecilia 在界面上试真实请求、跑豆包思考对比、`pnpm build`，然后合进 main。之后是板块 1B。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 

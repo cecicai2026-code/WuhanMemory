@@ -30,7 +30,7 @@ from app.data_quality.rules import (
     VOLATILE_MAX_DAYS,
     WUHAN_BOUNDS,
 )
-from app.schemas.poi import Fact, OpeningHours, PoiFile
+from app.schemas.poi import PLACEHOLDER_LICENSES, Fact, OpeningHours, PoiFile
 
 Level = Literal["error", "warning"]
 
@@ -129,6 +129,15 @@ class _PoiChecker:
                 continue
             self.check_fact(name, label, fact, VOLATILE_MAX_DAYS.get(name))
 
+        # 开放状态可以不写（表示正常开放）；写了就按会变的信息检查
+        if self.poi.operatingStatus is not None:
+            self.check_fact(
+                "operatingStatus",
+                FIELD_LABELS["operatingStatus"],
+                self.poi.operatingStatus,
+                VOLATILE_MAX_DAYS["operatingStatus"],
+            )
+
         self.check_location()
         self.check_opening_hours()
 
@@ -209,6 +218,16 @@ class _PoiChecker:
                     "verification-source-mismatch",
                     path,
                     f"「{label}」来源是实地走访，核实方式应该是 onsite",
+                )
+
+        for extra in fact.extraSourceIds:
+            if extra not in self.sources:
+                self.error("unknown-source", path, f"「{label}」引用的来源「{extra}」不在 sources 里")
+            elif self.sources[extra].type == "field-visit" and fact.verification != "onsite":
+                self.error(
+                    "verification-source-mismatch",
+                    path,
+                    f"「{label}」来源里有实地走访，核实方式应该是 onsite",
                 )
 
         # 核实日期
@@ -314,13 +333,19 @@ class _PoiChecker:
             if not p.caption.strip():
                 self.error("bad-photo", where, f"照片「{p.file}」缺一句说明")
 
-            if p.license == "official-placeholder":
+            if p.license in PLACEHOLDER_LICENSES:
                 stats.placeholder_photos += 1
                 if not p.sourceUrl or p.retrievedAt is None:
                     self.error(
                         "bad-photo",
                         where,
-                        f"官网占位照片「{p.file}」必须写来源链接 sourceUrl 和下载日期 retrievedAt",
+                        f"占位照片「{p.file}」必须写来源链接 sourceUrl 和下载日期 retrievedAt",
+                    )
+                if p.license == "third-party-placeholder" and not p.licenseNote:
+                    self.error(
+                        "bad-photo",
+                        where,
+                        f"第三方占位照片「{p.file}」必须在 licenseNote 里写明出处和授权情况",
                     )
                 if not (placeholder_dir / p.file).is_file():
                     # 占位照片不进 git，换台电脑就没有，所以只算警告

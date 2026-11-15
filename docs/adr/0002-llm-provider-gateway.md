@@ -74,3 +74,8 @@ MVP 默认使用 mock provider。真实环境推荐 `qwen` 为主 provider，`do
 - **豆包的深度思考保持模型默认**（Cecilia 定的，2026-11-15），可以用 `DOUBAO_THINKING` 改。
 
 "后续任务"里的四条都已完成。现在的样子见 `docs/architecture/llm-provider-gateway.md`。
+
+## 2026-11-15 更新（板块 5）
+
+- 规划链路不用工具调用，`complete_with_tools` 不做，见 ADR 0004。
+- 临时接口 `POST /api/llm/ping` 去掉；界面选中的模型跟着每条对话消息发给后端。

@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.amap_proxy import router as amap_proxy_router
 from app.api.llm import router as llm_router
+from app.api.planning import router as planning_router
 from app.api.pois import router as pois_router
 from app.api.routing import router as routing_router
 from app.api.routes import router
@@ -49,6 +50,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(planning_router)
 app.include_router(pois_router)
 app.include_router(amap_proxy_router)
 app.include_router(routing_router)

@@ -76,6 +76,51 @@ CREATE TABLE IF NOT EXISTS llm_calls (
 );
 
 CREATE INDEX IF NOT EXISTS llm_calls_started_idx ON llm_calls (started_at);
+
+-- 对话（板块 5）。preferences_json 是到目前为止抽到的偏好，每条新消息在它的基础上补充。
+CREATE TABLE IF NOT EXISTS conversations (
+    id               TEXT PRIMARY KEY,
+    created_at       TEXT NOT NULL,
+    preferences_json TEXT NOT NULL,
+    itinerary_id     TEXT                -- 这段对话生成的行程；还没生成时为空
+);
+
+CREATE TABLE IF NOT EXISTS conversation_messages (
+    id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id      TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    role                 TEXT NOT NULL,  -- user / assistant
+    content              TEXT NOT NULL,
+    created_at           TEXT NOT NULL,
+    kind                 TEXT,           -- 回复的种类：question / itinerary / failed / error（用户消息为空）
+    asked                TEXT,           -- 反问时问了什么：days、date，逗号分隔
+    provider             TEXT,           -- 这条回复用的模型（用户消息为空）
+    itinerary_version_id TEXT            -- 这条回复带出的行程版本
+);
+
+CREATE INDEX IF NOT EXISTS conversation_messages_conv_idx ON conversation_messages (conversation_id, id);
+
+-- 行程和行程版本（板块 5）。版本存下后不再修改；分享页（板块 7）绑定版本，
+-- 双模型对比（板块 6）按版本取结果。没通过校验的版本也存，标 failed。
+CREATE TABLE IF NOT EXISTS itineraries (
+    id              TEXT PRIMARY KEY,
+    conversation_id TEXT,
+    created_at      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS itinerary_versions (
+    id                TEXT PRIMARY KEY,
+    itinerary_id      TEXT NOT NULL REFERENCES itineraries(id) ON DELETE CASCADE,
+    version_number    INTEGER NOT NULL,  -- 同一份行程从 1 开始
+    created_at        TEXT NOT NULL,
+    provider          TEXT NOT NULL,     -- qwen / doubao
+    model             TEXT,              -- 对方返回的真实模型名
+    validation_status TEXT NOT NULL,     -- passed / warning / failed
+    error_count       INTEGER NOT NULL,
+    warning_count     INTEGER NOT NULL,
+    rounds            INTEGER NOT NULL,  -- 1 或 2（修正过一次）
+    data_json         TEXT NOT NULL,     -- 整个版本（ItineraryVersionData）
+    UNIQUE (itinerary_id, version_number)
+);
 """
 
 
@@ -87,5 +132,16 @@ def connect(path: Path) -> sqlite3.Connection:
     return conn
 
 
+# 表建好以后又加的列。CREATE TABLE IF NOT EXISTS 不会给已有的表加列，所以在这里补。
+_ADDED_COLUMNS = (
+    ("conversation_messages", "kind", "TEXT"),
+    ("conversation_messages", "asked", "TEXT"),
+)
+
+
 def init_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA)
+    for table, column, decl in _ADDED_COLUMNS:
+        existing = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        if column not in existing:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")

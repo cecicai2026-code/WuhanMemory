@@ -32,10 +32,18 @@ export interface MapRouteLine {
   path: GeoPoint[];
 }
 
-/** 一条路线。dayNumber 用来按天分色（板块 5），两点之间的临时路线为 null */
+/**
+ * 按天分色时用的颜色名（设计规范 9.1，2026-11-15 Cecilia 选的：黄铜、纸色、胶片橙轮换）。
+ * 只给颜色名，具体色值由各家地图 provider 对着设计规范的变量取。
+ */
+export type RouteColor = "brass" | "paper" | "film";
+
+/** 一条路线。dayNumber 是第几天，两点之间的临时路线为 null */
 export interface MapRoute {
   id: string;
   dayNumber: number | null;
+  /** 给了就整条路线用这个颜色（"全部天"视图按天分色），交通方式只用线型区分（步行虚线）；不给就按交通方式分色 */
+  color?: RouteColor;
   lines: MapRouteLine[];
 }
 

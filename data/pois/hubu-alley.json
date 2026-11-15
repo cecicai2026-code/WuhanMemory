@@ -4,7 +4,14 @@
   "name": "户部巷",
   "district": "武昌区",
   "category": "food-street",
-  "tags": [],
+  "tags": [
+    "小吃",
+    "过早",
+    "烟火气",
+    "夜景",
+    "免费",
+    "亲子"
+  ],
   "sources": [
     {
       "id": "amap-search",
@@ -14,31 +21,31 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "tuniu",
-      "type": "travel-platform",
-      "title": "途牛：户部巷攻略（页面没有日期）",
-      "url": "https://m.tuniu.com/g1799580/guide-0-0/",
+      "id": "s1",
+      "type": "amap",
+      "title": "户部巷 POI（高德地图数据，地址/营业时间）",
+      "url": "https://www.amap.com/",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "bendibao-2015",
-      "type": "other",
-      "title": "本地宝：武汉户部巷小吃攻略（2015-04-02）",
-      "url": "https://m.bendibao.com/show679929.html",
+      "id": "s2",
+      "type": "government",
+      "title": "武昌街巷·户部巷（武汉市武昌区人民政府，2022-04-11）",
+      "url": "https://www.wuchang.gov.cn/zjwc/wcly/lyzx/wcjg/202204/t20220411_1953629.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "bendibao-hbx-where",
-      "type": "other",
-      "title": "本地宝：武汉户部巷在哪，怎么去？（2015-04-02）",
-      "url": "https://m.bendibao.com/show679920.html",
+      "id": "s3",
+      "type": "ugc",
+      "title": "武汉｜户部巷游玩笔记（携程，2026-10-17）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=405843299",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "chinatripedia-hbx",
-      "type": "travel-platform",
-      "title": "Chinatripedia：Hubu Alley, Wuhan（英文，页面没有日期）",
-      "url": "https://chinatripedia.com/hubu-alley-wuhan-ticket-price-opening-hours-location-and-food",
+      "id": "s4",
+      "type": "ugc",
+      "title": "户部巷逛吃攻略（携程，2026-08-27 / 2026-06-21）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=364280519",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -54,22 +61,28 @@
     "note": "高德地点：户部巷（司门口中华路街道解放路459号），B0FFF5V6F4。"
   },
   "address": {
-    "value": "武汉市武昌区司门口户部巷自由路口",
-    "verification": "placeholder",
-    "sourceId": "tuniu",
-    "lastCheckedAt": "2026-11-15",
-    "note": "本地宝写的是\"武昌区民主路户部巷巷子口\"；高德写的是\"解放路 459 号\"。"
-  },
-  "intro": {
-    "value": "武昌司门口一带一条约 150 米长的百年老巷，是武汉有名的小吃街。",
-    "verification": "placeholder",
-    "sourceId": "tuniu",
+    "value": "武汉市武昌区司门口中华路街道解放路459号（巷口牌坊位于解放路一侧）",
+    "verification": "confirmed",
+    "sourceId": "s1",
     "lastCheckedAt": "2026-11-15"
   },
+  "intro": {
+    "value": "被称为「汉味小吃第一巷」，主巷约 150 米，从明代延续至今。热干面、糊汤粉、三鲜豆皮、面窝在这一条巷子里都能吃到。紧邻黄鹤楼与长江大桥，适合和黄鹤楼、汉阳门码头串成半天。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
+  },
   "history": {
-    "value": "明代形成；清代因为挨着藩台衙门（对应京城的户部衙门）而得名。",
-    "verification": "placeholder",
-    "sourceId": "bendibao-hbx-where",
+    "value": "户部巷形成于明代，清代因毗邻户部下属的藩台衙门而得名；明嘉靖年间《湖广图经志》地图上已标注此巷，至少有 400 多年历史。因紧靠码头，自古舟车络绎，以鲜、香、快、热的汉味小吃闻名，民间有「早尝户部巷，宵夜吉庆街」之说。2003 年起武昌区进行整体打造，经六次改造，由 147 米长、3 米宽、12 家经营户发展为 300 余户、特色美食过千种的街区，年均游客约 1800 万人次。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
@@ -77,10 +90,14 @@
       "allDay": true,
       "periods": [],
       "closedWeekdays": [],
-      "note": null
+      "note": "街区全天开放；商铺普遍 7:00—22:00 营业。高德 POI 标注为 08:00—18:00，与街区实际经营不符，采用「全天开放、商铺 7:00—22:00」口径。"
     },
-    "verification": "placeholder",
-    "sourceId": "tuniu",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s3",
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-02-13"
   },
@@ -88,134 +105,207 @@
     "value": {
       "free": true,
       "items": [],
-      "note": null
+      "note": "优惠：不适用（开放式街区）。 免票：全部游客免费进入。 巷内消费为商铺自费项目。"
     },
-    "verification": "placeholder",
-    "sourceId": "chinatripedia-hbx",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s3"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14",
-    "note": "这一项只出现在页面后半部分，那部分没能逐字读到，是程序读页面时生成的摘要。"
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "无需预约，也不用买门票，开放式步行街区。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s4"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 巷内各摊铺自主收款，未查到统一官方说明，各摊支付方式不一，建议现场确认。"
   },
   "transport": {
     "value": {
-      "metro": [],
-      "note": "公交 14、15、16、18、521、530、529、539 路到司门口站下车即到。"
+      "metro": [
+        {
+          "station": "司门口黄鹤楼",
+          "line": "5 号线",
+          "exit": "C",
+          "walkMinutes": null
+        }
+      ],
+      "note": "地铁 5 号线「司门口黄鹤楼」站 C 口出，步行约 300 米到巷口北侧牌坊。公交 14、521、573 等至「民主路司门口」站。不建议自驾，老城区车位紧张、违停抓拍严格。"
     },
-    "verification": "placeholder",
-    "sourceId": "tuniu",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15",
-    "note": "本地宝 2015 年列的公交线路不一样。"
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": 150,
-    "verification": "placeholder",
-    "sourceId": "tuniu",
+    "value": 90,
+    "verification": "confirmed",
+    "sourceId": "s3",
     "lastCheckedAt": "2026-11-15",
-    "note": "途牛页面写\"2.5\"，没写单位，按小时算。"
+    "note": "攻略给的「1.5—2 小时」下限，非官方数据。"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "早上 7 点来「过早」，旅行团未到、不用排队；傍晚灯光亮起烟火气最足，可顺路去汉阳门码头看日落。",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s4"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
-  "photoSpots": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "户部巷大牌坊",
+        "description": "解放路巷口。牌坊正面中轴对称，早晚人少时拍空镜；红灯笼与匾额同框",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s3",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "巷内文化墙",
+        "description": "主巷中段。墙面画满武汉美食故事，侧光拍墙面纹理与人物剪影",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s4",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "汉阳门码头日落",
+        "description": "巷口往西到江边，长江大桥武昌桥头下方。傍晚拍江面落日与大桥，蓝调时刻灯光刚亮最好",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s3",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "复古戏台",
+        "description": "巷中段。偶有汉剧小段演出，拍台下看客与红灯笼",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s4",
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
   "food": [
     {
       "value": {
-        "name": "石婆婆热干面",
-        "walkMinutes": null,
-        "note": null
+        "name": "蔡林记热干面",
+        "walkMinutes": 0,
+        "note": "巷内，芝麻酱用油泄开，全料热干面"
       },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
+      "verification": "confirmed",
+      "sourceId": "s4",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+      "expiresAt": "2027-05-14"
     },
     {
       "value": {
-        "name": "徐嫂鲜鱼糊汤粉",
-        "walkMinutes": null,
-        "note": null
+        "name": "徐嫂糊汤粉",
+        "walkMinutes": 0,
+        "note": "巷内，小鲫鱼熬汤配老油条"
       },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
+      "verification": "confirmed",
+      "sourceId": "s4",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+      "expiresAt": "2027-05-14"
     },
     {
       "value": {
-        "name": "谢家面窝",
-        "walkMinutes": null,
-        "note": null
+        "name": "三鲜豆皮 / 面窝 / 欢喜坨",
+        "walkMinutes": 0,
+        "note": "巷内摊点，过早经典组合"
       },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
+      "verification": "confirmed",
+      "sourceId": "s3",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+      "expiresAt": "2027-05-14"
     },
     {
       "value": {
-        "name": "高胖子粥店",
+        "name": "大成路、水陆街老店",
         "walkMinutes": null,
-        "note": null
+        "note": "本地人更认的过早片区，多家老店只做上午，11 点前后打烊"
       },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
+      "verification": "confirmed",
+      "sourceId": "s3",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
-    },
-    {
-      "value": {
-        "name": "陈记红油牛肉面",
-        "walkMinutes": null,
-        "note": null
-      },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
-      "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
-    },
-    {
-      "value": {
-        "name": "何记豆皮",
-        "walkMinutes": null,
-        "note": null
-      },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
-      "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
-    },
-    {
-      "value": {
-        "name": "小文煎包",
-        "walkMinutes": null,
-        "note": null
-      },
-      "verification": "placeholder",
-      "sourceId": "bendibao-2015",
-      "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "来自 2015 年的文章，店可能已经关了或搬了。"
+      "expiresAt": "2027-05-14"
     }
   ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "05-hubuxiang-1.jpg",
+      "caption": "户部巷牌坊",
+      "license": "third-party-placeholder",
+      "author": "极目新闻",
+      "sourceUrl": "https://aka.doubaocdn.com/l/aB7aAJt72g",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：极目新闻（户部巷牌坊与巷内人流）。新闻媒体图，商用需授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "05-hubuxiang-2.jpg",
+      "caption": "牌坊夜色与弯月",
+      "license": "third-party-placeholder",
+      "author": "今日头条 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/JP14O8dxrV",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：今日头条（摄影作品集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "05-hubuxiang-3.jpg",
+      "caption": "巷内夜市",
+      "license": "third-party-placeholder",
+      "author": "网络图片站 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/VcPN5upTeY",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：ecywang 图片站（转载）。来源为图片聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "05-hubuxiang-4.jpg",
+      "caption": "蔡林记热干面（巷内）",
+      "license": "third-party-placeholder",
+      "author": "携程用户 / UGC",
+      "sourceUrl": "https://aka.doubaocdn.com/l/yDXHg1KFUQ",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：携程用户点评图。UGC 图片，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "05-hubuxiang-5.jpg",
+      "caption": "牌坊长曝光",
+      "license": "third-party-placeholder",
+      "author": "转载图虫创意 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/tclJaSLojU",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：ichaxun 风景图片站（转载图虫创意）。付费图库预览图，商用需购买授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }
