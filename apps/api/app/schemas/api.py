@@ -27,6 +27,8 @@ class MessageOut(BaseModel):
     kind: Literal["question", "itinerary", "failed", "error"] | None = None
     provider: str | None = None
     itineraryVersionId: str | None = None
+    # 板块 5B：这条回复带出的那一轮方案，用 GET /api/planning-rounds/{id} 取
+    planningRoundId: str | None = None
 
 
 class ConversationOut(BaseModel):
@@ -68,6 +70,7 @@ class PlanningJobOut(BaseModel):
     reply: str | None = None
     provider: str | None = None
     itineraryVersionId: str | None = None
+    planningRoundId: str | None = None
     error: LLMErrorOut | None = None
 
 

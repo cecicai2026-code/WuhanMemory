@@ -29,6 +29,8 @@ class PlanningJob:
     reply: str | None = None
     used_provider: str | None = None
     itinerary_version_id: str | None = None
+    # 板块 5B：这次规划产生的那一轮方案
+    planning_round_id: str | None = None
     error: LLMErrorOut | None = None
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
