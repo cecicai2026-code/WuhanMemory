@@ -126,7 +126,11 @@ function Stop({ stop, issues }: { stop: ItineraryStop; issues: ValidationIssue[]
   );
 }
 
-function DayCard({ day, issues, tilt }: { day: ItineraryDay; issues: ValidationIssue[]; tilt: number }) {
+/**
+ * 每天一张的卡片放平，不歪：卡片常有两三千像素高，歪 1 度时上下两头会横着偏出二十多像素，
+ * 左边的字被右栏的滚动框裁掉（2026-11-15 Cecilia 反馈字贴边、被切）。短的总卡照旧歪。
+ */
+function DayCard({ day, issues }: { day: ItineraryDay; issues: ValidationIssue[] }) {
   const mine = issues.filter((i) => i.dayNumber === day.dayNumber);
   const dayWide = mine.filter((i) => !i.poiId);
   const items: ReactNode[] = [];
@@ -148,7 +152,7 @@ function DayCard({ day, issues, tilt }: { day: ItineraryDay; issues: ValidationI
   });
   const hasWarning = mine.length > 0;
   return (
-    <Paper kind="card" tilt={tilt} as="article" aria-label={dayLabel(day)}>
+    <Paper kind="card" className={s.sheet} as="article" aria-label={dayLabel(day)}>
       <div className={s.cardHead}>
         <PaperMark>{dayLabel(day)}</PaperMark>
         <Stamp status={hasWarning ? "pending" : "verified"}>{hasWarning ? "有警告" : "通过"}</Stamp>
@@ -199,7 +203,7 @@ interface Props {
 export function ItineraryCards({ version, loading, error, shownDay, onShowDay, shareable = false }: Props) {
   if (loading) {
     return (
-      <Paper kind="card" tilt={1}>
+      <Paper kind="card" className={s.sheet} tilt={1}>
         <PaperMark>索引卡 · 行程</PaperMark>
         <p>正在取行程……</p>
       </Paper>
@@ -207,7 +211,7 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay, s
   }
   if (error) {
     return (
-      <Paper kind="card" tilt={1}>
+      <Paper kind="card" className={s.sheet} tilt={1}>
         <PaperMark>索引卡 · 行程</PaperMark>
         <p className={s.routeError} role="alert">
           没取到行程：{error}
@@ -217,7 +221,7 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay, s
   }
   if (!version) {
     return (
-      <Paper kind="card" tilt={1}>
+      <Paper kind="card" className={s.sheet} tilt={1}>
         <PaperMark>索引卡 · 行程</PaperMark>
         <PaperTitle level={3}>还没有行程</PaperTitle>
         <p>在左边的打字纸上说想怎么玩。排好、校验过的行程会出现在这里，每天一张卡，地图上同时画出路线。</p>
@@ -242,7 +246,7 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay, s
 
   return (
     <>
-      <Paper kind="card" tilt={-1} as="section" aria-label="行程总卡">
+      <Paper kind="card" className={s.sheet} tilt={-1} as="section" aria-label="行程总卡">
         <div className={s.cardHead}>
           <PaperMark>
             {v.emphasis ? `${EMPHASIS_TEXT[v.emphasis]} · ` : "行程 · "}第 {v.versionNumber} 版
@@ -316,8 +320,8 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay, s
               <li>虚线是步行，实线是公交地铁或打车；图钉上的“1-2”是第 1 天第 2 站</li>
             </ul>
           )}
-          {v.days.map((day, i) => (
-            <DayCard key={day.dayNumber} day={day} issues={report.issues} tilt={i % 2 ? 1 : -1} />
+          {v.days.map((day) => (
+            <DayCard key={day.dayNumber} day={day} issues={report.issues} />
           ))}
         </>
       )}
