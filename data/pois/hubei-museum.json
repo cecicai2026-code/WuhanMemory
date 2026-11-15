@@ -4,22 +4,15 @@
   "name": "湖北省博物馆",
   "district": "武昌区",
   "category": "museum",
-  "tags": [],
+  "tags": [
+    "历史",
+    "文物",
+    "亲子",
+    "室内",
+    "免费",
+    "5A"
+  ],
   "sources": [
-    {
-      "id": "hbww-fuwu",
-      "type": "official-site",
-      "title": "湖北省博物馆官网：服务（开馆信息、参观指南）",
-      "url": "http://www.hbww.org.cn/fuwu/index.html",
-      "accessedAt": "2026-11-15"
-    },
-    {
-      "id": "hbww-intro",
-      "type": "official-site",
-      "title": "湖北省博物馆官网：博物馆简介",
-      "url": "http://www.hbww.org.cn/gyjj/p/7900.html",
-      "accessedAt": "2026-11-15"
-    },
     {
       "id": "amap-search",
       "type": "amap",
@@ -28,10 +21,59 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "dahepiao-hbm",
+      "id": "s1",
+      "type": "official-site",
+      "title": "服务（湖北省博物馆官网，含预约与交通指引）",
+      "url": "http://hbww.org.cn/fuwu/index.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s2",
+      "type": "government",
+      "title": "国庆假期，湖北省博物馆延长开放时间（武汉市人民政府，2024-10-01）",
+      "url": "https://www.wuhan.gov.cn/zwgk/tzgg/202410/t20241001_2463215.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s3",
       "type": "travel-platform",
-      "title": "大河票务网：2025 湖北省博物馆展品介绍+参观时间（2025-11-04）",
-      "url": "https://www.dahepiao.com/lvyounews1/20251104536323.html",
+      "title": "2026 年湖北省博物馆夜游指南（武汉本地宝，2026-09-03）",
+      "url": "https://m.wh.bendibao.com/tour/200402.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "travel-platform",
+      "title": "2026 武汉景点优惠门票/预约汇总（武汉本地宝，2026-11-05）",
+      "url": "http://wh.bendibao.com/tour/jingdianbao/",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "travel-platform",
+      "title": "湖北省博物馆门票预约流程（武汉本地宝，2026-08-12）",
+      "url": "https://m.wh.bendibao.com/mip/102047.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s6",
+      "type": "other",
+      "title": "Visitor Guide（湖北省文物考古研究院转载馆方英文参观指南，2026-04-21）",
+      "url": "https://m-www.hbkgy.com/p/12728.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s7",
+      "type": "ugc",
+      "title": "湖北省博物馆保姆级攻略（携程笔记，2026-03-11）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=278022515",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s8",
+      "type": "ugc",
+      "title": "逛东湖省博周边餐厅推荐（抖音，2026-08-31）",
+      "url": "https://www.iesdouyin.com/share/video/7680121197119793657",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -47,110 +89,272 @@
     "note": "高德地点：湖北省博物馆（东湖路160号），B001B0JYXS。"
   },
   "address": {
-    "value": "湖北省武汉市武昌区东湖路 160 号",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-hbm",
+    "value": "武汉市武昌区东湖路160号",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "intro": {
-    "value": "馆内藏品近 48 万件（套），一级文物 1096 件（套）。随州出土的曾侯乙编钟是镇馆之宝，入选了《世界记忆国际名录》。博物馆免费开放，参观要实名预约。",
-    "verification": "placeholder",
-    "sourceId": "hbww-intro",
-    "lastCheckedAt": "2026-11-15"
+    "value": "荆楚文化的核心场馆，镇馆之宝包括越王勾践剑、曾侯乙编钟、元青花四爱图梅瓶等。新馆建筑群取形「鼎」，临东湖一侧是 270 度观湖玻璃幕墙。免费但必须预约，热门时段放票即满。",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s6"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
   },
   "history": {
-    "value": "1953 年成立湖北省博物馆筹备处，往前可以追溯到 1928 年的湖北省立公共科学实验馆。",
-    "verification": "placeholder",
-    "sourceId": "hbww-intro",
+    "value": "湖北省博物馆筹建于 1953 年，是国家一级博物馆、中央与地方共建的八家国家级博物馆之一。馆藏以礼乐青铜器、战国秦汉漆木简牍、明代金玉器为特色。三期扩建后建筑群从高空俯瞰呈「鼎」字，曾侯乙编钟、越王勾践剑为最具代表性的藏品。",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
     "value": {
       "allDay": false,
+      "closedWeekdays": [
+        1
+      ],
       "periods": [
         {
+          "months": null,
           "weekdays": [
             2,
             3,
             4,
-            5,
-            6,
-            7
+            5
           ],
           "open": "09:00",
           "close": "17:00",
           "lastEntry": "16:00"
+        },
+        {
+          "months": null,
+          "weekdays": [
+            6,
+            7
+          ],
+          "open": "09:00",
+          "close": "20:30",
+          "lastEntry": "19:30"
         }
       ],
-      "closedWeekdays": [
-        1
-      ],
-      "note": "周一闭馆，国家法定节假日除外。"
+      "note": "法定节假日按周六、周日的时段。 周二至周五 9:00—17:00（16:00 停止入馆）；周六、周日及法定节假日 9:00—20:30（19:30 停止入馆），夜场延时自 2026 年 9 月 5 日起执行；周一闭馆（法定节假日除外），除夕闭馆。白天东馆、西馆、南馆、北馆四馆全开，夜场仅开南馆、北馆。"
     },
-    "verification": "placeholder",
-    "sourceId": "hbww-fuwu",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3",
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13",
-    "note": "官网写暑期（8 月 31 日前）开放时间改为 8:30–17:30，暑期从哪天开始没写，没有录进时段。"
+    "expiresAt": "2027-02-13"
   },
   "ticket": {
     "value": {
       "free": true,
       "items": [],
-      "note": "免费，也不收预约费。编钟演出、全息剧、讲解、语音导览和停车另收费。"
+      "note": "优惠：不适用：基本陈列免费，无学生票。 免票：全部观众免费，需预约。 馆内另有付费项目：编钟乐舞演出、《穿越青铜纪》VR、《遇见·楚庄王》全息剧等，票价另计（官网英文页列有 158 元成人票/128 元优待票的特展或演出价，具体以现场为准）。"
     },
-    "verification": "placeholder",
-    "sourceId": "hbww-fuwu",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s3",
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-05-14"
   },
   "reservation": {
     "value": {
       "required": true,
-      "how": "官网、官方微信公众号、美团 APP、湖北文旅之声、鄂汇办 APP，实名预约",
-      "advanceDays": null,
-      "note": "当天的票要在有余票时 16:00 前预约。现役军人、消防救援人员、残疾人、65 岁以上老年人不用预约，刷身份证原件入馆。"
+      "how": "湖北省博物馆官方微信公众号、官网或预约小程序",
+      "advanceDays": 5,
+      "note": "必须实名预约（分时段）。渠道：湖北省博物馆官方微信公众号、官网或预约小程序。每日 17:18 放票，最多可提前 5 天；散客每单最多 5 张，下单后不可改签、可退票；14 周岁（含）以下需实名预约并由成人关联带入。团队需在官网注册账号、至少提前 1 天预约，最多 7 天，每批至少 5 人。"
     },
-    "verification": "placeholder",
-    "sourceId": "hbww-fuwu",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s3",
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-02-13",
-    "note": "官网\"最多可提前 5 天\"和暑期规定写在同一句里，平时能提前几天待确认。"
+    "note": "「每日 17:18 放票」在 Claude 2026-11-15 抽查的夜游指南页里没有找到，另外两个来源没有抽查，待确认。"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 免费入馆，付费演出、文创、讲解的支付渠道未见官方说明，待确认。咨询电话以官网「服务」页公布为准。"
   },
   "transport": {
     "value": {
       "metro": [
         {
-          "station": "省博湖北日报站",
+          "station": "省博湖北日报",
           "line": "8 号线",
           "exit": "A",
           "walkMinutes": null
         }
       ],
-      "note": "官网也写了黄鹂路人行通道出口；公交 402、411 路到东湖路省博物馆站。"
+      "note": "地铁 8 号线「省博湖北日报」站 A 口或黄鹂路人行通道出口，经黄鹂路、省博路步行约 600—700 米至南门。公交 14、402、411、578、709、810 至「东湖路省博物馆」站。打车建议定位南门，自驾定位西南门（车位紧张）。"
     },
-    "verification": "placeholder",
-    "sourceId": "hbww-fuwu",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2",
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 180,
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "lastCheckedAt": "2026-11-15",
+    "note": "攻略给出的「3 小时精华路线」，非官方数据。"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "工作日上午 9:00—11:00 人相对少；周六、周日晚可走夜场到 20:30。",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s7"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
-  "photoSpots": [],
-  "food": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "编钟展厅长廊",
+        "description": "南馆曾侯乙编钟展厅。长廊纵深构图，古风氛围；避免使用闪光灯",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s7",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "国宝展柜 45° 侧拍",
+        "description": "南馆二楼越王勾践剑等展柜。45 度侧拍避开玻璃反光，贴近展柜压低机位",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s7",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "大厅中央穹顶",
+        "description": "南馆/北馆大厅。广角仰拍穹顶与结构线条",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s7",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "北门/南门外立面",
+        "description": "馆区入口。对称构图拍楚式大坡屋顶，上午顺光",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s1",
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
+  "food": [
+    {
+      "value": {
+        "name": "隐茗·湖仙小院（东湖省博店）",
+        "walkMinutes": null,
+        "note": "省博隔壁独栋小院，主打湖鲜，步行可达（具体分钟数未核实）"
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "楚天粤海国际大酒店",
+        "walkMinutes": null,
+        "note": "省博对面，星级酒店餐饮，需提前 1 天预约"
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "鹤公馆",
+        "walkMinutes": null,
+        "note": "省博旁、东湖边私房菜，人均偏高"
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    }
+  ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "02-hubei-museum-1.jpg",
+      "caption": "湖北省博物馆正门",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/BCRsKbFKWP",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（摄影师上传，EXIF 显示 2021-05-02 摄）。付费图库，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "02-hubei-museum-2.jpg",
+      "caption": "越王勾践剑",
+      "license": "third-party-placeholder",
+      "author": "网络图片站 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/SZ8BDRmPvL",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：ecywang 图片站（越王勾践剑展柜实拍）。来源为图片聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "02-hubei-museum-3.jpg",
+      "caption": "编钟演奏厅",
+      "license": "third-party-placeholder",
+      "author": "夏俊俊 / 湖北日报",
+      "sourceUrl": "https://aka.doubaocdn.com/l/giGNeCqLCM",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：国际在线（转载湖北日报，2023-08-30）。新闻媒体图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "02-hubei-museum-4.jpg",
+      "caption": "曾侯乙编钟全景",
+      "license": "third-party-placeholder",
+      "author": "视觉中国 VCG / 签约摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/xqaOFnE6b7",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：视觉中国 VCG（编钟图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "02-hubei-museum-5.jpg",
+      "caption": "编钟另一角度",
+      "license": "third-party-placeholder",
+      "author": "视觉中国 VCG / 签约摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/DAo5G9X8hU",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：视觉中国 VCG（编钟图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }

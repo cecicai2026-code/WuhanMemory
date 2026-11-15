@@ -4,7 +4,14 @@
   "name": "黄鹤楼",
   "district": "武昌区",
   "category": "landmark",
-  "tags": [],
+  "tags": [
+    "历史",
+    "登高",
+    "夜景",
+    "拍照",
+    "亲子",
+    "5A"
+  ],
   "sources": [
     {
       "id": "amap-search",
@@ -14,17 +21,45 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "sohu-2026",
-      "type": "media",
-      "title": "搜狐：武汉黄鹤楼最新旅游攻略 2026 春夏季必看（2026-04-17）",
-      "url": "https://m.sohu.com/a/1010963506_593519/",
+      "id": "s1",
+      "type": "official-site",
+      "title": "黄鹤楼公园门票政策（官网）",
+      "url": "http://www.cnhhl.com/index.php/list-12.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "dahepiao-night",
+      "id": "s2",
+      "type": "government",
+      "title": "不用实名预约！即日起随时来逛黄鹤楼公园（武汉市人民政府门户网站，2024-07-11）",
+      "url": "https://3g.wuhan.gov.cn/sy/whyw/202407/t20240711_2427365.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s3",
       "type": "travel-platform",
-      "title": "大河票务网：2025 夜上黄鹤楼门票（2024-07-29 发布）",
-      "url": "https://www.dahepiao.com/lvyounews1/20240627472955.html",
+      "title": "夜上黄鹤楼游玩攻略（武汉本地宝，2026-08-13）",
+      "url": "https://m.wh.bendibao.com/tour/186068.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "travel-platform",
+      "title": "2026 武汉黄鹤楼公园门票价格表（武汉本地宝，2026-08-13）",
+      "url": "https://m.wh.bendibao.com/tour/199724.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "黄鹤楼机位合集（抖音/携程攻略笔记，2025—2026）",
+      "url": "https://www.iesdouyin.com/share/video/7694327327559601595",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s7",
+      "type": "travel-platform",
+      "title": "2026 武汉旅游地图（黄鹤楼开放时间条目，武汉本地宝）",
+      "url": "https://wh.bendibao.com/tour/lvyouditu/",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -40,21 +75,28 @@
     "note": "高德地点：黄鹤楼（蛇山西山坡特1号(地铁司门口黄鹤楼站A出口步行500m)），B001B0I4K0。"
   },
   "address": {
-    "value": "武汉市武昌区蛇山西山坡特 1 号",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-night",
+    "value": "武汉市武昌区蛇山西山坡特1号",
+    "verification": "confirmed",
+    "sourceId": "s3",
     "lastCheckedAt": "2026-11-15"
   },
   "intro": {
-    "value": "武汉的城市名片。白天是日场，晚上有光影演艺夜游《夜上黄鹤楼》，日场票和夜场票不能通用。",
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
-    "lastCheckedAt": "2026-11-15"
+    "value": "武汉的城市名片，江南三大名楼之一。主楼五层，登顶可俯瞰长江与武汉长江大桥，是武昌老城视线的中心。白天看江景与古建，晚上有「夜上黄鹤楼」光影演艺。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
   },
   "history": {
-    "value": "现在的黄鹤楼是 1985 年重建落成的，之后开放了夜间游览。",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-night",
+    "value": "黄鹤楼有 1800 余年历史，被称为「天下江山第一楼」，是承载中华传统文化的诗楼，也是武汉的城市地标。现楼于 1985 年重新开放，2020 年起首次开放夜间沉浸式体验。2023 年全年接待游客约 483 万人次。",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
@@ -78,105 +120,230 @@
         }
       ],
       "closedWeekdays": [],
-      "note": "以上是日场。夜场《夜上黄鹤楼》19:30–22:00，21:30 停止入园。"
+      "note": "时段是日场：17:00 停止售票，17:20 停止入园，18:00 清园。 日场：售票 8:30—17:00，入园 8:30—17:20，清园（楼）18:00。夜场：19:30 入园；平日 22:00 结束（21:30 停止入园）；周五、周六、周日及法定节假日 22:30 结束（21:50 停止入园）。全年执行，未见淡旺季差异。"
     },
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s3",
+      "s4",
+      "s7"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13",
-    "note": "大河票务网把夜场写成 20:00–20:40 和 21:10–21:30 两轮，和搜狐文章不一致。"
+    "expiresAt": "2027-02-13"
   },
   "ticket": {
     "value": {
       "free": false,
       "items": [
         {
-          "name": "日场门票",
+          "name": "日场全票",
           "priceCny": 70
         },
         {
-          "name": "夜场《夜上黄鹤楼》起价",
+          "name": "日场半票",
+          "priceCny": 35
+        },
+        {
+          "name": "夜场成人票（周五至周日及法定节假日）",
+          "priceCny": 150
+        },
+        {
+          "name": "夜场成人票（周一至周四）",
           "priceCny": 120
         }
       ],
-      "note": "学生、老人、军人等凭证件可以半价或免票，具体标准文章没写。"
+      "note": "优惠：日场半票 35 元/人：6—18 周岁未成年人、全日制本科及以下学历在读学生、60—65 周岁（不含 65）老人、退役军人。 免票：6 周岁（含）以下或身高 1.2 米（含）以下儿童；65 周岁（含）以上老人；现役军人、消防救援人员、伤残军人、军队离退休干部、三属；持记者证者；残疾人；灵秀湖北感恩卡（援鄂医护及 1—3 名陪同）；楚才卡 A/B；武汉血液中心电子景区卡；带团导游。 夜场：夜场成人 150 元（平日周一至周四 120 元）；儿童 75/60 元；学生 90/70 元；优待 110/90 元；1.2 米以下儿童免费。 日场票价执行武发改收费[2018]228 号文件；研究生及以上不享受半价。"
     },
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-05-14",
-    "note": "大河票务网写夜场成人票 150 元、1.2 米以下儿童免票，和搜狐文章不一致。"
+    "note": "日场票价的来源是黄鹤楼官网，2026-11-15 Claude 抽查时官网证书出错打不开，没能对上原文。"
   },
   "reservation": {
     "value": {
-      "required": true,
-      "how": "黄鹤楼公园官方公众号，门票和停车位都要预约",
+      "required": false,
+      "how": null,
       "advanceDays": null,
-      "note": null
+      "note": "免实名、免预约。2024 年 7 月 11 日起取消购票实名登记，可现场窗口或线上平台随时购票；节假日高峰建议提前购票，达到最大承载量时暂停入园。夜场另需购买夜场票。"
     },
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13",
-    "note": "文章讲的是五一期间实行\"景点预约 + 停车预约\"，平时是否必须预约没写。"
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 未查到官方对微信/支付宝/现金/外卡的公开说明。已知可线下窗口购票、线上平台（官网、官微、电商平台）购票，具体支付渠道待确认。建议电话核实：400-700-9798（8:30—17:30）、027-88875096。"
   },
   "transport": {
     "value": {
       "metro": [
         {
-          "station": "司门口黄鹤楼站",
+          "station": "彭刘杨",
           "line": "5 号线",
-          "exit": null,
+          "exit": "A",
+          "walkMinutes": null
+        },
+        {
+          "station": "复兴路",
+          "line": "4 号线",
+          "exit": "C2",
           "walkMinutes": null
         }
       ],
-      "note": "文章说出站就到；还有将近 20 条公交线路到景区。"
+      "note": "地铁 5 号线「彭刘杨」站 A 口出，步行约 828 米到南门；或地铁 4 号线「复兴路」站 C2 口出，步行约 1.4 公里。公交 108、222、401、413、537、556、561、596、710、728 至「武珞路阅马场」站。地铁 5 号线「司门口黄鹤楼」站 C 口是红墙合影机位，距景区尚有距离。"
     },
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15",
-    "note": "高德地点信息写的是 A 出口步行约 500 米。"
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "todo": "TODO(Cecilia): 未查到官方建议时长，攻略站也未给统一口径。留空，待人工确认。"
   },
   "bestTime": {
-    "value": "春末夏初最好。上午 9–11 点人少、光线好；傍晚 5–7 点看日落晚霞；下午入园可以接着看夜场。",
-    "verification": "placeholder",
-    "sourceId": "sohu-2026",
-    "lastCheckedAt": "2026-11-15"
+    "value": "傍晚入园可衔接夜场灯光；拍建筑想避开人群选早上 8 点前或工作日下午 3 点后。",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
   "photoSpots": [
     {
       "value": {
-        "title": "司门口红墙",
-        "description": "地铁司门口黄鹤楼站 C 出口外的红墙，改造后整体抬高了 7 米，文章称它是头号网红机位。",
+        "title": "司门口黄鹤楼地铁站 C 口红墙",
+        "description": "5 号线司门口黄鹤楼站 C 口出站即到。长焦压缩，让红墙与黄鹤楼同框；下午 4—5 点光线斜射，红墙色彩最饱和",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "sohu-2026",
+      "verification": "confirmed",
+      "sourceId": "s5",
       "lastCheckedAt": "2026-11-15"
     },
     {
       "value": {
-        "title": "得胜桥巷口",
-        "description": "能拍到黄鹤楼和街巷市井同框。",
+        "title": "得胜桥老巷",
+        "description": "C 口往西，得胜桥巷内数十米。窄巷透视，拍黄鹤楼与老居民楼同框，古今对比；下午 3 点后光线穿巷",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "sohu-2026",
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "长江大桥武昌桥头岗亭",
+        "description": "司门口天桥上天桥，往汉阳方向前行。桥头岗亭附近用 3 倍以上长焦，等列车经过拍火车与黄鹤楼同框",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "彭刘杨站 B2 口",
+        "description": "5 号线彭刘杨站 B2 出口。「武汉」立体字、粉色笑脸墙同框，人少",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "白云阁",
+        "description": "黄鹤楼公园内（含在门票内）。平视或微仰角度与主楼同框，可避开主楼正面人流",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
       "lastCheckedAt": "2026-11-15"
     }
   ],
-  "food": [],
+  "food": [
+    {
+      "value": {
+        "name": "户部巷（汉味小吃街）",
+        "walkMinutes": 10,
+        "note": "从公园南门往司门口方向步行可达，具体分钟数按地图实测为准"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "粮道街",
+        "walkMinutes": null,
+        "note": "本地人过早聚集地，距景区需步行或短途打车"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    }
+  ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "01-huanghelou-1.jpg",
+      "caption": "航拍黄鹤楼正面",
+      "license": "third-party-placeholder",
+      "author": "武汉市人民政府门户网站",
+      "sourceUrl": "https://aka.doubaocdn.com/l/5OmQMrv5EG",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：武汉市人民政府门户网站（黄鹤楼相关报道配图）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "01-huanghelou-2.jpg",
+      "caption": "长江大桥与黄鹤楼夜景",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/WsCB5Pl5ii",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "01-huanghelou-3.jpg",
+      "caption": "雪后黄鹤楼",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/74tHdBouI2",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "01-huanghelou-4.jpg",
+      "caption": "樱花簇拥的楼阁",
+      "license": "third-party-placeholder",
+      "author": "视觉中国 VCG / 签约摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/HeN04pcGl5",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：视觉中国 VCG（黄鹤楼图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "01-huanghelou-5.jpg",
+      "caption": "夜樱与楼影",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/ZRSDzUYsGM",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }

@@ -4,15 +4,16 @@
   "name": "东湖听涛景区",
   "district": "武昌区",
   "category": "park",
-  "tags": [],
+  "tags": [
+    "湖景",
+    "免费",
+    "散步",
+    "骑行",
+    "日落",
+    "亲子",
+    "5A"
+  ],
   "sources": [
-    {
-      "id": "donghu-map",
-      "type": "government",
-      "title": "武汉东湖生态旅游风景区管委会：东湖最新漫游地图（2026-01-22 发布）",
-      "url": "https://www.whdonghu.gov.cn/ztzl_6323/wlzl/202601/t20260122_2716447.shtml",
-      "accessedAt": "2026-11-15"
-    },
     {
       "id": "amap-search",
       "type": "amap",
@@ -21,24 +22,59 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "dahepiao-tt-2022",
+      "id": "s1",
       "type": "travel-platform",
-      "title": "大河票务网：东湖听涛景区开放时间+门票（2022-09-13 发布）",
-      "url": "https://www.dahepiao.com/lvyounews1/20220913296487.html",
+      "title": "东湖听涛景区介绍（携程攻略页）",
+      "url": "https://you.ctrip.com/sight/wuhan145/1488643.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "dahepiao-xyg-2025",
-      "type": "travel-platform",
-      "title": "大河票务网：2025 武汉行吟阁门票（2025-08-04）",
-      "url": "https://www.dahepiao.com/lvyounews1/20250804524159.html",
+      "id": "s2",
+      "type": "government",
+      "title": "东湖风景区 A 级景区基本信息（东湖生态旅游风景区管委会，2025-09-24）",
+      "url": "https://www.whdonghu.gov.cn/zwgk_6255/xxgkml/gysyjs/lyly/202312/t20231220_2324715.shtml",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "qunar-donghu",
+      "id": "s3",
+      "type": "government",
+      "title": "东湖听涛泳场即日起免费开放（武汉市人民政府，2026-06-26）",
+      "url": "https://www.wuhan.gov.cn/hdjl/rdhy/202606/t20260626_2813928.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
       "type": "travel-platform",
-      "title": "去哪儿：东湖生态旅游风景区攻略（页面没有日期）",
-      "url": "https://touch.travel.qunar.com/poi/702578",
+      "title": "武汉东湖听涛景区怎么玩（武汉本地宝，2025-08-11）",
+      "url": "https://m.wh.bendibao.com/mip/190121.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "东湖听涛景区游玩笔记（携程，2026-08-15）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=357155779",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s6",
+      "type": "other",
+      "title": "武汉东湖风景区（百科，含行吟阁/长天楼条目）",
+      "url": "https://www.baike.com/wikiid/7202809120544735243",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s7",
+      "type": "travel-platform",
+      "title": "2026 东湖听涛中秋国庆活动季（武汉本地宝，2026-09-18）",
+      "url": "https://m.wh.bendibao.com/mip/102783_2.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s8",
+      "type": "ugc",
+      "title": "东湖省博周边餐厅推荐（抖音，2026-08-31 / 2026-09-01）",
+      "url": "https://www.iesdouyin.com/share/video/7680510044811638510",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -54,146 +90,249 @@
     "note": "高德地点：东湖听涛景区（东湖路特1号东湖生态旅游风景区西北角），B001B1ASJQ。"
   },
   "address": {
-    "value": "武汉市武昌区黄鹂路 88 号",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-tt-2022",
+    "value": "武汉市武昌区东湖路特1号（梨园大门 / 东湖大门）。平台另载「黄鹂路88号」，两说并存。",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "note": "高德写的是\"东湖路特 1 号东湖生态旅游风景区西北角\"。"
+    "note": "两个地址并存，还没选定用哪个。"
   },
   "intro": {
-    "value": "东湖风景区里的一片景区，碧潭观鱼、长天楼、苍柏园、行吟阁、小梅岭、天圜美术馆都在这里。",
-    "verification": "placeholder",
-    "sourceId": "donghu-map",
-    "lastCheckedAt": "2026-11-15"
+    "value": "东湖四大片区中开发最早的一片，也是离省博最近、最适合散步的一片。核心是纪念屈原的行吟阁，三面环水；沿湖还有碧潭观鱼、长天楼、先月亭、听涛泳场。全程免费，适合半天慢慢走。",
+    "verification": "confirmed",
+    "sourceId": "s6",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
   },
   "history": {
-    "value": "听涛是东湖风景区最早建成开放的景区，以纪念屈原为主题；景区里的长天楼 1956 年修建。",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-tt-2022",
-    "lastCheckedAt": "2026-11-15",
-    "note": "大河票务网 2025 年的文章写行吟阁始建于 1955 年。"
+    "value": "听涛是东湖最早建成开放的景区，前身是私家园林「海光农圃」，被称为东湖源头。行吟阁建于 1955 年，三层绿瓦方形阁，四面环水，由荷风、落羽两桥连通，阁名取自《楚辞·渔父》「行吟泽畔」，匾额为郭沫若手书，阁前立 3.6 米屈原全身像。长天楼 1956 年建成，楼名取自《滕王阁序》「秋水共长天一色」。",
+    "verification": "confirmed",
+    "sourceId": "s6",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
     "value": {
-      "allDay": false,
-      "periods": [
-        {
-          "months": [
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12
-          ],
-          "weekdays": [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7
-          ],
-          "open": "09:00",
-          "close": "17:00",
-          "lastEntry": null
-        }
-      ],
+      "allDay": true,
+      "periods": [],
       "closedWeekdays": [],
-      "note": null
+      "note": "景区全天开放（07:00—21:00 可环湖漫步的说法见平台笔记）。内部场馆按白天时段开放：碧潭观鱼每日 8:00—17:30；周苍柏纪念室、周小燕纪念室周二至周日 8:30—17:00。观光车 9:00—16:30。"
     },
-    "verification": "placeholder",
-    "sourceId": "dahepiao-tt-2022",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s4",
+      "s6"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-02-13",
-    "note": "原文是\"04/08–12/31 09:00–17:00\"，1 月到 4 月初没写。行吟阁另有 2025 年的文章写全年 9:00–15:00。"
+    "note": "另有平台笔记写 7:00—21:00，和「全天开放」的说法不一致，待官方确认。"
   },
   "ticket": {
     "value": {
       "free": true,
-      "items": [],
-      "note": null
+      "items": [
+        {
+          "name": "听涛专线观光车",
+          "priceCny": 30
+        }
+      ],
+      "note": "优惠：景区免费，无半票政策；收费项目（观光车、游船、皮划艇等）按项目计价。 免票：全部游客免费入园。 听涛专线观光车 30 元/人（9:00—16:30，当日 16:30 前有效，90cm 以下儿童免票）；东湖听涛泳场 2026-06-26 至 08-31 每日 16:00—20:00 免费开放。"
     },
-    "verification": "placeholder",
-    "sourceId": "donghu-map",
+    "verification": "confirmed",
+    "sourceId": "s2",
+    "extraSourceIds": [
+      "s3",
+      "s1"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-05-14",
-    "note": "来源页面是 2026-01-22 发布的漫游地图，景区内是否有收费项目待确认。"
+    "note": "「景区免费」在 Claude 2026-11-15 抽查的市政府通稿里没有写到（通稿只讲泳场免费），携程页没有抽查，待确认。"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "无需预约，到场即可入园。2026 年政府通稿与本地宝活动页均明确「景区免费开放，各活动无需预约」。注意：2025 年一篇本地宝攻略写「免费，需要预约」，属旧说法，已按最新口径取「无需预约」。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s1",
+      "s7"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "抽查的市政府通稿只写了泳场无需线上预约，没有写整个景区；本地宝活动页没有抽查，待确认。"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 大门免费，观光车/游船/泳场配套的支付方式未查到官方说明，待确认。咨询电话以管委会官网公布为准。"
   },
   "transport": {
     "value": {
-      "metro": [],
-      "note": "公交 14、108、402、534、537、578、605、777、810 路可以到。从湖北省博物馆沿黄鹂路往东走约 10 分钟。"
+      "metro": [
+        {
+          "station": "梨园",
+          "line": "8 号线",
+          "exit": "C",
+          "walkMinutes": 5
+        },
+        {
+          "station": "省博湖北日报",
+          "line": "8 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": "地铁 8 号线「梨园」站 C 口出，导航「梨园大门」，步行约 5 分钟；也可乘 8 号线到「省博湖北日报」站，逛完省博从北门方向进景区。公交 402、411 等至「东湖路」相关站点。"
     },
-    "verification": "placeholder",
-    "sourceId": "qunar-donghu",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15",
-    "note": "步行时间来自 2015 年的用户点评。"
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": 90,
-    "verification": "placeholder",
-    "sourceId": "qunar-donghu",
+    "value": 120,
+    "verification": "confirmed",
+    "sourceId": "s4",
     "lastCheckedAt": "2026-11-15",
-    "note": "来自 2015 年的用户点评：骑车转完听涛 1–2 小时，坐观光车 30–50 分钟。"
+    "note": "景区内全程约 3—4 公里，官方攻略给的步行时间约 2 小时。"
   },
   "bestTime": {
-    "value": "四季都适合：春天赏景，夏天避暑。",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-tt-2022",
-    "lastCheckedAt": "2026-11-15"
+    "value": "傍晚看日落（听涛泳场栈桥视角好）；清晨人少、湖面安静。",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
   "photoSpots": [
     {
       "value": {
-        "title": "行吟阁前的屈原铜像",
-        "description": "阁前一尊 3.6 米高的屈原铜像。",
+        "title": "行吟阁",
+        "description": "听涛景区中部小岛，荷风桥/落羽桥连通。隔水拍三层绿瓦阁与屈原像；登阁顶层可拍湖面与磨山远景",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "dahepiao-xyg-2025",
+      "verification": "confirmed",
+      "sourceId": "s6",
+      "extraSourceIds": [
+        "s5"
+      ],
       "lastCheckedAt": "2026-11-15"
     },
     {
       "value": {
-        "title": "行吟阁二、三层窗口",
-        "description": "从窗口能看到湖面和听涛轩。",
+        "title": "听涛泳场圆形装置栈桥",
+        "description": "听涛泳场岸边。透过金属圆环框住湖中亭与栈桥，对称构图；阴天也很出片",
         "photo": null
       },
-      "verification": "placeholder",
-      "sourceId": "dahepiao-xyg-2025",
+      "verification": "confirmed",
+      "sourceId": "s3",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "碧潭观鱼九曲回廊",
+        "description": "碧潭观鱼。俯拍回廊与锦鲤，树荫多、适合亲子",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "先月亭",
+        "description": "景区南部靠近武大方向。人少林密，拍森系与湖景；可远眺武汉大学方向",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
       "lastCheckedAt": "2026-11-15"
     }
   ],
   "food": [
     {
       "value": {
-        "name": "长天楼",
+        "name": "喜玥小馆（东湖黄鹂路）",
         "walkMinutes": null,
-        "note": null
+        "note": "东湖黄鹂路一带的湖北菜馆，主打鱼嘴、武昌鱼，步行距离未核实"
       },
-      "verification": "placeholder",
-      "sourceId": "dahepiao-tt-2022",
+      "verification": "confirmed",
+      "sourceId": "s8",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "文章写整栋楼可同时容纳上千人吃饭喝茶，没写菜品；2022 年的文章。"
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "翠蝈蝈的饭馆（东湖店）",
+        "walkMinutes": null,
+        "note": "东湖景区内湖北菜，适合小聚"
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
     }
   ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "03-donghu-tingtao-1.jpg",
+      "caption": "听涛泳场的装置和栈桥",
+      "license": "third-party-placeholder",
+      "author": "武汉市人民政府门户网站",
+      "sourceUrl": "https://aka.doubaocdn.com/l/opEGQ88OcY",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：武汉市人民政府门户网站《东湖听涛泳场即日起免费开放》（2026-06-26）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "03-donghu-tingtao-2.jpg",
+      "caption": "行吟阁航拍",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/iJLSQEbjVh",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "03-donghu-tingtao-3.jpg",
+      "caption": "行吟阁正面",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/swa42Do0mM",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "03-donghu-tingtao-4.jpg",
+      "caption": "碧潭落日栈桥",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/GTZRDGF4vE",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "03-donghu-tingtao-5.jpg",
+      "caption": "湖面晚霞",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/VUZRAYJa2g",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }

@@ -4,15 +4,15 @@
   "name": "江汉路步行街",
   "district": "江汉区",
   "category": "street",
-  "tags": [],
+  "tags": [
+    "商业街",
+    "近代建筑",
+    "夜景",
+    "购物",
+    "美食",
+    "免费"
+  ],
   "sources": [
-    {
-      "id": "jianghan-gk",
-      "type": "government",
-      "title": "武汉市江汉区人民政府：江汉概况",
-      "url": "https://www.jianghan.gov.cn/mljh/jbgk/201802/t20180201_11565.shtml",
-      "accessedAt": "2026-11-15"
-    },
     {
       "id": "amap-search",
       "type": "amap",
@@ -21,10 +21,45 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "ctrip-travels-2023",
-      "type": "travel-platform",
-      "title": "携程游记：武汉旅游攻略-汉口篇（2023-11-15）",
-      "url": "https://gs.ctrip.com/html5/you/travels/145/4118501.html",
+      "id": "s1",
+      "type": "government",
+      "title": "江汉路：一座二十世纪的建筑博物馆（武汉市江汉区人民政府，2019-03-01）",
+      "url": "https://www.jianghan.gov.cn/mljh/zsyz/zsdt/201903/t20190301_3719.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s2",
+      "type": "government",
+      "title": "江汉区概况信息（江汉路步行街历史与 2021 全国示范步行街）",
+      "url": "https://www.jianghan.gov.cn/zfxxgk/fdzdgknr/gkxx/",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s3",
+      "type": "media",
+      "title": "《武汉百年瞬间》第六十四期：江汉路步行街开街（澎湃新闻，2021-07-28）",
+      "url": "https://m.thepaper.cn/newsDetail_forward_13777324",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "ugc",
+      "title": "江汉路步行街游玩攻略（携程笔记，2026-08-28 / 2026-09-11）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=364855919",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "江汉路亲子逛吃攻略（携程笔记，2026-06-28）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=328417713",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s8",
+      "type": "amap",
+      "title": "江汉关大楼（高德 2025 状元榜·景点页）",
+      "url": "https://www.amap.com/ranking/wuhan/scenic/420103",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -40,80 +75,262 @@
     "note": "高德地点：江汉路步行街（江汉路步行街与铭新街交叉口东20米），B001B0J07F。"
   },
   "address": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
-  },
-  "intro": {
-    "value": "有一百多年历史的商业老街，沿街老建筑多，被称作\"武汉二十世纪建筑博物馆\"。2021 年 7 月被商务部评为\"全国示范步行街\"。",
-    "verification": "placeholder",
-    "sourceId": "jianghan-gk",
+    "value": "武汉市江汉区江汉路（南起沿江大道江汉关，北至解放大道，全长约 1600 米）",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
+  "intro": {
+    "value": "中国最长的步行街之一，也是「武汉二十世纪建筑博物馆」。沿街 13 栋近代优秀历史建筑，从江汉关钟楼一路走到解放大道，白天看建筑、晚上看霓虹。南端直连汉口江滩，逛完就能去看灯光秀。",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2",
+      "s3"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
+  },
   "history": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+    "value": "江汉路前身是明代形成的广利巷/广利街；1861 年英租界设立后拓宽改名太平路；1907 年花楼街口至循礼门的新路以富商刘歆生之名命名歆生路；1927 年国民政府收回英租界，合并太平路与歆生路，取江汉关「江汉」二字定名江汉路。2000 年 9 月 22 日改建为步行街开街，一度以 1210 米称「中国最长步行街」。现存 13 栋近代优秀历史建筑，涵盖欧陆、罗马、拜占庭、文艺复兴等风格。2021 年 7 月被商务部评为第二批「全国示范步行街」，是中部地区唯一一条。",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2",
+      "s3"
+    ],
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+    "value": {
+      "allDay": true,
+      "periods": [],
+      "closedWeekdays": [],
+      "note": "街区全天开放、24 小时可通行；沿街商铺普遍 10:00—22:00；建筑亮灯约 19:30—22:30。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "ticket": {
     "value": {
       "free": true,
       "items": [],
-      "note": null
+      "note": "优惠：不适用（开放式步行街）。 免票：全部游客免费进入。 江汉关博物馆免费但需线上预约、周一闭馆。"
     },
-    "verification": "placeholder",
-    "sourceId": "ctrip-travels-2023",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "extraSourceIds": [
+      "s4"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14",
-    "note": "来自用户游记。"
+    "expiresAt": "2027-05-14"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "无需预约，街区自由通行。江汉关博物馆单独预约。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 街区免费，商户各自收款，未查到统一官方说明；江汉关博物馆等场馆支付方式待确认。"
   },
   "transport": {
     "value": {
       "metro": [
         {
-          "station": "江汉路站",
-          "line": "2 号线",
+          "station": "江汉路",
+          "line": "2/6 号线",
+          "exit": "C/H",
+          "walkMinutes": null
+        },
+        {
+          "station": "循礼门",
+          "line": "1/2 号线",
           "exit": null,
           "walkMinutes": null
         }
       ],
-      "note": null
+      "note": "地铁 2/6 号线「江汉路」站 C/H 口出站即达主街核心段；北端可乘 1/2 号线至「循礼门」站。公交 1、24、408 至「中山大道地铁江汉路」站。节假日单日客流可达 40—50 万人次，停车位极紧张，不建议自驾。"
     },
-    "verification": "placeholder",
-    "sourceId": "ctrip-travels-2023",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15",
-    "note": "来自用户游记。"
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 180,
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "lastCheckedAt": "2026-11-15",
+    "note": "攻略「3—4 小时」，取下限。"
   },
   "bestTime": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": "16:00 之后到，先拍建筑街景，入夜看亮灯再觅食；周末与节假日人流大。",
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
-  "photoSpots": [],
-  "food": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "江汉关钟楼",
+        "description": "步行街南端、沿江大道口。仰拍钟楼与背后高楼；整点报时前后拍，蓝调时刻灯光最匀",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "中心百货一带欧式立面",
+        "description": "主街中段。贴墙仰拍檐口与柱式，或用橱窗做前景",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s4",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "汉口水塔",
+        "description": "主街北段。红砖塔身与街景同框，适合竖构图",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s2",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "江汉村 / 上海邨里分",
+        "description": "步行街两侧巷内。石库门门头与弄堂纵深，人少",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s2",
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
+  "food": [
+    {
+      "value": {
+        "name": "水塔美食街",
+        "walkMinutes": 3,
+        "note": "步行街中段，本地小吃与网红店混合"
+      },
+      "verification": "confirmed",
+      "sourceId": "s4",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "Happy 站台",
+        "walkMinutes": 2,
+        "note": "室内美食街，夏天避暑、排队店集中"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "老居巷汤包 / 芳芳牛杂",
+        "walkMinutes": 5,
+        "note": "本地人常去的老店，蟹粉汤包、虎皮凤爪"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "吉庆街",
+        "walkMinutes": 15,
+        "note": "夜市与汉味表演，从步行街步行约 15 分钟"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    }
+  ],
   "reviews": [],
   "photos": [
+    {
+      "file": "08-jianghan-road-1.jpg",
+      "caption": "江汉关夜景",
+      "license": "third-party-placeholder",
+      "author": "高德地图 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/tUfcUpmnCv",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：高德地图「2025 状元榜·武汉景点」江汉关大楼页。平台图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "08-jianghan-road-2.jpg",
+      "caption": "步行街夜景航拍（竖）",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/LUtoLAEfRa",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "08-jianghan-road-3.jpg",
+      "caption": "步行街夜色（横）",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/ftePZbSEkP",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "08-jianghan-road-4.jpg",
+      "caption": "夜游人潮",
+      "license": "third-party-placeholder",
+      "author": "网络图片站 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/POFan9kfEq",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：网络图片站（转载摄影作品）。来源为聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "08-jianghan-road-5.jpg",
+      "caption": "白天老建筑",
+      "license": "third-party-placeholder",
+      "author": "Dreamstime / 供稿摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/yqVkpYkV0s",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：Dreamstime 图库。图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
     {
       "file": "jianghan-road-street.jpg",
       "caption": "江汉路步行街：街两边是带钟楼的老建筑，街上人很多。",

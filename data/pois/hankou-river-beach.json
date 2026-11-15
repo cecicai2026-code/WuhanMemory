@@ -4,7 +4,15 @@
   "name": "汉口江滩",
   "district": "江岸区",
   "category": "riverside",
-  "tags": [],
+  "tags": [
+    "江景",
+    "夜景",
+    "日落",
+    "灯光秀",
+    "免费",
+    "散步",
+    "亲子"
+  ],
   "sources": [
     {
       "id": "amap-search",
@@ -14,17 +22,66 @@
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "dahepiao-hkjt",
+      "id": "s1",
       "type": "travel-platform",
-      "title": "大河票务网：汉口江滩门票、开放时间、游玩攻略（2022-07-22 发布）",
-      "url": "https://www.dahepiao.com/lvyounews1/20220722286191.html",
+      "title": "汉口江滩介绍（携程攻略页）",
+      "url": "https://you.ctrip.com/sight/wuhan145/119534.html",
       "accessedAt": "2026-11-15"
     },
     {
-      "id": "thepaper-free-2024",
+      "id": "s2",
+      "type": "other",
+      "title": "汉口江滩（抖音百科，面积/格局/管理单位）",
+      "url": "https://m.baike.com/wiki/%E6%B1%89%E5%8F%A3%E6%B1%9F%E6%BB%9D/661437",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s3",
+      "type": "travel-platform",
+      "title": "武汉必去十大景点·汉口江滩（武汉本地宝，2026-08-13）",
+      "url": "https://m.wh.bendibao.com/tour/jingdianbangdan/514.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s4",
+      "type": "travel-platform",
+      "title": "武汉江滩红叶观赏攻略（武汉本地宝，2026-10-30，含江滩开放时间）",
+      "url": "https://m.wh.bendibao.com/tour/183099.shtm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s5",
+      "type": "ugc",
+      "title": "汉口江滩半天/夜景路线（携程笔记，2026-10-16 / 2026-05-02）",
+      "url": "https://m.ctrip.com/webapp/you/community/detail?articleId=391931065",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s6",
+      "type": "government",
+      "title": "武汉市江滩管理办法（2026 年修订，武汉市人民政府，2026-11-13）",
+      "url": "https://www.wuhan.gov.cn/zwgk/xxgk/zfgz_new/202611/t20261113_2879400.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s7",
+      "type": "ugc",
+      "title": "武汉夜景打卡点清单（抖音，2026-09-20）",
+      "url": "https://www.iesdouyin.com/share/video/7687416005496319077",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s8",
+      "type": "amap",
+      "title": "江汉关大楼（高德 2025 状元榜·景点页）",
+      "url": "https://www.amap.com/ranking/wuhan/scenic/420103",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "s9",
       "type": "media",
-      "title": "澎湃号·湃客：第一次到武汉游玩，10 个免费又好玩景点（2024-01-24，自媒体投稿）",
-      "url": "https://thepaper.cn/newsDetail_forward_26123772",
+      "title": "汉口江滩芦荻花开（湖北日报，2025-10-26）",
+      "url": "https://news.hubeidaily.net/pc/c_4696315.html",
       "accessedAt": "2026-11-15"
     }
   ],
@@ -40,88 +97,306 @@
     "note": "高德地点：汉口江滩（江滩大道1号），B0FFGCIG85。汉口江滩沿江有好几公里长，这个点在江滩大道 1 号附近、长江边。2026-11-15 板块 3 接上地图后看过，Cecilia 决定保留这个点，不换成某个入口。"
   },
   "address": {
-    "value": "武汉市江岸区江滩大道 1 号",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-hkjt",
-    "lastCheckedAt": "2026-11-15",
-    "note": "同一页面另一处写的是\"江岸区沿江大道\"。"
-  },
-  "intro": {
-    "value": "长江边的江滩公园。夏天可以去新建的观江亲水平台踩水，还有铺着细沙的儿童友好公园。",
-    "verification": "placeholder",
-    "sourceId": "dahepiao-hkjt",
+    "value": "武汉市江岸区沿江大道（江汉门至长江二桥，全长约 7 公里，总面积约 160 万平方米）",
+    "verification": "confirmed",
+    "sourceId": "s1",
+    "extraSourceIds": [
+      "s2"
+    ],
     "lastCheckedAt": "2026-11-15"
   },
+  "intro": {
+    "value": "武汉的「城市会客厅」，一侧是沿江大道十几幢百年老建筑，一侧是三层观水平台。傍晚看日落、晚上看两江灯光秀，江汉门进、三阳门出是最顺的走法。秋冬芦苇荡金黄，是全年最好拍的季节。",
+    "verification": "confirmed",
+    "sourceId": "s6",
+    "extraSourceIds": [
+      "s1",
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "简介是资料包里自己写的，不是来源页面的原文。"
+  },
   "history": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+    "value": "汉口江滩是「大武汉」兴衰的见证。近代武汉曾是仅次于上海的中国第二大工业和贸易中心，沿江大道保留着德国领事馆（现市政府）、汇丰银行汉口分行、花旗银行汉口分行等十几幢百年老建筑；江汉关大楼 1924 年建成，一直作为武汉海关办公场所至 2012 年。江滩公园分三期建设，一期从武汉客运港至粤汉码头长 1.04 公里，二期 2003 年 9 月开放，形成 3.4 公里滨江长廊。2026 年 11 月《武汉市江滩管理办法》修订发布，明确江滩每日定时开放、开闭园时间由管理机构公布。",
+    "verification": "confirmed",
+    "sourceId": "s6",
+    "extraSourceIds": [
+      "s1",
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15"
   },
   "openingHours": {
     "value": {
-      "allDay": true,
-      "periods": [],
+      "allDay": false,
       "closedWeekdays": [],
-      "note": "具体以现场为准。"
+      "periods": [
+        {
+          "months": [
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "05:00",
+          "close": "23:00",
+          "lastEntry": null
+        },
+        {
+          "months": [
+            11,
+            12,
+            1,
+            2,
+            3,
+            4
+          ],
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "05:00",
+          "close": "22:30",
+          "lastEntry": null
+        }
+      ],
+      "note": "5—10 月 5:00—23:00；11—4 月 5:00—22:30（武汉江滩统一口径）。灯光秀常规时段 19:30—22:00，节假日延长。汛期亲水平台可能临时封闭。"
     },
-    "verification": "placeholder",
-    "sourceId": "dahepiao-hkjt",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s4",
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-02-13",
-    "note": "来源是 2022 年的文章。"
+    "note": "携程写的是全年全天开放，和这里的分季节时段不一致；这里用的是本地宝 2026-10-30 的说法。"
   },
   "ticket": {
     "value": {
       "free": true,
       "items": [],
-      "note": null
+      "note": "优惠：不适用。 免票：全部游客免费。 江滩内横渡长江博物馆免费但需公众号预约；游船、观光车、餐饮另计。"
     },
-    "verification": "placeholder",
-    "sourceId": "thepaper-free-2024",
+    "verification": "confirmed",
+    "sourceId": "s3",
+    "extraSourceIds": [
+      "s5"
+    ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-05-14"
   },
   "reservation": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "无需预约。江滩为开放式公共空间；仅横渡长江博物馆需在公众号预约。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "extraSourceIds": [
+      "s7"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
   },
   "payment": {
     "value": null,
     "verification": "todo",
-    "todo": "TODO(Cecilia): 支付方式要实地确认"
+    "todo": "TODO(Cecilia): 开放空间免费进入，园内停车、观光车、游船的支付方式未查到官方说明，咨询电话以江滩管理办公室公布为准。"
   },
   "transport": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+    "value": {
+      "metro": [
+        {
+          "station": "江汉路",
+          "line": "2/6 号线",
+          "exit": "C",
+          "walkMinutes": null
+        },
+        {
+          "station": "三阳路",
+          "line": "1/7 号线",
+          "exit": "B",
+          "walkMinutes": 5
+        },
+        {
+          "station": "黄浦路",
+          "line": "1/8 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": "江汉门（主入口，看江汉关与灯光秀）：地铁 2/6 号线「江汉路」站 C 口出，步行约 1.3 公里；三阳门（日落最佳）：地铁 1/7 号线「三阳路」站 B 口出，步行约 5 分钟；永清门（长江二桥段、芦苇荡）：地铁 1/8 号线「黄浦路」站出，步行约 300 米。公交 1、30、402、606 等至「沿江大道武汉关」站。"
+    },
+    "verification": "confirmed",
+    "sourceId": "s4",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15"
   },
   "recommendedDurationMinutes": {
-    "value": null,
-    "verification": "todo",
-    "todo": "TODO(Cecilia): 按你的游玩经验填"
+    "value": 120,
+    "verification": "confirmed",
+    "sourceId": "s6",
+    "extraSourceIds": [
+      "s5"
+    ],
+    "lastCheckedAt": "2026-11-15",
+    "note": "百科建议 2—3 小时，携程给了 4 小时深度路线；取 2 小时作下限。"
   },
   "bestTime": {
-    "value": "太阳落山前到江边吹晚风；晚上有灯光秀。",
-    "verification": "placeholder",
-    "sourceId": "thepaper-free-2024",
-    "lastCheckedAt": "2026-11-15"
+    "value": "下午 3 点后入园，先看日落再到三阳广场等灯光秀；10—11 月芦苇金黄、人相对少。",
+    "verification": "confirmed",
+    "sourceId": "s5",
+    "lastCheckedAt": "2026-11-15",
+    "note": "游客攻略里的经验，不是官方说法。"
   },
-  "photoSpots": [],
+  "photoSpots": [
+    {
+      "value": {
+        "title": "江汉门台阶",
+        "description": "江汉门入口。登上台阶回身拍江汉关钟楼与门楼，人物站台阶中轴",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s4",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "江汉关钟楼同框",
+        "description": "江汉门外沿江大道。整点报时前后拍钟楼，night 模式压暗天空让灯光更亮",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s8",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "三阳广场",
+        "description": "三阳门内大草坪。拍橘子海日落与对岸灯光秀，广角带上前景人群",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "观芦栈道",
+        "description": "长江二桥附近，江滩三期。10—11 月芦苇花穗最盛，橙色栏杆作引导线，低机位拍花海",
+        "photo": null
+      },
+      "verification": "confirmed",
+      "sourceId": "s9",
+      "extraSourceIds": [
+        "s5"
+      ],
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
   "food": [
     {
       "value": {
-        "name": "永无岛咖啡",
-        "walkMinutes": null,
-        "note": null
+        "name": "吉庆街",
+        "walkMinutes": 15,
+        "note": "老汉口夜市，宵夜集中；从江汉门步行约 15 分钟（平台口径）"
       },
-      "verification": "placeholder",
-      "sourceId": "dahepiao-hkjt",
+      "verification": "confirmed",
+      "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14",
-      "note": "文章写它距三阳广场 1.6 公里，不是距江滩的距离；2022 年的文章。"
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "江汉路水塔美食街 / Happy 站台",
+        "walkMinutes": 10,
+        "note": "从江汉门步行约 10 分钟进江汉路商圈"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
+    },
+    {
+      "value": {
+        "name": "黎黄陂路咖啡馆",
+        "walkMinutes": 10,
+        "note": "从江汉门往北步行到黎黄陂路，咖啡与西餐集中"
+      },
+      "verification": "confirmed",
+      "sourceId": "s5",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14"
     }
   ],
   "reviews": [],
-  "photos": []
+  "photos": [
+    {
+      "file": "07-hankou-riverside-1.jpg",
+      "caption": "汉口江滩的芦荻和栈道",
+      "license": "third-party-placeholder",
+      "author": "湖北日报",
+      "sourceUrl": "https://aka.doubaocdn.com/l/b5Zlr9YcZ4",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：湖北日报《汉口江滩芦荻花开秋意浓》（2025-10-26，文件名 DJI_20251026162625）。新闻媒体图，商用需授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "07-hankou-riverside-2.jpg",
+      "caption": "夜景备选图",
+      "license": "third-party-placeholder",
+      "author": "今日头条 / 原作者",
+      "sourceUrl": "https://aka.doubaocdn.com/l/8ranmCpve9",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：今日头条（EXIF 显示 2018-10-02 摄，「知音号」游船与江滩夜景）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "07-hankou-riverside-3.jpg",
+      "caption": "长江二桥灯光秀航拍",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/FdVTOM4Nfj",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "07-hankou-riverside-4.jpg",
+      "caption": "二桥夜色",
+      "license": "third-party-placeholder",
+      "author": "图虫创意 / 摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/Ybavoc2ZQ9",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    },
+    {
+      "file": "07-hankou-riverside-5.jpg",
+      "caption": "两岸灯光秀全景",
+      "license": "third-party-placeholder",
+      "author": "视觉中国 VCG / 签约摄影师",
+      "sourceUrl": "https://aka.doubaocdn.com/l/4NQHaYgnl6",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "出处：视觉中国 VCG（武汉江滩图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。"
+    }
+  ]
 }
