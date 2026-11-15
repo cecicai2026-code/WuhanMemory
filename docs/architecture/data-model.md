@@ -296,6 +296,7 @@ CREATE TABLE route_cache (
 - 景点坐标改了，`origin` / `destination` 对不上，旧缓存不再使用。景点表重建时这张表不动。
 - 只缓存查成功的（有方案或高德明确说没有方案），出错不缓存。
 - 公交地铁统一按当天上午 10 点出发查，避免半夜查到"地铁停运"又被缓存一周。
+- 板块 5B：`result_json` 里加了 `walkingDistanceMeters`（步行全程、公交地铁的换乘和进出站步行、打车 0）。之前存的行没有这个字段，`corepack pnpm routes:prewarm` 先从 `raw_json` 里补（`fill_walking_distances`，不发请求、不改有效期），再把 9 个开放景点两两的步行和公交地铁查齐。
 - 代码：repository `apps/api/app/repositories/route_cache_repository.py`，服务 `apps/api/app/services/routing/`。
 
 这张表可以随时删掉，下次查询会重新向高德要。
@@ -349,7 +350,8 @@ CREATE TABLE conversation_messages (
     kind                 TEXT,           -- 回复的种类：question / itinerary / failed / error
     asked                TEXT,           -- 反问时问了什么：days、date、past-date，逗号分隔
     provider             TEXT,           -- 这条回复用的模型
-    itinerary_version_id TEXT            -- 这条回复带出的行程版本
+    itinerary_version_id TEXT,           -- 这条回复带出的行程版本
+    planning_round_id    TEXT            -- 板块 5B：这条回复带出的那一轮方案
 );
 
 CREATE TABLE itineraries (
@@ -382,6 +384,26 @@ CREATE TABLE itinerary_versions (
 - 偏好和消息内容会存（对话要接着进行）；`llm_calls` 里仍然不存提示词和回答。
 - `kind` 和 `asked` 两列是后加的：`init_schema` 发现旧表缺这两列时用 `ALTER TABLE` 补上（`app/db/sqlite.py` 的 `_ADDED_COLUMNS`）。
 - 规划任务（进行到哪一步）只在内存里，不进数据库。
+
+### 12.1 规划的轮（板块 5B）
+
+```sql
+CREATE TABLE planning_rounds (
+    id              TEXT PRIMARY KEY,
+    conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    round_number    INTEGER NOT NULL,  -- 同一段对话从 1 开始
+    created_at      TEXT NOT NULL,
+    data_json       TEXT NOT NULL,     -- 整轮（PlanningRoundData）
+    UNIQUE (conversation_id, round_number)
+);
+```
+
+- 一次规划按三种侧重排三份，是一"轮"。`data_json` 里按"经典必去 → 轻松少走路 → 深度文化"记下每份的侧重、行程 id、版本 id、展示没有、不展示的原因，以及三份共用的 `defaultsUsed`。
+- 每份方案是一份行程（`itineraries` 一行）：同一段对话里同一侧重是同一份行程，下一轮是它的下一个版本。所以一段对话现在最多有三份行程；`conversations.itinerary_id` 只记第一次展示的那份，界面不再用它找行程，而是按消息上的 `planning_round_id` 取一轮。
+- 轮存下后不再修改；再发消息就是新的一轮，旧的保留。
+- 版本的 `data_json` 里多了 `emphasis`（侧重）和 `metrics`（程序算的数字）；之前存的版本没有，为 null。
+- `conversation_messages.planning_round_id` 是后加的列，和 `kind`、`asked` 一样由 `_ADDED_COLUMNS` 补上。
+- 代码：`apps/api/app/repositories/planning_round_repository.py`。
 - 代码：`apps/api/app/repositories/conversation_repository.py`、`itinerary_repository.py`。
 
 ## 13. 以后的表
