@@ -19,7 +19,9 @@ import re
 from collections.abc import Mapping
 from datetime import date, timedelta
 
+from app.core.lang import L
 from app.data_quality.rules import FIELD_LABELS
+from app.services.poi_i18n import display_name, display_text
 from app.schemas.planning import PlanDraft, PlanStop, TripFrame, ValidationIssue, ValidationReport
 from app.schemas.poi import Fact, OpeningHours, OpeningPeriod, PoiFile
 from app.schemas.route import RouteOut
@@ -36,6 +38,34 @@ TRANSPORT_SLACK_MINUTES = 10
 SHORT_STAY_RATIO = 0.5
 
 WEEKDAY_LABELS = {1: "周一", 2: "周二", 3: "周三", 4: "周四", 5: "周五", 6: "周六", 7: "周日"}
+WEEKDAY_EN = {1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday", 7: "Sunday"}
+PACE_EN = {"relaxed": "relaxed", "moderate": "moderate", "intensive": "packed"}
+MONTH_EN = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+# 资料字段的英文名（中英双语；中文名在 app/data_quality/rules.py 的 FIELD_LABELS）
+FIELD_LABELS_EN: dict[str, str] = {
+    "operatingStatus": "operating status",
+    "location": "coordinates",
+    "address": "address",
+    "intro": "introduction",
+    "history": "history",
+    "openingHours": "opening hours",
+    "ticket": "ticket prices",
+    "reservation": "booking",
+    "payment": "payment methods",
+    "transport": "getting there",
+    "recommendedDurationMinutes": "suggested visit time",
+    "bestTime": "best time to go",
+    "photoSpots": "photo spots",
+    "food": "food nearby",
+}
+
+
+def _wd(w: int) -> str:
+    return L(WEEKDAY_LABELS[w], WEEKDAY_EN[w])
+
+
+def _sep() -> str:
+    return L("、", ", ")
 
 # 行程卡上用到的资料：查它们有没有过期、是不是待确认
 USED_FACTS = ("openingHours", "recommendedDurationMinutes", "reservation", "ticket", "payment")
@@ -96,13 +126,20 @@ def validate_itinerary(
 
     # ---------- 整份行程 ----------
     if len(draft.days) != frame.days:
-        c.error("day-count", f"要求 {frame.days} 天，行程排了 {len(draft.days)} 天。")
+        c.error("day-count", L(f"要求 {frame.days} 天，行程排了 {len(draft.days)} 天。", f"{frame.days} days were asked for, but the plan has {len(draft.days)} days."))
     for index, day in enumerate(draft.days, start=1):
         if day.dayNumber != index:
-            c.error("day-number", f"第 {index} 个日程的编号写成了第 {day.dayNumber} 天，应该从 1 开始按顺序编号。", dayNumber=day.dayNumber)
+            c.error(
+                "day-number",
+                L(
+                    f"第 {index} 个日程的编号写成了第 {day.dayNumber} 天，应该从 1 开始按顺序编号。",
+                    f"Day entry {index} is numbered day {day.dayNumber}; days should be numbered in order from 1.",
+                ),
+                dayNumber=day.dayNumber,
+            )
 
     if frame.startDate is None:
-        c.warn("date-unknown", "旅行日期还没定，闭馆日没法校验。")
+        c.warn("date-unknown", L("旅行日期还没定，闭馆日没法校验。", "The travel dates aren't set yet, so closing days can't be checked."))
 
     seen: dict[str, int] = {}
     for day in draft.days:
@@ -110,7 +147,10 @@ def validate_itinerary(
             if stop.poiId in seen and stop.poiId in pois:
                 c.error(
                     "duplicate-poi",
-                    f"{pois[stop.poiId].name}安排了两次（第 {seen[stop.poiId]} 天和第 {day.dayNumber} 天）。",
+                    L(
+                        f"{pois[stop.poiId].name}安排了两次（第 {seen[stop.poiId]} 天和第 {day.dayNumber} 天）。",
+                        f"{display_name(pois[stop.poiId])} is scheduled twice (day {seen[stop.poiId]} and day {day.dayNumber}).",
+                    ),
                     dayNumber=day.dayNumber,
                     poiId=stop.poiId,
                 )
@@ -121,7 +161,7 @@ def validate_itinerary(
         d = day.dayNumber
         when = day_date(frame, d)
         if not day.stops:
-            c.error("empty-day", f"第 {d} 天一个景点都没有。", dayNumber=d)
+            c.error("empty-day", L(f"第 {d} 天一个景点都没有。", f"Day {d} has no places."), dayNumber=d)
             continue
 
         times: list[tuple[int, int] | None] = []
@@ -156,23 +196,41 @@ def _check_stop(
     """检查一站，返回 (到达, 离开) 的分钟数；时间格式不对返回 None。"""
     poi = pois.get(stop.poiId)
     if poi is None:
-        c.error("unknown-poi", f"第 {d} 天的景点 id「{stop.poiId}」不在候选景点里（只能从景点库给出的候选里选）。", dayNumber=d, poiId=stop.poiId)
+        c.error(
+            "unknown-poi",
+            L(
+                f"第 {d} 天的景点 id「{stop.poiId}」不在候选景点里（只能从景点库给出的候选里选）。",
+                f"The place id \"{stop.poiId}\" on day {d} is not among the candidates (only candidates from the place database may be used).",
+            ),
+            dayNumber=d,
+            poiId=stop.poiId,
+        )
 
     elif poi.operatingStatus and poi.operatingStatus.value and poi.operatingStatus.value.code == "closed-temporarily":
-        c.error("poi-closed", f"第 {d} 天的{poi.name}现在暂停开放，不能排进行程。", dayNumber=d, poiId=stop.poiId)
+        c.error(
+            "poi-closed",
+            L(f"第 {d} 天的{poi.name}现在暂停开放，不能排进行程。", f"{display_name(poi)} on day {d} is temporarily closed and can't be in the plan."),
+            dayNumber=d,
+            poiId=stop.poiId,
+        )
 
     if not stop.scheduled:
         return None  # 程序推不出钟点（板块 6C），原因已经是一条错误
-    name = poi.name if poi else stop.poiId
+    name = (L(poi.name, display_name(poi))) if poi else stop.poiId
     arrive, leave = parse_hhmm(stop.arrive), parse_hhmm(stop.leave)
     if arrive is None or leave is None:
         bad = stop.arrive if arrive is None else stop.leave
-        c.error("bad-time", f"第 {d} 天{name}的时间「{bad}」格式不对，应该是 HH:MM。", dayNumber=d, poiId=stop.poiId)
+        c.error(
+            "bad-time",
+            L(f"第 {d} 天{name}的时间「{bad}」格式不对，应该是 HH:MM。", f"The time \"{bad}\" for {name} on day {d} is not in HH:MM format."),
+            dayNumber=d,
+            poiId=stop.poiId,
+        )
         return None
     if leave <= arrive:
         c.error(
             "time-order",
-            f"第 {d} 天{name}的离开时间 {stop.leave} 不晚于到达时间 {stop.arrive}。",
+            L(f"第 {d} 天{name}的离开时间 {stop.leave} 不晚于到达时间 {stop.arrive}。", f"On day {d}, the leaving time {stop.leave} at {name} is not after the arrival time {stop.arrive}."),
             dayNumber=d,
             poiId=stop.poiId,
         )
@@ -194,20 +252,35 @@ def _check_opening(c: _Collector, poi: PoiFile, arrive: int, leave: int, d: int,
     fact: Fact[OpeningHours] | None = poi.openingHours
     hours = fact.value if fact is not None and fact.verification != "todo" else None
     if hours is None:
-        c.warn("hours-unknown", f"{poi.name}的开放时间未知，无法校验第 {d} 天的安排。", **kw)
+        c.warn("hours-unknown", L(f"{poi.name}的开放时间未知，无法校验第 {d} 天的安排。", f"Opening hours for {display_name(poi)} are unknown, so day {d} can't be checked."), **kw)
         return
     if hours.allDay:
         return
 
-    note = f"（备注：{hours.note}）" if hours.note else ""
+    name = L(poi.name, display_name(poi))
+    note = L(f"（备注：{hours.note}）", f" (Note: {display_text(poi, 'openingHours.value.note', hours.note)})") if hours.note else ""
     if when is None:
         # 日期未定：每天时段都一样的，照样查时间；有固定闭馆日的提醒一句
         if hours.closedWeekdays:
-            days = "、".join(WEEKDAY_LABELS[w] for w in sorted(hours.closedWeekdays))
-            c.warn("closed-day-unchecked", f"{poi.name}{days}闭馆，日期未定，没法确认第 {d} 天是不是闭馆日。{note}", **kw)
+            days = _sep().join(_wd(w) for w in sorted(hours.closedWeekdays))
+            c.warn(
+                "closed-day-unchecked",
+                L(
+                    f"{name}{days}闭馆，日期未定，没法确认第 {d} 天是不是闭馆日。{note}",
+                    f"{name} is closed on {days}; the dates aren't set, so it can't be confirmed whether day {d} is a closing day.{note}",
+                ),
+                **kw,
+            )
         distinct = {(p.open, p.close, p.lastEntry) for p in hours.periods}
         if len(distinct) != 1:
-            c.warn("hours-unknown", f"{poi.name}不同日子开放时间不一样，日期未定，无法校验第 {d} 天的时间。", **kw)
+            c.warn(
+                "hours-unknown",
+                L(
+                    f"{name}不同日子开放时间不一样，日期未定，无法校验第 {d} 天的时间。",
+                    f"{name} has different hours on different days and the dates aren't set, so day {d}'s times can't be checked.",
+                ),
+                **kw,
+            )
             return
         periods = hours.periods[:1]
     else:
@@ -215,7 +288,7 @@ def _check_opening(c: _Collector, poi: PoiFile, arrive: int, leave: int, d: int,
         if wd in hours.closedWeekdays:
             c.error(
                 "closed-day",
-                f"第 {d} 天（{when.isoformat()}，{WEEKDAY_LABELS[wd]}）{poi.name}闭馆。{note}",
+                L(f"第 {d} 天（{when.isoformat()}，{_wd(wd)}）{name}闭馆。{note}", f"{name} is closed on day {d} ({when.isoformat()}, {_wd(wd)}).{note}"),
                 **kw,
             )
             return
@@ -223,7 +296,10 @@ def _check_opening(c: _Collector, poi: PoiFile, arrive: int, leave: int, d: int,
         if not periods:
             c.warn(
                 "hours-unknown",
-                f"资料里没有{poi.name}在 {when.month} 月{WEEKDAY_LABELS[wd]}的开放时间，无法校验第 {d} 天的安排。{note}",
+                L(
+                    f"资料里没有{name}在 {when.month} 月{_wd(wd)}的开放时间，无法校验第 {d} 天的安排。{note}",
+                    f"The data has no opening hours for {name} on {_wd(wd)}s in {MONTH_EN[when.month]}, so day {d} can't be checked.{note}",
+                ),
                 **kw,
             )
             return
@@ -233,7 +309,7 @@ def _check_opening(c: _Collector, poi: PoiFile, arrive: int, leave: int, d: int,
         return  # 有一个时段完全合适
     # 都不合适：按问题最少的那个时段报（例如中午闭馆时，报"下午还没开门"而不是"上午已关门"）
     for code, message in min(problems_by_period, key=len):
-        c.error(code, f"第 {d} 天{poi.name}：{message}{note}", **kw)
+        c.error(code, L(f"第 {d} 天{name}：{message}{note}", f"Day {d}, {name}: {message}{note}"), **kw)
 
 
 def _period_problems(p: OpeningPeriod, arrive: int, leave: int) -> list[tuple[str, str]]:
@@ -241,13 +317,13 @@ def _period_problems(p: OpeningPeriod, arrive: int, leave: int) -> list[tuple[st
     last = parse_hhmm(p.lastEntry) if p.lastEntry else None
     problems: list[tuple[str, str]] = []
     if open_ is not None and arrive < open_:
-        problems.append(("before-open", f"{fmt(arrive)} 到达，还没开门（{p.open} 开门）。"))
+        problems.append(("before-open", L(f"{fmt(arrive)} 到达，还没开门（{p.open} 开门）。", f"arrives at {fmt(arrive)}, before it opens ({p.open}).")))
     if last is not None and arrive > last:
-        problems.append(("after-last-entry", f"{fmt(arrive)} 到达，已经过了最晚入场时间 {p.lastEntry}。"))
+        problems.append(("after-last-entry", L(f"{fmt(arrive)} 到达，已经过了最晚入场时间 {p.lastEntry}。", f"arrives at {fmt(arrive)}, after last entry ({p.lastEntry}).")))
     elif last is None and close is not None and arrive >= close:
-        problems.append(("after-last-entry", f"{fmt(arrive)} 到达，已经关门了（{p.close} 关门）。"))
+        problems.append(("after-last-entry", L(f"{fmt(arrive)} 到达，已经关门了（{p.close} 关门）。", f"arrives at {fmt(arrive)}, after closing ({p.close}).")))
     if close is not None and leave > close:
-        problems.append(("after-close", f"{fmt(leave)} 离开，晚于关门时间 {p.close}。"))
+        problems.append(("after-close", L(f"{fmt(leave)} 离开，晚于关门时间 {p.close}。", f"leaves at {fmt(leave)}, after closing time ({p.close}).")))
     return problems
 
 
@@ -256,10 +332,21 @@ def _check_stay(c: _Collector, poi: PoiFile, arrive: int, leave: int, d: int) ->
     fact = poi.recommendedDurationMinutes
     rec = fact.value if fact is not None and fact.verification != "todo" else None
     if rec is None:
-        c.warn("duration-unknown", f"{poi.name}没有建议游玩时长，第 {d} 天停留 {leave - arrive} 分钟够不够没法判断。", **kw)
+        c.warn(
+            "duration-unknown",
+            L(
+                f"{poi.name}没有建议游玩时长，第 {d} 天停留 {leave - arrive} 分钟够不够没法判断。",
+                f"{display_name(poi)} has no suggested visit time, so it can't be judged whether {leave - arrive} minutes on day {d} is enough.",
+            ),
+            **kw,
+        )
         return
     if leave - arrive < rec * SHORT_STAY_RATIO:
-        c.warn("stay-short", f"第 {d} 天{poi.name}只停留 {leave - arrive} 分钟，建议游玩 {rec} 分钟。", **kw)
+        c.warn(
+            "stay-short",
+            L(f"第 {d} 天{poi.name}只停留 {leave - arrive} 分钟，建议游玩 {rec} 分钟。", f"Only {leave - arrive} minutes at {display_name(poi)} on day {d}; the suggested visit is {rec} minutes."),
+            **kw,
+        )
 
 
 # ---------- 相邻两站 ----------
@@ -276,40 +363,60 @@ def _check_transport(
     for i in range(1, len(stops)):
         prev, nxt = stops[i - 1], stops[i]
         pt, nt = times[i - 1], times[i]
-        a = pois[prev.poiId].name if prev.poiId in pois else prev.poiId
-        b = pois[nxt.poiId].name if nxt.poiId in pois else nxt.poiId
+        a = display_name(pois[prev.poiId]) if prev.poiId in pois else prev.poiId
+        b = display_name(pois[nxt.poiId]) if nxt.poiId in pois else nxt.poiId
         kw = {"dayNumber": d, "poiId": nxt.poiId}
         if pt is None or nt is None:
             continue  # 时间格式错已经报过
         gap = nt[0] - pt[1]
         if gap < 0:
-            c.error("overlap", f"第 {d} 天{b} {fmt(nt[0])} 到达，比离开{a}的 {fmt(pt[1])} 还早，时间重叠。", **kw)
+            c.error(
+                "overlap",
+                L(
+                    f"第 {d} 天{b} {fmt(nt[0])} 到达，比离开{a}的 {fmt(pt[1])} 还早，时间重叠。",
+                    f"On day {d}, arrival at {b} ({fmt(nt[0])}) is before leaving {a} ({fmt(pt[1])}); the times overlap.",
+                ),
+                **kw,
+            )
             continue
         if prev.poiId not in pois or nxt.poiId not in pois:
             continue  # 景点不存在已经报过，查不了路线
         route = legs.get((prev.poiId, nxt.poiId))
         if route is None or route.status != "ok" or route.durationMinutes is None:
-            why = f"（{route.error.message}）" if route is not None and route.error else ""
-            c.warn("route-unknown", f"第 {d} 天{a}到{b}的交通时间没查到，无法校验空档 {gap} 分钟够不够。{why}", **kw)
+            why = L(f"（{route.error.message}）", f" ({route.error.message})") if route is not None and route.error else ""
+            c.warn(
+                "route-unknown",
+                L(
+                    f"第 {d} 天{a}到{b}的交通时间没查到，无法校验空档 {gap} 分钟够不够。{why}",
+                    f"No travel time was found from {a} to {b} on day {d}, so the {gap}-minute gap can't be checked.{why}",
+                ),
+                **kw,
+            )
             continue
         need = route.durationMinutes
-        mode = {"walk": "步行", "transit": "公交地铁", "drive": "驾车"}[route.mode]
+        mode = L({"walk": "步行", "transit": "公交地铁", "drive": "驾车"}[route.mode], {"walk": " on foot", "transit": " by bus/metro", "drive": " by car"}[route.mode])
         if gap < need:
             c.error(
                 "transport-too-short",
-                f"第 {d} 天{a}到{b}{mode}要 {need} 分钟，行程只留了 {gap} 分钟。",
+                L(f"第 {d} 天{a}到{b}{mode}要 {need} 分钟，行程只留了 {gap} 分钟。", f"On day {d}, {a} to {b}{mode} takes {need} minutes, but the plan leaves only {gap}."),
                 **kw,
             )
         elif gap < need + TRANSPORT_SLACK_MINUTES:
             c.warn(
                 "transport-tight",
-                f"第 {d} 天{a}到{b}{mode}要 {need} 分钟，只留了 {gap} 分钟，余量不到 {TRANSPORT_SLACK_MINUTES} 分钟。",
+                L(
+                    f"第 {d} 天{a}到{b}{mode}要 {need} 分钟，只留了 {gap} 分钟，余量不到 {TRANSPORT_SLACK_MINUTES} 分钟。",
+                    f"On day {d}, {a} to {b}{mode} takes {need} minutes and {gap} are left: less than {TRANSPORT_SLACK_MINUTES} minutes to spare.",
+                ),
                 **kw,
             )
         if route.cache == "stale":
             c.warn(
                 "route-stale",
-                f"第 {d} 天{a}到{b}的交通时间用的是过期的缓存（{route.warning or '重新查询失败'}）。",
+                L(
+                    f"第 {d} 天{a}到{b}的交通时间用的是过期的缓存（{route.warning or '重新查询失败'}）。",
+                    f"On day {d}, the travel time from {a} to {b} comes from an expired cache ({route.warning or 'the new lookup failed'}).",
+                ),
                 **kw,
             )
 
@@ -320,15 +427,18 @@ def _check_day_span(c: _Collector, times: list[tuple[int, int] | None], d: int, 
         return
     start, end = min(t[0] for t in valid), max(t[1] for t in valid)
     if start < DAY_EARLIEST:
-        c.error("day-window", f"第 {d} 天 {fmt(start)} 就开始，早于 {fmt(DAY_EARLIEST)}。", dayNumber=d)
+        c.error("day-window", L(f"第 {d} 天 {fmt(start)} 就开始，早于 {fmt(DAY_EARLIEST)}。", f"Day {d} starts at {fmt(start)}, earlier than {fmt(DAY_EARLIEST)}."), dayNumber=d)
     if end > DAY_LATEST:
-        c.error("day-window", f"第 {d} 天到 {fmt(end)} 才结束，晚于 {fmt(DAY_LATEST)}。", dayNumber=d)
+        c.error("day-window", L(f"第 {d} 天到 {fmt(end)} 才结束，晚于 {fmt(DAY_LATEST)}。", f"Day {d} ends at {fmt(end)}, later than {fmt(DAY_LATEST)}."), dayNumber=d)
     limit = DAY_LIMIT_MINUTES[frame.pace]
     if end - start > limit:
         hours = (end - start) / 60
         c.error(
             "day-too-long",
-            f"第 {d} 天从 {fmt(start)} 到 {fmt(end)}，共 {hours:.1f} 小时，超过{PACE_LABELS[frame.pace]}节奏的上限 {limit // 60} 小时。",
+            L(
+                f"第 {d} 天从 {fmt(start)} 到 {fmt(end)}，共 {hours:.1f} 小时，超过{PACE_LABELS[frame.pace]}节奏的上限 {limit // 60} 小时。",
+                f"Day {d} runs from {fmt(start)} to {fmt(end)}, {hours:.1f} hours in all, over the {limit // 60}-hour limit for a {PACE_EN[frame.pace]} pace.",
+            ),
             dayNumber=d,
         )
 
@@ -343,7 +453,7 @@ def _check_data(c: _Collector, poi: PoiFile, d: int, today: date) -> None:
     missing_fields: list[str] = []
     for field in USED_FACTS:
         fact = getattr(poi, field)
-        label = FIELD_LABELS[field]
+        label = L(FIELD_LABELS[field], FIELD_LABELS_EN[field])
         if fact is None or fact.verification == "todo":
             # 开放时间和建议时长缺了，上面已经各报过一条"无法校验"
             if field not in ("openingHours", "recommendedDurationMinutes"):
@@ -353,7 +463,10 @@ def _check_data(c: _Collector, poi: PoiFile, d: int, today: date) -> None:
         if fact.expiresAt is not None and fact.expiresAt < today:
             c.warn(
                 "data-expired",
-                f"{poi.name}的{label}已经过期（有效期到 {fact.expiresAt.isoformat()}），行程依据的可能不是现在的情况。",
+                L(
+                    f"{poi.name}的{label}已经过期（有效期到 {fact.expiresAt.isoformat()}），行程依据的可能不是现在的情况。",
+                    f"The {label} for {display_name(poi)} expired (valid until {fact.expiresAt.isoformat()}); the plan may not reflect the current situation.",
+                ),
                 dayNumber=d,
                 poiId=poi.id,
                 fields=[field],
@@ -364,7 +477,7 @@ def _check_data(c: _Collector, poi: PoiFile, d: int, today: date) -> None:
     if pending:
         c.warn(
             "data-pending",
-            f"{poi.name}的{'、'.join(pending)}是占位资料，待确认。",
+            L(f"{poi.name}的{'、'.join(pending)}是占位资料，待确认。", f"The {', '.join(pending)} for {display_name(poi)} is placeholder data, to be confirmed."),
             dayNumber=d,
             poiId=poi.id,
             fields=pending_fields,
@@ -372,7 +485,7 @@ def _check_data(c: _Collector, poi: PoiFile, d: int, today: date) -> None:
     if missing:
         c.warn(
             "data-missing",
-            f"{poi.name}的{'、'.join(missing)}还没有资料，行程卡上会写“待补充”。",
+            L(f"{poi.name}的{'、'.join(missing)}还没有资料，行程卡上会写“待补充”。", f"There is no {', '.join(missing)} data for {display_name(poi)} yet; the trip card will say \"to fill in\"."),
             dayNumber=d,
             poiId=poi.id,
             fields=missing_fields,

@@ -18,7 +18,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 from app.schemas.planning import OutlineStop, PlanDay, PlanDraft, PlanOutline, PlanStop, TripFrame, ValidationIssue
+from app.core.lang import L
 from app.schemas.poi import PoiFile
+from app.services.poi_i18n import display_name
 from app.schemas.route import RouteOut
 from app.services.planning.validate import TRANSPORT_SLACK_MINUTES, _matching_periods, day_date, fmt, parse_hhmm
 
@@ -80,7 +82,8 @@ def schedule(
         start = parse_hhmm(day.start)
         if start is None:
             issues.append(ValidationIssue(level="error", code="bad-time", dayNumber=d,
-                                          message=f"第 {d} 天的出发时间「{day.start}」格式不对，应该是 HH:MM。"))
+                                          message=L(f"第 {d} 天的出发时间「{day.start}」格式不对，应该是 HH:MM。",
+                                                    f"The start time \"{day.start}\" on day {d} is not in HH:MM format.")))
             stops = [_unscheduled(s) for s in day.stops]
             days.append(PlanDay(dayNumber=d, theme=day.theme, stops=stops))
             continue
@@ -99,10 +102,12 @@ def schedule(
                 if prev.poiId in pois and s.poiId in pois and prev.poiId != s.poiId:
                     route = legs.get((prev.poiId, s.poiId))
                     if route is None or route.status != "ok" or route.durationMinutes is None:
-                        why = f"（{route.error.message}）" if route is not None and route.error else ""
+                        why = L(f"（{route.error.message}）", f" ({route.error.message})") if route is not None and route.error else ""
+                        a, b = display_name(pois[prev.poiId]), display_name(pois[s.poiId])
                         issues.append(ValidationIssue(
                             level="error", code="transport-unknown", dayNumber=d, poiId=s.poiId,
-                            message=f"第 {d} 天{pois[prev.poiId].name}到{pois[s.poiId].name}的交通没查到，没法排后面的时间。{why}",
+                            message=L(f"第 {d} 天{a}到{b}的交通没查到，没法排后面的时间。{why}",
+                                      f"No route was found from {a} to {b} on day {d}, so the rest of the day can't be timed.{why}"),
                         ))
                         stuck = True
                         stops.append(_unscheduled(s))
@@ -113,10 +118,13 @@ def schedule(
             arrive = _opening_wait(pois.get(s.poiId), _round_up(arrive), frame, d)
             leave = arrive + s.stayMinutes
             if leave >= MIDNIGHT:
-                name = pois[s.poiId].name if s.poiId in pois else s.poiId
+                name = display_name(pois[s.poiId]) if s.poiId in pois else s.poiId
                 issues.append(ValidationIssue(
                     level="error", code="day-overflow", dayNumber=d, poiId=s.poiId,
-                    message=f"第 {d} 天从 {fmt(start)} 出发，按停留时长和真实交通推下来，到{name}已经过了午夜，这天排不下这么多站或停留太久。",
+                    message=L(
+                        f"第 {d} 天从 {fmt(start)} 出发，按停留时长和真实交通推下来，到{name}已经过了午夜，这天排不下这么多站或停留太久。",
+                        f"Starting at {fmt(start)} on day {d}, the stays and real travel times push {name} past midnight; the day can't fit this many stops or such long stays.",
+                    ),
                 ))
                 stuck = True
                 stops.append(_unscheduled(s))

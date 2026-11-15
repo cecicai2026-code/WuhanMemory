@@ -16,6 +16,7 @@ from app.api.routing import router as routing_router
 from app.api.shares import router as shares_router
 from app.api.trips import router as trips_router
 from app.core.config import settings
+from app.core.lang import LangMiddleware
 from app.data_quality.rules import today_in_city
 from app.db.import_pois import import_pois
 from app.db.sqlite import connect
@@ -43,6 +44,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="WuhanMemory API", version="0.1.0", lifespan=lifespan)
+
+# 中英双语：每个请求的语言（app/core/lang.py）
+app.add_middleware(LangMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

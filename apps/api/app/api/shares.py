@@ -21,6 +21,7 @@ from app.core.config import settings
 from app.core.site_policy import require_owner
 from app.repositories.share_link_repository import ShareLinkRepository, SqliteShareLinkRepository
 from app.schemas.share import ShareLinkOut, SharePageOut
+from app.core.lang import L
 
 router = APIRouter(prefix="/api", tags=["share"])
 
@@ -36,9 +37,9 @@ ShareLinks = Annotated[ShareLinkRepository, Depends(get_share_links)]
 async def publish_share(version_id: str, response: Response, itineraries: Itineraries, links: ShareLinks) -> ShareLinkOut:
     version = itineraries.get_version(version_id)
     if version is None:
-        raise HTTPException(status_code=404, detail=f"没有这份行程：{version_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这份行程：{version_id}", f"No such trip: {version_id}"))
     if version.validation.status == "failed":
-        raise HTTPException(status_code=409, detail="这份行程没通过校验，不能分享")
+        raise HTTPException(status_code=409, detail=L("这份行程没通过校验，不能分享", "This trip didn't pass the checks, so it can't be shared"))
     existing = links.active_for_version(version_id)
     if existing is not None:
         response.status_code = 200
@@ -52,7 +53,7 @@ async def publish_share(version_id: str, response: Response, itineraries: Itiner
 async def get_version_share(version_id: str, links: ShareLinks) -> ShareLinkOut:
     link = links.active_for_version(version_id)
     if link is None:
-        raise HTTPException(status_code=404, detail="这份行程还没有分享链接")
+        raise HTTPException(status_code=404, detail=L("这份行程还没有分享链接", "This trip has no share link yet"))
     return ShareLinkOut.of(link)
 
 
@@ -60,9 +61,9 @@ async def get_version_share(version_id: str, links: ShareLinks) -> ShareLinkOut:
 async def get_share(slug: str, itineraries: Itineraries, links: ShareLinks) -> SharePageOut:
     link = links.get(slug)
     if link is None:
-        raise HTTPException(status_code=404, detail=f"没有这个分享链接：{slug}")
+        raise HTTPException(status_code=404, detail=L(f"没有这个分享链接：{slug}", f"No such share link: {slug}"))
     if link.revokedAt is not None:
-        raise HTTPException(status_code=410, detail="这个分享链接已经撤回")
+        raise HTTPException(status_code=410, detail=L("这个分享链接已经撤回", "This share link has been withdrawn"))
     version = itineraries.get_version(link.versionId)
     if version is None:  # 版本被删了（现在没有删除版本的功能，防万一）
         raise HTTPException(status_code=404, detail=f"这个分享链接指向的行程不在了：{slug}")
@@ -73,5 +74,5 @@ async def get_share(slug: str, itineraries: Itineraries, links: ShareLinks) -> S
 async def revoke_share(slug: str, links: ShareLinks) -> ShareLinkOut:
     link = links.revoke(slug)
     if link is None:
-        raise HTTPException(status_code=404, detail=f"没有这个分享链接：{slug}")
+        raise HTTPException(status_code=404, detail=L(f"没有这个分享链接：{slug}", f"No such share link: {slug}"))
     return ShareLinkOut.of(link)

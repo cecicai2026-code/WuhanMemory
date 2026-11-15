@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any, Literal
 
+from app.core.lang import L
 from app.repositories.conversation_repository import ConversationRepository
 from app.repositories.itinerary_repository import ItineraryRepository
 from app.repositories.planning_round_repository import PlanningRoundRepository
@@ -44,24 +45,35 @@ from app.services.planning import prompts
 from app.services.planning.candidates import Candidates, candidate_brief, select_candidates
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
-from app.services.planning.preferences import PACE_LABELS, TRANSPORT_LABELS, Frame, frame_for, merge, question_for
+from app.services.planning.preferences import PACE_EN, PACE_LABELS, PACE_PREFIXES, TRANSPORT_LABELS, Frame, frame_for, merge, question_for
 from app.services.planning.schedule import schedule
 from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
+from app.services.poi_i18n import display_name, localize_for_display
 from app.services.poi_view import fact_status
 from app.services.routing.service import RouteService
 
 # 界面上显示的规划步骤。顺序就是链路的顺序；repairing 只在第一轮有错误时出现。
 Stage = Literal["understanding", "selecting", "generating", "routing", "validating", "repairing", "saving"]
-STAGE_LABELS: dict[str, str] = {
-    "understanding": "理解需求",
-    "selecting": "从景点库挑候选",
-    "generating": "模型排三份方案",
-    "routing": "查真实交通时间",
-    "validating": "校验",
-    "repairing": "把错误交给模型修正",
-    "saving": "保存",
+_STAGE_LABELS: dict[str, tuple[str, str]] = {
+    "understanding": ("理解需求", "Understanding the request"),
+    "selecting": ("从景点库挑候选", "Picking candidates from the place database"),
+    "generating": ("模型排三份方案", "The model plans three options"),
+    "routing": ("查真实交通时间", "Looking up real travel times"),
+    "validating": ("校验", "Checking"),
+    "repairing": ("把错误交给模型修正", "Sending errors back to the model to fix"),
+    "saving": ("保存", "Saving"),
 }
+
+
+def stage_label(stage: str) -> str:
+    """步骤名，按当前请求的语言（查进度时现取，所以英文页面看到的是英文）"""
+    pair = _STAGE_LABELS.get(stage)
+    return L(*pair) if pair else stage
+
+
+# 旧代码和测试按名字引用；值是中文
+STAGE_LABELS: dict[str, str] = {k: v[0] for k, v in _STAGE_LABELS.items()}
 
 DEFAULT_EMPHASES: tuple[str, ...] = tuple(EMPHASES)
 
@@ -225,7 +237,7 @@ class PlanningPipeline:
         drafts: dict[int, tuple[PlanOutline, str | None]] = {}
         for i, (plan, g) in enumerate(zip(plans, generated)):
             if isinstance(g, LLMError):
-                plan.removed = f"模型没排出来：{g.message}"
+                plan.removed = L(f"模型没排出来：{g.message}", f"The model didn't produce a plan: {g.message}")
             else:
                 drafts[i] = (g.parsed, g.model)  # type: ignore[union-attr]
 
@@ -251,7 +263,7 @@ class PlanningPipeline:
                     if not isinstance(r, LLMError):
                         raise r
                     # 修正没回来：保留第一轮的结果，下面按"没通过校验"处理
-                    p.removed = f"修正时模型出错：{r.message}"
+                    p.removed = L(f"修正时模型出错：{r.message}", f"The model failed while fixing: {r.message}")
                 else:
                     fixed[plans.index(p)] = (r.parsed, r.model)  # type: ignore[union-attr]
             if fixed:
@@ -260,8 +272,9 @@ class PlanningPipeline:
 
         for p in plans:
             if p.removed is None and p.final is not None and p.final.report.status == "failed":
-                tried = "（修正过一次）" if p.final is not p.first else ""
-                p.removed = f"没通过校验：还有 {len(p.final.report.errors)} 处问题{tried}"
+                tried = L("（修正过一次）", " (fixed once)") if p.final is not p.first else ""
+                n = len(p.final.report.errors)
+                p.removed = L(f"没通过校验：还有 {n} 处问题{tried}", f"Didn't pass the checks: {n} problems left{tried}")
 
         # ⑨ 保存：每份一个版本，记下这一轮
         await stage("saving")
@@ -352,7 +365,7 @@ class PlanningPipeline:
         try:
             g = await self._generate(plan, provider)
         except LLMError as exc:
-            return SingleOutcome(provider=provider, error=f"排行程时模型出错：{exc.message}", defaults=defaults)
+            return SingleOutcome(provider=provider, error=L(f"排行程时模型出错：{exc.message}", f"The model failed while planning: {exc.message}"), defaults=defaults)
         await self._check_all([plan], {0: (g.parsed, g.model)}, today, stage)  # type: ignore[dict-item]
         plan.final = plan.first
 
@@ -363,7 +376,7 @@ class PlanningPipeline:
                 r = await self._repair(plan, provider)
             except LLMError as exc:
                 # 修正没回来：保留第一版，按没通过处理（和 handle 一样）
-                repair_error = f"修正时模型出错：{exc.message}"
+                repair_error = L(f"修正时模型出错：{exc.message}", f"The model failed while fixing: {exc.message}")
             else:
                 await self._check_all([plan], {0: (r.parsed, r.model)}, today, stage, into="final")  # type: ignore[dict-item]
 
@@ -404,7 +417,7 @@ class PlanningPipeline:
     async def _generate(self, plan: _Plan, provider: str):  # type: ignore[no-untyped-def]
         return await self.gateway.complete_json(
             task="generate_itinerary",
-            system_prompt=prompts.GENERATE_SYSTEM,
+            system_prompt=prompts.GENERATE_SYSTEM + prompts.language_rule(),
             user_prompt=plan.prompt,
             schema=PlanOutline,
             provider=provider,
@@ -416,7 +429,7 @@ class PlanningPipeline:
         assert p.first is not None
         return await self.gateway.complete_json(
             task="repair_itinerary",
-            system_prompt=prompts.REPAIR_SYSTEM,
+            system_prompt=prompts.REPAIR_SYSTEM + prompts.language_rule(),
             user_prompt=prompts.repair_user_prompt(
                 generate_prompt=p.prompt,
                 outline=p.first.outline,
@@ -496,7 +509,7 @@ class PlanningPipeline:
             for k in kept:
                 reason = near_duplicate(k.final.draft, p.final.draft)  # type: ignore[union-attr]
                 if reason is not None:
-                    p.removed = f"和「{k.emphasis.label}」几乎一样：{reason}"
+                    p.removed = L(f"和「{k.emphasis.label}」几乎一样：{reason}", f"Almost the same as \"{k.emphasis.label}\": {reason}")
                     break
             else:
                 kept.append(p)
@@ -512,7 +525,7 @@ class PlanningPipeline:
         final, first = p.final, p.first
         assert final is not None and first is not None
         data = ItineraryVersionData(
-            title=final.draft.title or f"武汉 {p.trip.frame.days} 日 · {p.emphasis.label}",
+            title=final.draft.title or L(f"武汉 {p.trip.frame.days} 日 · {p.emphasis.label}", f"{p.trip.frame.days} days in Wuhan · {p.emphasis.label}"),
             frame=p.trip.frame,
             preferences=prefs,
             defaultsUsed=p.trip.defaults_used,
@@ -540,10 +553,13 @@ class PlanningPipeline:
 
 def _defaults(trip: Frame, base: Candidates) -> list[str]:
     defaults = list(trip.defaults_used)
+    sep = L("、", ", ")
     if base.not_in_library:
-        defaults.append(f"你提到的{'、'.join(base.not_in_library)}不在景点库里，没有安排")
+        names = sep.join(base.not_in_library)
+        defaults.append(L(f"你提到的{names}不在景点库里，没有安排", f"{names}, which you mentioned, isn't in the place database, so it isn't in the plan"))
     if base.closed_requested:
-        defaults.append(f"你提到的{'、'.join(base.closed_requested)}现在暂停开放，没有安排")
+        names = sep.join(base.closed_requested)
+        defaults.append(L(f"你提到的{names}现在暂停开放，没有安排", f"{names}, which you mentioned, is temporarily closed, so it isn't in the plan"))
     return defaults
 
 
@@ -568,9 +584,12 @@ def _plan_defaults(
     """一份方案的"按默认补的设置"。侧重改了节奏（轻松少走路按轻松排）时，不能再写三份共用的"节奏：适中（按默认）"。"""
     if frame.pace == shared.pace:
         return list(defaults)
-    said = f"；你说的是{PACE_LABELS[prefs.pace]}" if prefs.pace is not None else ""
-    note = f"节奏：{PACE_LABELS[frame.pace]}（这份是「{emphasis.label}」，按{PACE_LABELS[frame.pace]}排{said}）"
-    return [d for d in defaults if not d.startswith("节奏：")] + [note]
+    said = L(f"；你说的是{PACE_LABELS[prefs.pace]}", f"; you said {PACE_EN[prefs.pace]}") if prefs.pace is not None else ""
+    note = L(
+        f"节奏：{PACE_LABELS[frame.pace]}（这份是「{emphasis.label}」，按{PACE_LABELS[frame.pace]}排{said}）",
+        f"Pace: {PACE_EN[frame.pace]} (this is \"{emphasis.label}\", planned at a {PACE_EN[frame.pace]} pace{said})",
+    )
+    return [d for d in defaults if not d.startswith(PACE_PREFIXES)] + [note]
 
 
 # ---------- 存进版本的快照 ----------
@@ -602,6 +621,8 @@ def _build_days(final: _Round, candidates: Candidates, frame: TripFrame, today: 
             poi = candidates.pois.get(s.poiId)
             if poi is None or poi.location is None or poi.location.value is None:
                 continue  # 不存在的景点只留在 draft 里，校验结果里有错误
+            # 存进版本的名字、区、资料按当前语言（英文用 data/pois/en/ 的译文）
+            poi = localize_for_display(poi)
             facts = StopFacts.model_validate(
                 {
                     name: _fact_out(poi, getattr(poi, name), today)
@@ -650,16 +671,20 @@ def _leg_lines(legs: list[ItineraryLeg], candidates: Candidates) -> list[str]:
 def _reply_text(plans: list[RoundPlan], shown: list[ItineraryVersion]) -> str:
     total = len(plans)
     hidden = [p for p in plans if not p.shown]
-    why = "".join(f"「{p.label}」没有展示：{p.removedReason}。" for p in hidden)
+    why = "".join(L(f"「{p.label}」没有展示：{p.removedReason}。", f" \"{p.label}\" isn't shown: {p.removedReason}.") for p in hidden)
     if not shown:
-        return f"这次排的 {total} 份方案都不能展示。{why}可以换个说法或调整要求再试。"
-    names = "、".join(f"「{p.label}」" for p in plans if p.shown)
-    head = f"排了 {total} 份方案，展示 {len(shown)} 份：{names}。" if total > 1 else "排好了。"
+        return L(f"这次排的 {total} 份方案都不能展示。{why}可以换个说法或调整要求再试。", f"None of the {total} plans this time can be shown.{why} Try rewording or changing your request.")
+    names = L("、", ", ").join(L(f"「{p.label}」", f"\"{p.label}\"") for p in plans if p.shown)
+    head = L(f"排了 {total} 份方案，展示 {len(shown)} 份：{names}。", f"Planned {total} options, showing {len(shown)}: {names}.") if total > 1 else L("排好了。", "Done.")
     repaired = sum(1 for v in shown if v.planner.rounds == 2)
-    fixed = f"其中 {repaired} 份第一版有错误，交给模型修正过一次。" if repaired else ""
+    fixed = L(f"其中 {repaired} 份第一版有错误，交给模型修正过一次。", f" {repaired} had errors in the first draft and were sent back to the model to fix once.") if repaired else ""
     warnings = [len(v.validation.warnings) for v in shown]
     if any(warnings):
-        checked = f"校验没有发现错误，警告分别有 {'、'.join(str(w) for w in warnings)} 条，主要是有些资料还没核实，详情在行程卡上。"
+        counts = L("、", ", ").join(str(w) for w in warnings)
+        checked = L(
+            f"校验没有发现错误，警告分别有 {counts} 条，主要是有些资料还没核实，详情在行程卡上。",
+            f" The checks found no errors; there are {counts} warnings respectively, mostly because some info hasn't been verified yet. Details are on the trip cards.",
+        )
     else:
-        checked = "校验通过。"
+        checked = L("校验通过。", " Checks passed.")
     return head + fixed + checked + why

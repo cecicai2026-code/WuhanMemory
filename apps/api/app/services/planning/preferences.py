@@ -12,6 +12,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from app.core.lang import L
 from app.schemas.planning import Pace, TransportPreference, TravelerPreferences, TripFrame
 
 DEFAULT_PACE: Pace = "moderate"
@@ -21,6 +22,11 @@ PACE_LABELS = {"relaxed": "轻松", "moderate": "适中", "intensive": "紧凑"}
 TRANSPORT_LABELS = {"metro": "地铁公交优先", "walk": "尽量走路", "taxi": "打车"}
 BUDGET_LABELS = {"low": "省钱", "medium": "适中", "high": "不太在意花费"}
 PARTY_LABELS = {"solo": "一个人", "couple": "情侣", "friends": "朋友", "family": "带孩子", "elderly": "带老人"}
+# 写给人看的英文（上面几张中文表也写进给模型的提示词，不改）
+PACE_EN = {"relaxed": "relaxed", "moderate": "moderate", "intensive": "packed"}
+TRANSPORT_EN = {"metro": "metro and bus first", "walk": "walk where possible", "taxi": "taxi"}
+# 按默认补的设置以这几个开头（中英两种），换节奏时按它找到旧的那条
+PACE_PREFIXES = ("节奏：", "Pace: ")
 
 
 def merge(old: TravelerPreferences, new: TravelerPreferences) -> TravelerPreferences:
@@ -47,17 +53,26 @@ def question_for(prefs: TravelerPreferences, already_asked: set[str], today: dat
     parts: list[str] = []
     if prefs.days is None:
         ask.append("days")
-        parts.append("还需要知道打算玩几天，才能排行程。" if "days" in already_asked else "打算玩几天？")
+        parts.append(
+            L("还需要知道打算玩几天，才能排行程。", "I still need to know how many days you plan to stay before I can plan the trip. ")
+            if "days" in already_asked
+            else L("打算玩几天？", "How many days will you stay? ")
+        )
     date_open = prefs.startDate is None and not prefs.dateUndecided
     if date_open and "date" not in already_asked:
         ask.append("date")
-        parts.append("哪天出发？还没定也可以，直接说没定。")
+        parts.append(L("哪天出发？还没定也可以，直接说没定。", "When do you start? If you haven't decided, just say so. "))
     elif prefs.startDate is not None and prefs.startDate < today and "past-date" not in already_asked:
         ask.append("past-date")
-        parts.append(f"你说的出发日期 {prefs.startDate.isoformat()} 已经过去了，是哪一天？")
+        parts.append(
+            L(
+                f"你说的出发日期 {prefs.startDate.isoformat()} 已经过去了，是哪一天？",
+                f"The start date you gave, {prefs.startDate.isoformat()}, has already passed. Which day did you mean? ",
+            )
+        )
     if not ask:
         return None
-    return Question(text="".join(parts), asked=ask)
+    return Question(text="".join(parts).strip(), asked=ask)
 
 
 @dataclass
@@ -73,11 +88,11 @@ def frame_for(prefs: TravelerPreferences) -> Frame:
     pace = prefs.pace
     if pace is None:
         pace = DEFAULT_PACE
-        defaults.append(f"节奏：{PACE_LABELS[pace]}（你没说，按默认）")
+        defaults.append(L(f"节奏：{PACE_LABELS[pace]}（你没说，按默认）", f"Pace: {PACE_EN[pace]} (you didn't say, so the default)"))
     transport = prefs.transport
     if transport is None:
         transport = DEFAULT_TRANSPORT
-        defaults.append(f"交通：{TRANSPORT_LABELS[transport]}（你没说，按默认）")
+        defaults.append(L(f"交通：{TRANSPORT_LABELS[transport]}（你没说，按默认）", f"Transport: {TRANSPORT_EN[transport]} (you didn't say, so the default)"))
     if prefs.startDate is None:
-        defaults.append("日期：没定（闭馆日没法校验）")
+        defaults.append(L("日期：没定（闭馆日没法校验）", "Dates: not set (closing days can't be checked)"))
     return Frame(frame=TripFrame(days=prefs.days, startDate=prefs.startDate, pace=pace), transport=transport, defaults_used=defaults)

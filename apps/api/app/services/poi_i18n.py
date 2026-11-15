@@ -172,3 +172,48 @@ def localize_pois(pois: list[PoiFile], lang: str, data_dir: Path) -> list[PoiFil
         return pois
     table = load_translations(data_dir)
     return [apply_translation(p, table.get(p.id)).poi for p in pois]
+
+
+# ---------- 规划链路用：逻辑照旧用中文资料（标签、兴趣都按中文判断），只在写给人看时换名字 ----------
+
+
+def _en_text(poi: PoiFile, path: str, zh: str) -> str | None:
+    from app.core.config import settings
+
+    t = load_translations(settings.data_dir).get(poi.id)
+    entry = t.texts.get(path) if t else None
+    if entry and entry.get("zh") == zh and entry.get("en", "").strip():
+        return entry["en"]
+    return None
+
+
+def display_name(poi: PoiFile) -> str:
+    """当前语言下景点的名字（app/core/lang.py 的当前语言）。英文没有译文或译文作废时用中文名。"""
+    from app.core.lang import current_lang
+
+    if current_lang() != "en":
+        return poi.name
+    return _en_text(poi, "name", poi.name) or poi.name
+
+
+def all_names(poi: PoiFile) -> list[str]:
+    """景点的中英文名字，用户点名想去、不想去时按它们匹配（用户可能用英文说）。"""
+    en = _en_text(poi, "name", poi.name)
+    return [poi.name, en] if en else [poi.name]
+
+
+def localize_for_display(poi: PoiFile) -> PoiFile:
+    """当前语言是英文时换成译文（存进行程版本的景点名、区、资料用）。"""
+    from app.core.config import settings
+    from app.core.lang import current_lang
+
+    return localize_poi(poi, current_lang(), settings.data_dir)
+
+
+def display_text(poi: PoiFile, path: str, zh: str) -> str:
+    """当前语言下景点资料里的一段文字（path 同译文文件的键，例如 openingHours.value.note）。没有译文时用中文。"""
+    from app.core.lang import current_lang
+
+    if current_lang() != "en":
+        return zh
+    return _en_text(poi, path, zh) or zh

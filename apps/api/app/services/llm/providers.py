@@ -18,6 +18,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from app.core.lang import L
 import httpx
 
 from app.core.config import Settings
@@ -49,6 +50,22 @@ _ERROR_TEXT: dict[type[LLMError], str] = {
     LLMUpstreamError: "{label}服务器出错（{detail}）",
     LLMBadRequestError: "{label}拒绝了这次请求（{detail}）",
 }
+# 英文（中英双语）。{label} 换成英文名（Qwen、Doubao）
+_ERROR_TEXT_EN: dict[type[LLMError], str] = {
+    LLMAuthError: "{label}: the key is invalid or lacks permission ({detail})",
+    LLMBadConfigError: "{label} can't find this model or endpoint; check the model name in .env ({detail})",
+    LLMQuotaError: "{label}: quota used up or the account is in arrears ({detail})",
+    LLMRateLimitError: "{label} rate-limited the request ({detail})",
+    LLMContentBlockedError: "{label}'s content moderation blocked this request ({detail})",
+    LLMTimeoutError: "{label} timed out ({detail})",
+    LLMUpstreamError: "{label} server error ({detail})",
+    LLMBadRequestError: "{label} rejected this request ({detail})",
+}
+
+
+def label_en(name: str) -> str:
+    """模型的英文名：qwen → Qwen，doubao → Doubao"""
+    return {"qwen": "Qwen", "doubao": "Doubao"}.get(name, name)
 
 
 class OpenAICompatibleProvider:
@@ -111,9 +128,9 @@ class OpenAICompatibleProvider:
                     self._json_mode_supported = False
                     response = await self._post(client, messages, json_mode, temperature)
         except httpx.TimeoutException:
-            raise LLMTimeoutError(f"{self.label}在 {timeout:g} 秒内没有回答", provider=self.name) from None
+            raise LLMTimeoutError(L(f"{self.label}在 {timeout:g} 秒内没有回答", f"{label_en(self.name)} didn't answer within {timeout:g} s"), provider=self.name) from None
         except httpx.HTTPError as exc:
-            raise LLMUpstreamError(f"连不上{self.label}（{type(exc).__name__}）", provider=self.name) from None
+            raise LLMUpstreamError(L(f"连不上{self.label}（{type(exc).__name__}）", f"Can't reach {label_en(self.name)} ({type(exc).__name__})"), provider=self.name) from None
 
         if response.status_code != 200:
             raise self._error_from_response(response)
@@ -130,7 +147,7 @@ class OpenAICompatibleProvider:
                 output_tokens=usage.get("completion_tokens"),
             )
         except (ValueError, KeyError, IndexError, TypeError, AttributeError):
-            raise LLMProviderError(f"{self.label}返回的内容看不懂（结构和预期不一样）", provider=self.name) from None
+            raise LLMProviderError(L(f"{self.label}返回的内容看不懂（结构和预期不一样）", f"{label_en(self.name)} returned something unreadable (unexpected structure)"), provider=self.name) from None
 
     async def _post(
         self, client: httpx.AsyncClient, messages: list[LLMMessage], json_mode: bool, temperature: float
@@ -190,7 +207,10 @@ class OpenAICompatibleProvider:
         code, message = self._error_detail(response)
         detail = f"HTTP {status}" + (f"，{code}" if code else "") + (f"：{message}" if message else "")
         kind = self._classify(status, code, message)
-        text = _ERROR_TEXT[kind].format(label=self.label, detail=detail)
+        text = L(
+            _ERROR_TEXT[kind].format(label=self.label, detail=detail),
+            _ERROR_TEXT_EN[kind].format(label=label_en(self.name), detail=detail),
+        )
         if kind is LLMRateLimitError:
             return LLMRateLimitError(text, provider=self.name, retry_after=_retry_after_seconds(response))
         return kind(text, provider=self.name)

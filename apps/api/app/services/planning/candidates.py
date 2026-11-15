@@ -18,7 +18,9 @@ from typing import Any
 
 from app.schemas.planning import TravelerPreferences
 from app.schemas.poi import PoiFile
+from app.core.lang import L
 from app.services.planning.interests import matched_interests, poi_interests
+from app.services.poi_i18n import all_names, display_name
 
 
 @dataclass
@@ -39,8 +41,12 @@ def is_closed(poi: PoiFile) -> bool:
 
 
 def _matches(name: str, poi: PoiFile) -> bool:
+    # 中英文名字都比一下：英文版里用户可能说 "Yellow Crane Tower"（英文名来自 data/pois/en/ 的译文）
     name = name.strip()
-    return bool(name) and (name in poi.name or poi.name in name)
+    if not name:
+        return False
+    low = name.lower()
+    return any(low in n.lower() or n.lower() in low for n in all_names(poi))
 
 
 def select_candidates(library: list[PoiFile], prefs: TravelerPreferences) -> Candidates:
@@ -50,7 +56,7 @@ def select_candidates(library: list[PoiFile], prefs: TravelerPreferences) -> Can
     for poi in library:
         if is_closed(poi):
             if any(_matches(n, poi) for n in prefs.mustVisit):
-                closed_requested.append(poi.name)
+                closed_requested.append(display_name(poi))
         elif any(_matches(n, poi) for n in prefs.avoid):
             avoided.append(poi.id)
         else:
@@ -87,10 +93,10 @@ def distance_km(a: PoiFile, b: PoiFile) -> float:
 def _hours_for_model(poi: PoiFile) -> Any:
     fact = poi.openingHours
     if fact is None or fact.verification == "todo" or fact.value is None:
-        return "未知"
+        return L("未知", "unknown")
     h = fact.value
     if h.allDay:
-        return "全天开放"
+        return L("全天开放", "open all day")
     return {
         "periods": [p.model_dump(exclude_none=True) for p in h.periods],
         "closedWeekdays": h.closedWeekdays,
@@ -106,14 +112,14 @@ def candidate_brief(c: Candidates, prefs: TravelerPreferences) -> list[dict[str,
         out.append(
             {
                 "id": poi.id,
-                "name": poi.name,
+                "name": display_name(poi),
                 "district": poi.district,
                 "category": poi.category,
                 "fitsInterests": poi_interests(poi),
                 "matchesUser": matched_interests(poi, prefs.interests),
                 "mustVisit": poi.id in c.must_visit,
                 "openingHours": _hours_for_model(poi),
-                "recommendedDurationMinutes": dur.value if dur and dur.verification != "todo" else "未知",
+                "recommendedDurationMinutes": dur.value if dur and dur.verification != "todo" else L("未知", "unknown"),
             }
         )
     return out
