@@ -1,6 +1,6 @@
 # Data Model
 
-最后更新：2026-11-15（板块 2）。数据格式由 Cecilia 在 2026-11-15 确认。
+最后更新：2026-11-15（板块 3 加了路线缓存）。数据格式由 Cecilia 在 2026-11-15 确认。
 
 ## 1. 存储方式（ADR 0003）
 
@@ -260,11 +260,40 @@ class PoiRepository(Protocol):
 
 接口和以后的规划链路只调用这两个方法。SQL 只出现在 `SqlitePoiRepository` 和 `app/db/` 里。换 PostgreSQL 时新写一个实现这两个方法的类。
 
-## 10. 以后的表
+## 10. 路线缓存（板块 3）
 
-行程、行程版本、分享页、模型对比结果、高德路线缓存这些运行时数据也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件：
+文书里"交通时间等会变的信息，要记录上次核实时间和过期时间"落在这张表上。
 
-- 路线缓存（板块 3）：每条带 `checkedAt` 和 `expiresAt`。
+```sql
+CREATE TABLE route_cache (
+    from_poi_id TEXT NOT NULL,
+    to_poi_id   TEXT NOT NULL,
+    mode        TEXT NOT NULL,   -- walk / transit / drive
+    origin      TEXT NOT NULL,   -- 发给高德的起点 "lng,lat"（GCJ-02）
+    destination TEXT NOT NULL,
+    provider    TEXT NOT NULL,   -- amap
+    result_json TEXT NOT NULL,   -- 整理后的结果（接口里的一条 route）
+    raw_json    TEXT NOT NULL,   -- 高德原始返回，留着核对
+    checked_at  TEXT NOT NULL,   -- 向高德查询的时间，带时区
+    expires_at  TEXT NOT NULL,
+    PRIMARY KEY (from_poi_id, to_poi_id, mode)
+);
+```
+
+- 一对景点、一种交通方式一行。A 到 B 和 B 到 A 分开存（单行道、公交方向不同）。
+- 过期时间（2026-11-15 Cecilia 选的方案 A）：步行 30 天，公交地铁 7 天，驾车 1 天。数值在 `apps/api/app/services/routing/service.py` 的 `ROUTE_TTL_DAYS`。
+- 过期了就重新向高德查，查到的覆盖旧的。重查失败时先返回旧结果，标"已过期"。
+- 景点坐标改了，`origin` / `destination` 对不上，旧缓存不再使用。景点表重建时这张表不动。
+- 只缓存查成功的（有方案或高德明确说没有方案），出错不缓存。
+- 公交地铁统一按当天上午 10 点出发查，避免半夜查到"地铁停运"又被缓存一周。
+- 代码：repository `apps/api/app/repositories/route_cache_repository.py`，服务 `apps/api/app/services/routing/`。
+
+这张表可以随时删掉，下次查询会重新向高德要。
+
+## 11. 以后的表
+
+行程、行程版本、分享页、模型对比结果这些运行时数据也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件：
+
 - 行程和行程版本（板块 5）：版本不可变，分享页绑定版本。
 - 分享页（板块 7）、对比结果（板块 6）。
 

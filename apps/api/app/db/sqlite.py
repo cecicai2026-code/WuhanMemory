@@ -38,6 +38,23 @@ CREATE TABLE IF NOT EXISTS poi_facts (
 );
 
 CREATE INDEX IF NOT EXISTS poi_facts_expires_idx ON poi_facts (expires_at);
+
+-- 高德路线缓存（板块 3）。一对景点、一种交通方式一行；过期后重新向高德查。
+-- 文书里"交通时间要记录核实时间和过期时间"就落在 checked_at 和 expires_at 上。
+-- 景点表重建时这张表不动；景点坐标改了，origin / destination 对不上，缓存自然作废。
+CREATE TABLE IF NOT EXISTS route_cache (
+    from_poi_id TEXT NOT NULL,
+    to_poi_id   TEXT NOT NULL,
+    mode        TEXT NOT NULL,           -- walk / transit / drive
+    origin      TEXT NOT NULL,           -- 发给高德的起点 "lng,lat"（GCJ-02）
+    destination TEXT NOT NULL,           -- 发给高德的终点
+    provider    TEXT NOT NULL,           -- amap
+    result_json TEXT NOT NULL,           -- 整理后的结果（RouteOut）
+    raw_json    TEXT NOT NULL,           -- 高德的原始返回，留着核对
+    checked_at  TEXT NOT NULL,           -- 向高德查的时间，带时区
+    expires_at  TEXT NOT NULL,
+    PRIMARY KEY (from_poi_id, to_poi_id, mode)
+);
 """
 
 

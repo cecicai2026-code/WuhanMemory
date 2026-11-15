@@ -55,32 +55,147 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 .glass {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  position: relative;
   height: 100%;
-  padding: 24px;
-  text-align: center;
+  overflow: hidden;
   border: 1px solid var(--black);
   border-radius: 2px;
   background: radial-gradient(ellipse at 50% 40%, #33241a 0%, #150e0a 75%);
   box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
 }
-.glassText {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: var(--size-paper-title);
-  color: var(--paper);
+/* 高德地图画在这里 */
+.map {
+  position: absolute;
+  inset: 0;
 }
-.glassNote {
-  max-width: 30em;
+/* 加载中、出错时盖在地图上的一张小纸条 */
+.notice {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 5;
+  width: min(30em, calc(100% - 32px));
+  transform: translate(-50%, -50%);
+  padding: 16px 20px;
+  border: 1px solid var(--brass-deep);
+  border-radius: 2px;
+  background: rgba(7, 5, 4, 0.88);
+  color: var(--paper);
   font-size: var(--size-ui);
-  color: var(--text-secondary);
+  text-align: center;
+}
+.notice p {
+  margin: 6px 0 0;
 }
 
-/* 灯箱旁的拨杆。现在不能拨 */
+/* ---------- 图钉：黄铜圆头加一根针，针尖对准景点 ---------- */
+.pin {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+/* 针 */
+.pin::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 18px;
+  width: 2px;
+  height: 26px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #d9d2c4, #6d6658);
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+.pinHead {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--brass-bright), var(--brass) 45%, var(--brass-deep) 100%);
+  box-shadow: 3px 4px 6px rgba(0, 0, 0, 0.65);
+  transition: transform var(--t-micro) var(--ease-silk);
+}
+/* 名字：悬停、键盘选中或打开卡片时才出现 */
+.pinLabel {
+  position: absolute;
+  left: 30px;
+  top: 0;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  line-height: 18px;
+  white-space: nowrap;
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-micro) var(--ease-silk);
+}
+.pin:hover .pinHead,
+.pin:focus-visible .pinHead {
+  transform: translateY(-2px) scale(1.1);
+}
+.pin:hover .pinLabel,
+.pin:focus-visible .pinLabel,
+.pin[data-selected] .pinLabel {
+  opacity: 1;
+}
+.pin:focus-visible {
+  outline: none;
+}
+.pin:focus-visible .pinHead {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+/* 当前打开卡片的图钉：樱桃红，整幕唯一的亮点 */
+.pin[data-selected] .pinHead {
+  background: radial-gradient(circle at 35% 30%, #e8665a, var(--cherry) 50%, #6e140e 100%);
+}
+
+/* ---------- 图钉上方的索引卡 ---------- */
+.pinCard {
+  position: relative;
+  width: 232px;
+  font-size: var(--size-ui);
+  box-shadow: var(--shadow-lifted);
+}
+.cardClose {
+  position: absolute;
+  right: 4px;
+  top: 2px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cardClose:hover,
+.cardClose:focus-visible {
+  color: var(--ink);
+}
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 2px 0 6px;
+}
+
+/* 灯箱旁的拨杆：左边 2D，右边 3D */
 .lever {
   flex: none;
   display: flex;
@@ -96,6 +211,9 @@
   padding: 0;
   border: 0;
   background: none;
+  cursor: pointer;
+}
+.switch:disabled {
   cursor: not-allowed;
 }
 .switch::before {
@@ -118,7 +236,17 @@
   border-radius: 50%;
   background: var(--cherry);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  transition: left var(--t-hover) var(--ease-silk);
+}
+.switch:disabled i {
   filter: grayscale(0.6) brightness(0.7);
+}
+.switch[aria-checked="true"] i {
+  left: 30px;
+}
+.switch:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
 }
 
 /* 右：一排索引卡，自己滚动 */
@@ -133,6 +261,95 @@
   margin: 0;
   padding-left: 1.2em;
   color: var(--ink-soft);
+}
+
+/* ---------- 两点之间怎么走（临时，板块 3） ---------- */
+.cards > * + * {
+  margin-top: 24px;
+}
+.finder {
+  font-size: var(--size-ui);
+}
+.finderForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 8px 0 4px;
+}
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.pick select {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--ink-soft);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-paper);
+  font-size: var(--size-ui);
+}
+.pick select:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.routes {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.route {
+  padding: 8px 0 10px;
+  border-top: 1px dashed rgba(107, 94, 76, 0.45);
+}
+.route p {
+  margin: 2px 0 0;
+}
+.routeHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.routeHead strong {
+  font-family: var(--font-paper);
+  color: var(--ink);
+}
+.showLine {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  cursor: pointer;
+}
+.showLine:hover,
+.showLine:focus-visible,
+.showLine[aria-pressed="true"] {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: rgba(201, 164, 92, 0.25);
+}
+.routeMeta {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.routeError {
+  color: var(--expired-paper);
 }
 
 /* ---------- 平板：地图在上，对话和行程在下面并排 ---------- */
@@ -164,8 +381,19 @@
     flex: 1;
     min-height: 140px;
   }
+  .mapCol {
+    position: relative;
+  }
+  /* 手机上拨杆放在灯箱右上角，压在地图上 */
   .lever {
-    display: none; /* 手机上的 2D/3D 切换等板块 3 有地图时再放 */
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    z-index: 6;
+    min-height: 0;
+    padding: 0 10px;
+    border-radius: 2px;
+    background: rgba(7, 5, 4, 0.8);
   }
   .tabs {
     order: 2;

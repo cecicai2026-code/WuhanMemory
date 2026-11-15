@@ -14,6 +14,9 @@ flowchart LR
   Planner --> Tools[Planning Tools]
   Tools --> Poi[POI and Content Services]
   Tools --> Routing[Routing Service]
+  API --> Routing
+  Routing --> AmapWeb[高德 Web 服务]
+  Web -->|地图请求经后端代理加安全密钥| API
   Tools --> Weather[Weather Service]
   Seed[(data/pois JSON 种子文件)] --> Repo[Repository 层]
   API --> Repo
@@ -79,18 +82,27 @@ docs/
 
 ## 地图 Provider 抽象
 
-使用 `packages/map-core` 定义统一接口:
+使用 `packages/map-core` 定义统一接口（2026-11-15 板块 3 改成现在的样子）:
 
 ```ts
 export interface MapProvider {
   mount(container: HTMLElement, options: MapInitOptions): Promise<void>;
-  setMode(mode: "2d" | "3d"): Promise<void>;
-  renderPois(pois: MapPoi[]): void;
-  renderRoute(route: MapRoute): void;
+  setMode(mode: "2d" | "3d"): void;
+  setPins(pins: MapPin[]): void;                        // 景点图钉
+  onPinSelect(handler: (pinId: string | null) => void): void;
+  openCard(pinId: string, content: HTMLElement): void;  // 图钉上方的卡片，内容由页面画
+  closeCard(): void;
+  setRoutes(routes: MapRoute[]): void;                  // 路线折线，dayNumber 用来按天分色
   focusBounds(bounds: MapBounds): void;
   destroy(): void;
 }
 ```
+
+坐标一律 GCJ-02。高德的实现在 `apps/web/lib/map/amap-provider.ts`：
+
+- 浏览器只有 JS key（`NEXT_PUBLIC_AMAP_JS_KEY`）。安全密钥只在后端，地图请求经过后端的 `/_AMapService` 代理时由后端加上（高德官方推荐的做法）。
+- 地图一直用 `viewMode: "3D"` 创建：2D 是俯仰角 0、不许拖动俯仰和旋转，3D 是俯仰角 50 度。手机上默认 2D。
+- 配色用高德自带的"幻影黑"（`amap://styles/dark`）。
 
 MVP provider:
 
@@ -129,9 +141,10 @@ MVP provider:
 
 ### Routing Service
 
-- 调用高德路径规划 Web API。
-- 缓存起终点和交通方式的路线结果。
-- 对路线耗时设置过期时间，因为道路和算法会变化。
+- 代码在 `apps/api/app/services/routing/`，接口 `GET /api/routes/compare`、`GET /api/routes`（见 api-contracts.md）。
+- `RouteProvider` 是可替换的边界，现在的实现 `AmapRouteProvider` 调用高德路径规划 2.0（步行、公交地铁、驾车）。
+- 结果缓存在 SQLite 的 `route_cache` 表，带 `checkedAt` 和 `expiresAt`：步行 30 天、公交地铁 7 天、驾车 1 天，过期重查（见 data-model.md 第 10 节）。
+- 高德个人 key 的每秒请求数低：请求一个一个发、之间留间隔，被限流时等一下重试一次。
 
 ### Content Service
 
