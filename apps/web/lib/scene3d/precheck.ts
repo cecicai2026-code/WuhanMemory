@@ -15,7 +15,7 @@
 export const STAGE_PREF_KEY = "wm-stage";
 
 /** 有立体场景的网址（正则）。每做好一幕加一条 */
-export const STAGE_PATHS: string[] = ["^/places/?$", "^/places/[^/]+/?$"];
+export const STAGE_PATHS: string[] = ["^/places/?$", "^/places/[^/]+/?$", "^/places/[^/]+/[^/]+/?$"];
 
 /** 这个网址有没有立体场景 */
 export function pathHasStage(pathname: string): boolean {

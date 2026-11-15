@@ -66,6 +66,15 @@ export interface LineData {
   topics: LineTopic[];
 }
 
+/** 纸页幕：桌上的物件只和主题有关（纸本身是网页文字，不在场景里） */
+export interface SheetData {
+  /** 当前景点 id（书和方向键跳到别的主题时用） */
+  id: string;
+  /** 当前主题 id */
+  topic: string;
+  topics: Array<{ id: string; name: string }>;
+}
+
 /** 胶卷罐侧面的一行小字，只放真实的值 */
 export function rollLabel(d: RollsData): string {
   return `${d.district ?? "WUHAN MEMORY"} · ${pad2(d.frames.length)} EXP`;

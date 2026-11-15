@@ -302,3 +302,82 @@
   gap: 0;
   margin: 0;
 }
+
+/* ---------- 纸页幕的立体版（设计规范第 15 节第 4 条）：信纸浮在立体桌面上 ---------- */
+:global(html[data-stage="on"]) .sheetPage {
+  position: relative;
+  z-index: 2;
+  max-width: min(680px, calc(100vw - 2 * var(--edge) - 200px));
+  margin: 0 auto;
+  padding: 72px 0 180px;
+}
+:global(html[data-stage="on"]) .sheetPage .legend,
+:global(html[data-stage="on"]) .sheetPage .closed {
+  background: rgba(7, 5, 4, 0.72);
+  padding: 8px 14px;
+}
+/* 纸更像放在桌上：投影朝右下，长而虚 */
+:global(html[data-stage="on"]) .sheetDrop > section {
+  box-shadow: 14px 22px 34px rgba(0, 0, 0, 0.55), 2px 3px 6px rgba(0, 0, 0, 0.35);
+}
+/* 四个主题的索引：屏幕下方中间的一块深色小牌 */
+:global(html[data-stage="on"]) .sheetPage .topicIndex {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+  z-index: 31;
+  margin: 0;
+  padding: 0 22px;
+  transform: translateX(-50%);
+  flex-wrap: nowrap;
+  gap: 0 18px;
+  white-space: nowrap;
+  background: rgba(7, 5, 4, 0.86);
+  border: 1px solid var(--brass-deep);
+  border-radius: 3px;
+  box-shadow: var(--shadow-object);
+}
+
+/* 落下、打字、显影：只在立体模式下、幕间黑幕揭开以后播放。整张纸 1.2 秒内出完（规范 10.4） */
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop {
+  animation: sheetDrop 0.6s var(--ease-silk) both;
+}
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop h2 {
+  animation: typeIn 0.3s steps(var(--chars, 4)) 0.35s both;
+}
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div,
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop .sheetFoot {
+  animation: develop 0.35s var(--ease-silk) both;
+}
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(1) { animation-delay: 0.5s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(2) { animation-delay: 0.56s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(3) { animation-delay: 0.62s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(4) { animation-delay: 0.68s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(5) { animation-delay: 0.74s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop dl > div:nth-child(n + 6) { animation-delay: 0.8s; }
+:global(html[data-stage="on"]:not([data-stage-curtain])) .sheetDrop .sheetFoot { animation-delay: 0.85s; }
+@keyframes sheetDrop {
+  from {
+    opacity: 0;
+    transform: translate(28px, -90px) rotate(3deg) scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes typeIn {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+/* 显影：从暗房红的单色显出原色（规范第 7 节"加载"） */
+@keyframes develop {
+  from {
+    opacity: 0;
+    filter: sepia(1) hue-rotate(-35deg) saturate(2.5) brightness(0.7);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+  }
+}

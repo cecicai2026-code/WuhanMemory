@@ -4,6 +4,9 @@ import { Scene } from "@/components/shell/Scene";
 import { TextLink } from "@/components/ui";
 import { ApiUnavailableError, THEMES, findTheme, getPlace, getPlaceWithList, pad2 } from "@/lib/places";
 import { SCENES } from "@/lib/scenes";
+import { StageToggle } from "@/components/stage/StageProvider";
+import type { SheetData } from "@/lib/scene3d/data";
+import { SheetStage } from "../../SheetStage";
 import { ApiDown } from "../../PlaceParts";
 import { ClosedNote, StatusLegend, ThemeSheet } from "../../ThemeSheet";
 import s from "../../places.module.css";
@@ -48,6 +51,7 @@ export default async function Page({ params }: Props) {
 
   const { poi, asOf } = data.place;
   const t = THEMES.indexOf(theme);
+  const stageData: SheetData = { id: poi.id, topic: theme.id, topics: THEMES.map((th) => ({ id: th.id, name: th.name })) };
 
   return (
     <Scene
@@ -56,12 +60,18 @@ export default async function Page({ params }: Props) {
       title={`${poi.name} · ${theme.name}`}
       kicker={poi.district}
       back={{ href: `/places/${poi.id}`, label: "回到晾片" }}
+      corner={<StageToggle />}
     >
-      <div className={s.detail}>
+      <SheetStage data={stageData} />
+      {/* 立体模式下这一块照样显示，浮在桌面上（data-stage-show）；标题由纸上的大字代替 */}
+      <div className={`${s.detail} ${s.sheetPage}`} data-stage-show>
         <StatusLegend asOf={asOf} />
         <ClosedNote poi={poi} />
 
-        <ThemeSheet poi={poi} theme={theme} tilt={-0.5} />
+        {/* key：换主题时重新挂上，落下和显影重新播放。--chars：标题逐字打出用 */}
+        <div key={theme.id} className={s.sheetDrop} data-stage-paper style={{ "--chars": theme.name.length } as React.CSSProperties}>
+          <ThemeSheet poi={poi} theme={theme} tilt={-0.5} />
+        </div>
 
         <nav className={s.topicIndex} aria-label="四个主题">
           {THEMES.map((th, i) => (

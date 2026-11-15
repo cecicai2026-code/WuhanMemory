@@ -55,7 +55,8 @@ export type ActFactory = (env: ActEnv, req: StageRequest) => Act;
 /** 每一幕的代码分开打包，用到哪一幕才下载哪一幕 */
 const ACTS: Partial<Record<StageKind, () => Promise<ActFactory>>> = {
   rolls: () => import("./acts/rolls").then((m) => m.createRolls),
-  line: () => import("./acts/line").then((m) => m.createLine)
+  line: () => import("./acts/line").then((m) => m.createLine),
+  sheet: () => import("./acts/sheet").then((m) => m.createSheet)
 };
 
 /** 舞台：主灯（暖白、上方偏左）和暗房红的补光。每一幕的灯位不同，参数照样片 */

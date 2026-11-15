@@ -308,3 +308,10 @@ html:not([data-stage="on"]) .stage-tag,
 html:not([data-stage="on"]) .stage-focus {
   display: none;
 }
+/* 纸页幕可以滚动页面（纸往上推）；上沿加一道渐暗，滚上去的纸不和左上角的字叠在一起 */
+html[data-stage="on"][data-stage-scroll] body {
+  overflow: auto;
+}
+html[data-stage="on"][data-stage-scroll] [data-shell-top] {
+  background: linear-gradient(180deg, rgba(7, 5, 4, 0.92), rgba(7, 5, 4, 0.6) 70%, rgba(7, 5, 4, 0));
+}
