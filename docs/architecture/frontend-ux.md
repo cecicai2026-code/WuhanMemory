@@ -16,6 +16,7 @@
 | `/trips` | 我的行程 | 板块 7：一本笔记本。每段对话一页（标题是用户的第一句话），按侧重分份，每个版本一条印样（标题、天数、出发日期、模型、生成时间、校验章、错误和警告条数、按顺序的景点），能打开、生成分享链接、复制、撤回；没通过校验的写"不能分享"。加载中、出错（能再试一次）、还没有行程时各有说明。数据来自 `GET /api/trips` |
 | `/trips/[versionId]` | 我的行程里的一个版本 | 板块 7：和分享页同一个只读视图，明信片上多了分享按钮 |
 | `/s/[slug]` | 分享页 | 板块 7：只读。上面一张明信片（标题、天数和日期、侧重、节奏、谁排的、邮戳是生成日期、"这是快照"的说明），下面左边是灯箱里的地图，右边是和 `/map` 一样的行程卡（逐日时间线、每段交通、每站的开放、预约、门票、支付和核实状态、校验结果）。不放照片（占位照片不能公开）。撤回、没有这个链接、后端连不上各有说明；不让搜索引擎收录。服务器端取数据（`lib/share.ts`） |
+| 找不到的网址 | 404 页 | 板块 7：`app/not-found.tsx`，和网站风格一致，给几个入口。页面代码出了没预料到的错时是 `app/error.tsx`（"再试一次"，不给访客看错误原文） |
 | `/styleguide` | 样式参考 | 色板、字体和基础组件，不在菜单里，开发时对照用 |
 
 普通网页版不是临时的：板块 1B 加上立体场景后，它仍是手机端、无障碍和立体场景加载失败时的版本。
@@ -40,6 +41,8 @@
 - `app/map/MapPanel.tsx`：灯箱里的地图、图钉卡片、2D/3D 拨杆；`app/map/RouteFinder.tsx`：临时的"两点之间怎么走"；`app/map/ModelPicker.tsx`：模型选择（板块 4）。
 - `app/map/ChatPaper.tsx`：对话纸、规划进度；`app/map/ItineraryCards.tsx`：行程卡；`app/map/PlanCompare.tsx`：一轮方案的对比卡（板块 5B）；`app/map/PlannerState.tsx`：选中的模型和校验结果（右上角标注要用）；`lib/planning-client.ts`：对话和规划接口（板块 5）。`app/compare/CompareDesk.tsx`：模型对比页（板块 6），接口也在 `lib/planning-client.ts`。
 - `components/trip/TripView.tsx`：一份行程的只读视图（明信片、地图、行程卡），分享页和 `/trips/[versionId]` 共用；`components/trip/ShareControls.tsx`：生成、复制、撤回分享链接（板块 7）。`lib/itinerary-map.ts`：把行程变成地图上的路线和图钉（`/map`、分享页共用）。`lib/share.ts`：分享页和单个版本在服务器端取数据。
+- 服务器端取数据的页面（`/places`、`/places/[id]`、`/map`、`/s/[slug]`、`/trips/[versionId]`）各有 `loading.tsx`，先显示外壳和一张"正在取……"的纸（`components/shell/Loading.tsx`）。
+- `/map` 的行程总卡上有"分享这一版"（板块 7），和 `/trips` 用同一个 `ShareControls`。
 - 每个页面自己的组件和样式（CSS Modules）放在页面文件夹里，例如 `app/map/Workbench.tsx`。
 
 ## 地图交互
