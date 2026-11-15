@@ -158,6 +158,9 @@ def _check_stop(
     if poi is None:
         c.error("unknown-poi", f"第 {d} 天的景点 id「{stop.poiId}」不在候选景点里（只能从景点库给出的候选里选）。", dayNumber=d, poiId=stop.poiId)
 
+    elif poi.operatingStatus and poi.operatingStatus.value and poi.operatingStatus.value.code == "closed-temporarily":
+        c.error("poi-closed", f"第 {d} 天的{poi.name}现在暂停开放，不能排进行程。", dayNumber=d, poiId=stop.poiId)
+
     name = poi.name if poi else stop.poiId
     arrive, leave = parse_hhmm(stop.arrive), parse_hhmm(stop.leave)
     if arrive is None or leave is None:

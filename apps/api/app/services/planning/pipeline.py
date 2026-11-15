@@ -145,6 +145,9 @@ class PlanningPipeline:
         if candidates.not_in_library:
             defaults.append(f"你提到的{'、'.join(candidates.not_in_library)}不在景点库里，没有安排")
 
+        if candidates.closed_requested:
+            defaults.append(f"你提到的{'、'.join(candidates.closed_requested)}现在暂停开放，没有安排")
+
         previous: PlanDraft | None = None
         if conv.itineraryId:
             versions = self.itineraries.list_versions(conv.itineraryId)

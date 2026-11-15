@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from app.data_quality.rules import REQUIRED_FACTS
-from app.schemas.poi import Fact, Photo, PoiFile
+from app.schemas.poi import PLACEHOLDER_LICENSES, Fact, Photo, PoiFile
 from app.schemas.poi_api import (
     FactCounts,
     FactOut,
@@ -37,7 +37,7 @@ def fact_status(fact: Fact[Any], today: date) -> FactStatus:
 
 
 def _all_facts(poi: PoiFile) -> list[Fact[Any]]:
-    facts = [getattr(poi, n) for n in REQUIRED_FACTS]
+    facts = [getattr(poi, n) for n in REQUIRED_FACTS] + [poi.operatingStatus]
     return [f for f in facts if f is not None] + list(poi.photoSpots) + list(poi.food)
 
 
@@ -65,7 +65,7 @@ class PoiPresenter:
         self.today = today
 
     def photo(self, poi_id: str, p: Photo) -> PhotoOut:
-        placeholder = p.license == "official-placeholder"
+        placeholder = p.license in PLACEHOLDER_LICENSES
         if placeholder:
             exists = (self.data_dir / "photos-placeholder" / poi_id / p.file).is_file()
             url = f"{PLACEHOLDER_PHOTOS_URL}/{poi_id}/{p.file}" if exists else None
@@ -78,6 +78,20 @@ class PoiPresenter:
         own = [p for p in photos if not p.placeholder]
         shown = [p for p in photos if p.placeholder and p.url]
         return (own or shown or [None])[0]
+
+    def fact(self, poi: PoiFile, f: Fact[Any]) -> dict[str, Any]:
+        sources = {s.id: SourceOut(**s.model_dump()) for s in poi.sources}
+        return {
+            "value": f.value,
+            "verification": f.verification,
+            "status": fact_status(f, self.today),
+            "source": sources.get(f.sourceId) if f.sourceId else None,
+            "extraSources": [sources[i] for i in f.extraSourceIds if i in sources],
+            "lastCheckedAt": f.lastCheckedAt,
+            "expiresAt": f.expiresAt,
+            "todo": f.todo,
+            "note": f.note,
+        }
 
     def summary(self, poi: PoiFile) -> PoiSummaryOut:
         assert poi.location is not None and poi.location.value is not None
@@ -92,6 +106,7 @@ class PoiPresenter:
             status=poi_status(counts),
             counts=counts,
             coverPhoto=self._cover(poi),
+            operatingStatus=self.fact(poi, poi.operatingStatus) if poi.operatingStatus else None,
         )
 
     def detail(self, poi: PoiFile) -> PoiDetailOut:
@@ -100,16 +115,7 @@ class PoiPresenter:
         def fact(f: Fact[Any] | None) -> dict[str, Any]:
             # 导入前已检查过，这里的字段都存在
             assert f is not None
-            return {
-                "value": f.value,
-                "verification": f.verification,
-                "status": fact_status(f, self.today),
-                "source": sources.get(f.sourceId) if f.sourceId else None,
-                "lastCheckedAt": f.lastCheckedAt,
-                "expiresAt": f.expiresAt,
-                "todo": f.todo,
-                "note": f.note,
-            }
+            return self.fact(poi, f)
 
         base = self.summary(poi).model_dump()
         return PoiDetailOut.model_validate(

@@ -3,6 +3,7 @@
 模型只能从这份清单里选景点，用 id 引用；不在清单里的 id，校验时算"景点不存在"。
 
 筛选规则：
+- 暂停开放的去掉（资料里 operatingStatus 是 closed-temporarily）。用户点名想去的话，告诉他现在不开。
 - 用户说不想去的去掉（按名字匹配）。
 - 其余全部保留，按兴趣匹配的多少排序。景点库现在只有 10 个，规划策略要求候选至少是要排的景点数的 2 倍，
   所以眼下不按兴趣砍掉景点，只把对得上的排在前面、标出对得上哪些兴趣。景点多了以后再加上限。
@@ -27,6 +28,14 @@ class Candidates:
     # 用户点名、但景点库里没有的
     not_in_library: list[str] = field(default_factory=list)
     avoided: list[str] = field(default_factory=list)
+    # 用户点名、但现在暂停开放的（景点名）
+    closed_requested: list[str] = field(default_factory=list)
+
+
+def is_closed(poi: PoiFile) -> bool:
+    """资料里写着暂停开放。这条资料过期了也照样算关着，等重新核实后改资料。"""
+    fact = poi.operatingStatus
+    return fact is not None and fact.value is not None and fact.value.code == "closed-temporarily"
 
 
 def _matches(name: str, poi: PoiFile) -> bool:
@@ -37,8 +46,12 @@ def _matches(name: str, poi: PoiFile) -> bool:
 def select_candidates(library: list[PoiFile], prefs: TravelerPreferences) -> Candidates:
     kept: list[PoiFile] = []
     avoided: list[str] = []
+    closed_requested: list[str] = []
     for poi in library:
-        if any(_matches(n, poi) for n in prefs.avoid):
+        if is_closed(poi):
+            if any(_matches(n, poi) for n in prefs.mustVisit):
+                closed_requested.append(poi.name)
+        elif any(_matches(n, poi) for n in prefs.avoid):
             avoided.append(poi.id)
         else:
             kept.append(poi)
@@ -48,12 +61,18 @@ def select_candidates(library: list[PoiFile], prefs: TravelerPreferences) -> Can
     for name in prefs.mustVisit:
         hit = next((p for p in kept if _matches(name, p)), None)
         if hit is None:
-            missing.append(name)
+            # 暂停开放的另外说明，不算"不在景点库里"
+            if not any(_matches(name, p) for p in library if is_closed(p)):
+                missing.append(name)
         elif hit.id not in must:
             must.append(hit.id)
 
     kept.sort(key=lambda p: (p.id not in must, -len(matched_interests(p, prefs.interests))))
-    return Candidates(pois={p.id: p for p in kept}, must_visit=must, not_in_library=missing, avoided=avoided)
+    return Candidates(
+        pois={p.id: p for p in kept}, must_visit=must, not_in_library=missing,
+        avoided=avoided,
+        closed_requested=closed_requested,
+    )
 
 
 def distance_km(a: PoiFile, b: PoiFile) -> float:

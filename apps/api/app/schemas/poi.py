@@ -30,7 +30,8 @@ SourceType = Literal[
     "government",  # 政府网站（区政府、文旅局、景区管委会），用于没有自己官网的街区
     "amap",  # 高德地图（坐标拾取器、地点搜索）
     "media",  # 媒体报道（报纸、新闻网站）
-    "travel-platform",  # 旅游平台（携程、美团、马蜂窝等），准确度最低
+    "travel-platform",  # 旅游平台（携程、美团、马蜂窝、本地宝等）的景点页和攻略页
+    "ugc",  # 游客自己发的笔记和短视频（携程笔记、抖音等），是个人经验，准确度最低
     "other",
 ]
 
@@ -61,6 +62,8 @@ class Fact(_Model, Generic[T]):
     value: T | None = None
     verification: Verification
     sourceId: str | None = None
+    # 同一条信息还参考了哪些来源（sourceId 是最主要的那个）
+    extraSourceIds: list[str] = Field(default_factory=list)
     lastCheckedAt: date | None = None
     # 会变的信息必须有；不会变的信息不用填
     expiresAt: date | None = None
@@ -136,6 +139,22 @@ class Transport(_Model):
     note: str | None = None
 
 
+# 景点现在开不开
+#   open                 正常开放
+#   closed-temporarily   暂停开放（修缮、闭园等），排行程时不选
+OperatingCode = Literal["open", "closed-temporarily"]
+
+
+class OperatingStatus(_Model):
+    code: OperatingCode
+    # 为什么、从哪天起
+    note: str | None = None
+    # 预计哪天恢复；不知道就不填
+    reopenExpected: date | None = None
+    # 这个日期是谁说的，例如 "平台标注，不是寺方公告"
+    reopenNote: str | None = None
+
+
 class PhotoSpot(_Model):
     title: str
     description: str
@@ -165,7 +184,12 @@ PhotoLicense = Literal[
     "own",  # Cecilia 自己拍的，放 data/photos/<id>/，提交到 git
     "open-license",  # 可自由使用授权的图片，放 data/photos/<id>/，必须写授权说明
     "official-placeholder",  # 官网照片占位，放 data/photos-placeholder/<id>/，不提交
+    # 图库预览图、媒体和平台图片占位（Cecilia 2026-11-15 决定），同样放 data/photos-placeholder/<id>/，不提交
+    "third-party-placeholder",
 ]
+
+# 这两种都是占位照片：不进 git，网站公开前必须换掉
+PLACEHOLDER_LICENSES: tuple[str, ...] = ("official-placeholder", "third-party-placeholder")
 
 
 class Photo(_Model):
@@ -191,6 +215,9 @@ class PoiFile(_Model):
     category: str
     tags: list[str] = Field(default_factory=list)
     sources: list[Source] = Field(default_factory=list)
+
+    # 景点现在开不开。不写表示正常开放；暂停开放时必须写，过期日期填预计恢复的日子
+    operatingStatus: Fact[OperatingStatus] | None = None
 
     location: Fact[Coordinates] | None = None
     address: Fact[str] | None = None
