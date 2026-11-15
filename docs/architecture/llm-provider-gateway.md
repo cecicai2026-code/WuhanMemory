@@ -1,6 +1,6 @@
 # LLM Provider Gateway
 
-最后更新：2026-11-15（板块 4：千问和豆包真实接入）。这份文件写的是代码现在的样子。
+最后更新：2026-11-15（板块 4：千问和豆包真实接入；板块 5：规划链路接上，试一句去掉）。这份文件写的是代码现在的样子。
 
 ## 目标
 
@@ -33,7 +33,7 @@ provider 很薄，所以测试里可以用一个假的 provider 代替它，重�
 
 ```python
 result = await gateway.complete_json(
-    task="extract_preferences",   # 这次调用的用途，只用于记录
+    task="extract_preferences",   # 这次调用的用途，只用于记录（规划链路用 extract_preferences / generate_itinerary / repair_itinerary）
     system_prompt="...",
     user_prompt="...",
     schema=TravelerPreferences,   # 可选：Pydantic 模型，输出要通过它的校验
@@ -61,7 +61,7 @@ result.record    # 这次调用的记录
 
 1. `.env` 里的 `LLM_PROVIDER`：默认模型，`qwen` 或 `doubao`。改了要重启后端。
 2. 每次请求的 `provider` 参数：接口把前端传来的模型名原样交给网关。
-3. 界面：`/map` 对话纸上的模型选择，选的是第 2 条里的那个参数。清单来自 `GET /api/llm/providers`，没配置的模型选不了。
+3. 界面：`/map` 对话纸上的模型选择，选中的模型跟着每条消息发给后端（`POST /api/conversations/{id}/messages` 的 `provider`），规划链路里的每一次模型调用都用它。清单来自 `GET /api/llm/providers`，没配置的模型选不了。右上角的标注显示当前模型。
 
 切换只是"按名字从清单里取出另一个 provider"，提示词、输出检查、重试规则、返回的数据结构全都不变，所以业务代码不用为换模型写任何分支。
 
@@ -82,7 +82,7 @@ result.record    # 这次调用的记录
 
 错误码对照表按两家官方错误码文档写（2026-11-15 查阅），网址在 `providers.py` 开头。千问那页很长，后半部分是按摘要对的。
 
-2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。Cecilia 决定豆包保持模型默认（开着思考）。
+2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。Cecilia 决定豆包保持模型默认（开着思考），板块 5 有了规划提示词后用 `corepack pnpm plan:thinking` 再比一次（`apps/api/app/tools/thinking_compare.py`：三条规划请求，开和关各跑一遍完整链路）。
 
 还没在真实接口上见过的：对方说"不支持 `response_format`"时的报错原文。现在的判断依据是 400 的说明里提到这个参数。
 
@@ -160,7 +160,7 @@ cd ~/WuhanMemory-project2 && corepack pnpm llm:smoke
 
 ## 还没做的
 
-- **工具调用**（`complete_with_tools`）：早期设计里有，代码里没有。板块 5 定规划链路时再决定要不要。
+- **工具调用**（`complete_with_tools`）：不做。板块 5 的规划链路由程序决定每一步查什么，模型只回答固定结构的 JSON，见 ADR 0004。
 - **shadow 模式**（主模型回答用户，同时让另一个模型在后台跑）：没有做。两个模型并排比较是板块 6 的对比页，用每次请求指定模型的方式实现。
 - **流式输出**：没有做。
 - 早期设计里列的 Prometheus 风格指标没有做，现在用 `llm_calls` 表。

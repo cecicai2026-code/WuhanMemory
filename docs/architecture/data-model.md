@@ -1,6 +1,6 @@
 # Data Model
 
-最后更新：2026-11-15（板块 3 加了路线缓存）。数据格式由 Cecilia 在 2026-11-15 确认。
+最后更新：2026-11-15（板块 5 加了对话和行程）。数据格式由 Cecilia 在 2026-11-15 确认。
 
 ## 1. 存储方式（ADR 0003）
 
@@ -320,11 +320,62 @@ CREATE TABLE llm_calls (
 - 记录写不进去不影响这次调用，只在日志里留一条警告。
 - 代码：repository `apps/api/app/repositories/llm_call_repository.py`，记录的结构 `LLMCallRecord` 在 `apps/api/app/services/llm/base.py`。
 
-## 12. 以后的表
+## 12. 对话和行程（板块 5）
 
-行程、行程版本、分享页、模型对比结果这些运行时数据也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件：
+```sql
+CREATE TABLE conversations (
+    id               TEXT PRIMARY KEY,
+    created_at       TEXT NOT NULL,
+    preferences_json TEXT NOT NULL,   -- 到目前为止抽到的偏好（TravelerPreferences）
+    itinerary_id     TEXT             -- 这段对话生成的行程；还没生成时为空
+);
 
-- 行程和行程版本（板块 5）：版本不可变，分享页绑定版本。
-- 分享页（板块 7）、对比结果（板块 6）。
+CREATE TABLE conversation_messages (
+    id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id      TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    role                 TEXT NOT NULL,  -- user / assistant
+    content              TEXT NOT NULL,
+    created_at           TEXT NOT NULL,
+    kind                 TEXT,           -- 回复的种类：question / itinerary / failed / error
+    asked                TEXT,           -- 反问时问了什么：days、date、past-date，逗号分隔
+    provider             TEXT,           -- 这条回复用的模型
+    itinerary_version_id TEXT            -- 这条回复带出的行程版本
+);
+
+CREATE TABLE itineraries (
+    id              TEXT PRIMARY KEY,
+    conversation_id TEXT,
+    created_at      TEXT NOT NULL
+);
+
+CREATE TABLE itinerary_versions (
+    id                TEXT PRIMARY KEY,
+    itinerary_id      TEXT NOT NULL REFERENCES itineraries(id) ON DELETE CASCADE,
+    version_number    INTEGER NOT NULL,  -- 同一份行程从 1 开始
+    created_at        TEXT NOT NULL,
+    provider          TEXT NOT NULL,     -- qwen / doubao
+    model             TEXT,              -- 对方返回的真实模型名
+    validation_status TEXT NOT NULL,     -- passed / warning / failed
+    error_count       INTEGER NOT NULL,
+    warning_count     INTEGER NOT NULL,
+    rounds            INTEGER NOT NULL,  -- 1 或 2（把错误交给模型修正过一次）
+    data_json         TEXT NOT NULL,     -- 整个版本（ItineraryVersionData）
+    UNIQUE (itinerary_id, version_number)
+);
+```
+
+- 一段对话对应一份行程；每条带出行程的回复是这份行程的一个新版本。
+- **版本只能新增，不能修改**：repository 没有 update 方法。分享页（板块 7）绑定版本。
+- `data_json` 是快照：生成时的景点资料（连同核实状态）、交通、校验结果、模型、模型最后一轮的原始输出。以后景点资料改了，旧版本不变。字段见 `api-contracts.md` 的"获取行程版本"。
+- 模型、校验结果、错误和警告条数、修正轮数单独存成列，板块 6 按模型统计时不用解析 JSON。
+- 没通过校验的版本也存，`validation_status` 是 `failed`。
+- 偏好和消息内容会存（对话要接着进行）；`llm_calls` 里仍然不存提示词和回答。
+- `kind` 和 `asked` 两列是后加的：`init_schema` 发现旧表缺这两列时用 `ALTER TABLE` 补上（`app/db/sqlite.py` 的 `_ADDED_COLUMNS`）。
+- 规划任务（进行到哪一步）只在内存里，不进数据库。
+- 代码：`apps/api/app/repositories/conversation_repository.py`、`itinerary_repository.py`。
+
+## 13. 以后的表
+
+分享页（板块 7）、对比结果（板块 6）也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件。
 
 2026-07 按 PostgreSQL + PostGIS 写的旧草案已经删掉，可以在 git 历史和 `infra/migrations/0001_initial_schema.sql` 里查到。

@@ -16,6 +16,9 @@
 > 2026-11-15（板块 3）：路线接口和高德安全密钥代理已实现，见"路线"和"高德安全密钥代理"两节。
 >
 > 2026-11-15（板块 4）：模型接口已实现，见"模型"一节。
+>
+> 2026-11-15（板块 5）：对话、规划任务、行程版本的接口已实现，见"对话和规划"一节；临时的 `POST /api/llm/ping` 已删掉。
+> 分享接口在板块 7 之前，发布返回 501，查询返回 404。
 
 ### 景点列表
 
@@ -171,86 +174,67 @@ GET /api/llm/providers
 
 - `configured`：`apps/api/.env` 里这个模型的 key 和模型名（豆包是接入点 ID）都填了。只说有没有，不返回 key，也不返回接入点 ID。
 - `defaultProvider`：`.env` 里 `LLM_PROVIDER` 指的模型。填的不是 `qwen` 或 `doubao` 时是 `null`。
-- 这个接口不调用模型。"已配置"不等于"key 有效"，key 对不对要真的调用一次才知道（冒烟测试或下面的试一句）。
-
-### 模型：试一句（临时）
-
-```http
-POST /api/llm/ping
-```
-
-```json
-{ "provider": "doubao" }
-```
-
-`provider` 不填就用默认模型。后端通过 `LLMGateway` 给这个模型发一句固定的话，每调一次都是一次真实调用。板块 5 接上对话后去掉这个接口。
-
-```json
-{
-  "provider": "doubao",
-  "label": "豆包",
-  "model": "<对方返回的真实模型名>",
-  "reply": "<模型的回答>",
-  "latencyMs": 2065,
-  "attempts": 1,
-  "retried": false,
-  "repaired": false
-}
-```
-
-- `latencyMs`：从开始到结束的总时间，含重试之间的等待。`attempts`：一共向模型发了几次请求。
-- `retried`：有没有因为超时、限流、对方出错而重试。`repaired`：有没有因为输出不合格让模型重答。
+- 这个接口不调用模型。"已配置"不等于"key 有效"，key 对不对要真的调用一次才知道（冒烟测试，或在 `/map` 上发一条消息）。
 
 ### 模型：出错时
 
-所有经过 `LLMGateway` 的接口（现在是试一句，板块 5 起还有规划）出错时返回同一种结构：
+规划在后台任务里调用模型，所以模型出错不是 HTTP 错误，而是写在规划任务的 `error` 上（见下面"查询规划任务"）：
 
 ```json
-{ "detail": { "code": "rate_limited", "message": "豆包限流（HTTP 429，…）", "retryable": true, "provider": "doubao" } }
+{ "code": "rate_limited", "message": "豆包限流（HTTP 429，…）", "retryable": true, "provider": "doubao" }
 ```
 
-| `code` | 含义 | HTTP 状态码 | 网关会不会重试 |
-|---|---|---|---|
-| `unknown_provider` | 指定的模型不在清单里 | 400 | 不会 |
-| `not_configured` | 没配 key 或模型名 | 503 | 不会 |
-| `invalid_key` | key 无效或没有权限 | 502 | 不会 |
-| `bad_config` | 模型名或接入点填错 | 502 | 不会 |
-| `quota_exhausted` | 额度用完或账户欠费 | 502 | 不会 |
-| `content_blocked` | 被对方的内容审核拦下 | 502 | 不会 |
-| `bad_request` | 对方认为请求有问题 | 502 | 不会 |
-| `rate_limited` | 限流 | 429 | 会，先等一会儿 |
-| `timeout` | 规定时间内没有回答 | 504 | 会 |
-| `upstream_error` | 对方服务器出错或网络断开 | 502 | 会 |
-| `bad_output` | 让模型重答一次后输出仍不合格 | 502 | 已经重答过一次 |
-| `provider_error` | 对方返回的结构和预期不一样 | 502 | 不会 |
+| `code` | 含义 | 网关会不会重试 |
+|---|---|---|
+| `unknown_provider` | 指定的模型不在清单里 | 不会 |
+| `not_configured` | 没配 key 或模型名 | 不会 |
+| `invalid_key` | key 无效或没有权限 | 不会 |
+| `bad_config` | 模型名或接入点填错 | 不会 |
+| `quota_exhausted` | 额度用完或账户欠费 | 不会 |
+| `content_blocked` | 被对方的内容审核拦下 | 不会 |
+| `bad_request` | 对方认为请求有问题 | 不会 |
+| `rate_limited` | 限流 | 会，先等一会儿 |
+| `timeout` | 规定时间内没有回答 | 会 |
+| `upstream_error` | 对方服务器出错或网络断开 | 会 |
+| `bad_output` | 让模型重答一次后输出仍不合格 | 已经重答过一次 |
+| `provider_error` | 对方返回的结构和预期不一样 | 不会 |
+| `internal_error` | 规划链路里程序自己出错（不是模型的错），详情只在后端日志里 | 不会 |
 
-`retryable` 说的是这种错值不值得过一会儿再试；返回给前端时网关自己的重试已经用完了。`message` 里不会出现 key。
+`retryable` 说的是这种错值不值得过一会儿再试；到前端时网关自己的重试已经用完了。`message` 里不会出现 key。
 
-## 主要接口（设计草案）
+## 对话和规划（板块 5）
 
-### 创建对话
+代码：`apps/api/app/api/planning.py`，数据结构 `apps/api/app/schemas/api.py`、`itinerary.py`、`planning.py`，前端类型 `packages/shared/src/planning.ts`。链路见 `ai-planning-pipeline.md`。
+
+### 新建对话
 
 ```http
 POST /api/conversations
 ```
 
-Request:
+Request：`{ "city": "武汉" }`（可以省略）。Response：`{ "conversationId": "conv_…", "status": "active" }`。
+
+### 查看对话
+
+```http
+GET /api/conversations/{conversationId}
+```
 
 ```json
 {
-  "city": "武汉",
-  "locale": "zh-CN"
+  "conversationId": "conv_…",
+  "preferences": { "days": 2, "startDate": null, "dateUndecided": true, "pace": null, "interests": ["历史文化"], "budget": null, "party": null, "transport": "metro", "mustVisit": [], "avoid": [], "notes": null },
+  "itineraryId": "itin_…",
+  "messages": [
+    { "id": 1, "role": "user", "content": "武汉两天……", "createdAt": "…", "kind": null, "provider": null, "itineraryVersionId": null },
+    { "id": 2, "role": "assistant", "content": "排好了……", "createdAt": "…", "kind": "itinerary", "provider": "qwen", "itineraryVersionId": "ver_…" }
+  ]
 }
 ```
 
-Response:
-
-```json
-{
-  "conversationId": "uuid",
-  "status": "active"
-}
-```
+- `preferences`：到目前为止抽到的偏好，没说的是 null 或空列表。
+- `kind`（回复才有）：`question` 反问；`itinerary` 带出了行程（通过或有警告）；`failed` 修正后仍未通过；`error` 模型或程序出错。
+- 前端刷新页面后用它接着显示对话。没有这段对话时 404。
 
 ### 发送消息
 
@@ -258,23 +242,13 @@ Response:
 POST /api/conversations/{conversationId}/messages
 ```
 
-Request:
-
 ```json
-{
-  "content": "我想国庆去武汉玩 3 天，喜欢历史文化和美食，希望地铁优先。"
-}
+{ "content": "武汉两天，喜欢历史和美食，坐地铁", "provider": "doubao" }
 ```
 
-Response:
-
-```json
-{
-  "messageId": "uuid",
-  "planningJobId": "uuid",
-  "status": "queued"
-}
-```
+- `provider`：界面上选中的模型，不填用 `.env` 的默认模型。链路里的每一次模型调用都用它。
+- 返回 202：`{ "messageId": 3, "planningJobId": "job_…", "status": "queued" }`。规划在后台跑，用下面的接口查进度。
+- 对话不存在 404；内容是空的 400；这段对话上一条还在规划中 409。
 
 ### 查询规划任务
 
@@ -282,16 +256,36 @@ Response:
 GET /api/planning-jobs/{jobId}
 ```
 
-Response:
+前端每秒问一次，直到 `status` 是 `completed` 或 `failed`。
 
 ```json
 {
-  "jobId": "uuid",
-  "status": "running",
-  "stage": "validating_routes",
-  "progress": 0.62
+  "jobId": "job_…",
+  "conversationId": "conv_…",
+  "status": "completed",
+  "stage": "saving",
+  "stages": [
+    { "id": "understanding", "label": "理解需求" },
+    { "id": "selecting", "label": "从景点库挑候选" },
+    { "id": "generating", "label": "模型排行程" },
+    { "id": "routing", "label": "查真实交通时间" },
+    { "id": "validating", "label": "校验" },
+    { "id": "repairing", "label": "把错误交给模型修正" },
+    { "id": "routing", "label": "查真实交通时间" },
+    { "id": "validating", "label": "校验" },
+    { "id": "saving", "label": "保存" }
+  ],
+  "kind": "itinerary",
+  "reply": "排好了（第一版有错误，交给模型修正过一次）……",
+  "provider": "doubao",
+  "itineraryVersionId": "ver_…",
+  "error": null
 }
 ```
+
+- `stages`：链路真的走过的步骤，按顺序，最后一个是正在做的（或最后做完的）。`repairing` 和第二遍的 `routing`、`validating` 只在第一轮有错误时出现；反问时只有 `understanding`。
+- `status`：`failed` 只表示任务本身出错（模型调用失败等），看 `error`，结构见"模型：出错时"。**行程没通过校验时任务是 `completed`，`kind` 是 `failed`**，`itineraryVersionId` 照样有，界面只显示问题清单。
+- 任务只存在内存里，后端重启后查不到（404），但已经存进 SQLite 的消息和行程不丢。
 
 ### 获取行程版本
 
@@ -299,25 +293,26 @@ Response:
 GET /api/itinerary-versions/{versionId}
 ```
 
-Response:
+返回 `ItineraryVersion`（后端 `apps/api/app/schemas/itinerary.py`）：
 
-```json
-{
-  "id": "uuid",
-  "itineraryId": "uuid",
-  "versionNumber": 3,
-  "city": "武汉",
-  "days": [],
-  "map": {
-    "pois": [],
-    "routes": []
-  },
-  "validation": {
-    "status": "passed",
-    "warnings": []
-  }
-}
-```
+| 字段 | 说明 |
+|---|---|
+| `id`、`itineraryId`、`versionNumber`、`createdAt` | 同一份行程的版本从 1 递增；版本存下后不再修改 |
+| `title`、`city` | |
+| `frame` | `{ days, startDate, pace }`：校验时用的天数、开始日期（未定时 null）、节奏 |
+| `preferences` | 抽到的偏好 |
+| `defaultsUsed` | 程序替用户补上的默认值，例如"节奏：适中（你没说，按默认）"，界面上要列出来 |
+| `days[]` | `{ dayNumber, date, theme, stops[], legs[] }` |
+| `days[].stops[]` | `{ poiId, name, district, category, location, arrive, leave, reason, facts }`；`facts` 是生成时景点库里的 `openingHours`、`reservation`、`ticket`、`payment`、`recommendedDurationMinutes`，结构和景点详情里的一条信息一样（带 `status`：已核实、待确认、已过期、待补充） |
+| `days[].legs[]` | `{ fromPoiId, toPoiId, route, choice }`；`route` 是路线接口的一条 route（高德的真实时间、折线、查询时间、缓存状态），`choice` 是为什么选这种方式 |
+| `validation` | `{ status, issues[] }`；`status` 是 `passed` / `warning` / `failed`；每条 issue 是 `{ level, code, message, dayNumber, poiId, fields }`，code 的全部取值见 `ai-planning-pipeline.md` |
+| `planner` | `{ provider, providerLabel, model, rounds, firstRoundStatus, firstRoundErrors }`：用的模型、对方返回的真实模型名、生成了几轮（2 表示修正过一次）、第一轮的结果 |
+| `draft` | 模型最后一轮的原始输出。没通过时 `days` 里可能缺了不存在的景点，`draft` 里原样留着 |
+| `dataAsOf` | 资料状态按哪一天算的 |
+
+没有这个版本时 404。
+
+## 以后的接口（设计草案）
 
 ### 修改行程
 

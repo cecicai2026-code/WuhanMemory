@@ -158,14 +158,15 @@ MVP provider:
 
 ## 典型数据流
 
+2026-11-15（板块 5）按代码更新，详见 `ai-planning-pipeline.md` 和 ADR 0004。
+
 1. `POST /api/conversations` 创建对话。
-2. `POST /api/conversations/{id}/messages` 发送用户需求。
-3. API 创建 `planning_job`，返回 job id 并流式返回理解过程。
-4. Worker 执行 AI 规划和工具调用。
-5. 规划结果写入 `itinerary_versions`。
-6. 前端通过 WebSocket/SSE 或轮询拿到结构化结果。
-7. 地图层渲染 POI 点位、路线和每日行程。
-8. 用户修改后生成新版本，不覆盖旧版本。
+2. `POST /api/conversations/{id}/messages` 发送用户需求，带上选中的模型；返回规划任务 id。
+3. 后端在后台任务里跑规划链路（程序编排，模型只回答固定结构的 JSON，不用工具调用）。
+4. 前端每秒 `GET /api/planning-jobs/{id}`，显示链路真的走过的步骤。
+5. 结果写入 `itinerary_versions`（不可变，带模型和校验结果），回复写入 `conversation_messages`。
+6. 前端 `GET /api/itinerary-versions/{id}`，画行程卡和地图路线。
+7. 用户再发一条消息时生成新版本，不覆盖旧版本。
 
 ## 可靠性原则
 
