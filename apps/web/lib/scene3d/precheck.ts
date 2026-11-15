@@ -11,11 +11,32 @@
  * 判断规则在这里写一份，<head> 里的脚本和 React 里的判断都用它。
  */
 
+/** 这次访问打开的第一个页面（开场 G6 只在第一个页面播），记在 sessionStorage 里 */
+export const FIRST_PAGE_KEY = "wm-first-page";
+/** 开场已经播过 */
+export const INTRO_DONE_KEY = "wm-intro-done";
+
+/** 首页要不要播开场：这次访问的第一个页面是首页，并且还没播过 */
+export function shouldPlayIntro(): boolean {
+  try {
+    return sessionStorage.getItem(FIRST_PAGE_KEY) === "/" && !sessionStorage.getItem(INTRO_DONE_KEY);
+  } catch {
+    return false;
+  }
+}
+export function markIntroDone() {
+  try {
+    sessionStorage.setItem(INTRO_DONE_KEY, "1");
+  } catch {
+    // 存不了就算了，下次再播一遍
+  }
+}
+
 /** 普通版 / 立体版的选择记在浏览器里，用这个键 */
 export const STAGE_PREF_KEY = "wm-stage";
 
 /** 有立体场景的网址（正则）。每做好一幕加一条 */
-export const STAGE_PATHS: string[] = ["^/places/?$", "^/places/[^/]+/?$", "^/places/[^/]+/[^/]+/?$"];
+export const STAGE_PATHS: string[] = ["^/$", "^/places/?$", "^/places/[^/]+/?$", "^/places/[^/]+/[^/]+/?$"];
 
 /** 这个网址有没有立体场景 */
 export function pathHasStage(pathname: string): boolean {
@@ -70,6 +91,7 @@ export function webglAvailable(): boolean {
 
 /** <head> 里的脚本。不能 import，所以把上面几条规则原样写成一段字符串 */
 export const PRECHECK_SCRIPT = `(function(){try{
+try{if(!sessionStorage.getItem(${JSON.stringify(FIRST_PAGE_KEY)}))sessionStorage.setItem(${JSON.stringify(FIRST_PAGE_KEY)},location.pathname);}catch(e){}
 var paths=${JSON.stringify(STAGE_PATHS)},p=location.pathname,hit=false;
 for(var i=0;i<paths.length;i++){if(new RegExp(paths[i]).test(p))hit=true;}
 if(!hit)return;

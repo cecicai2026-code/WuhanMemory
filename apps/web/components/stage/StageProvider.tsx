@@ -80,6 +80,14 @@ function setHtmlStage(v: "pending" | "on" | null) {
   else d.setAttribute("data-stage", "flat");
 }
 
+/**
+ * 页面上有几个 StageProvider。从首页点进地点档案时，新的（地点档案的 layout）先挂上、旧的（首页）后卸载，
+ * 旧的卸载时不能把新的刚设好的 data-stage 撤掉。
+ */
+let mountedProviders = 0;
+/** 最近挂上的那个 StageProvider。只有它能改 <html> 上的状态（Next 藏起来的旧页面里的那个不能） */
+let activeProvider: object | null = null;
+
 export function StageProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<Mode>("checking");
   const [canOffer3D, setCanOffer3D] = useState(false);
@@ -103,6 +111,23 @@ export function StageProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const reasonRef = useRef<string | null>(null);
 
+  const me = useRef({});
+  useLayoutEffect(() => {
+    mountedProviders++;
+    activeProvider = me.current;
+    return () => {
+      mountedProviders--;
+      if (activeProvider === me.current) activeProvider = null;
+    };
+  }, []);
+  /** 只有当前的 StageProvider 才改 <html> 上的状态 */
+  const html = useCallback((v: "pending" | "on" | null) => {
+    if (activeProvider === me.current) setHtmlStage(v);
+  }, []);
+  const curtainHere = useCallback((on: boolean) => {
+    if (activeProvider === me.current) setCurtain(on);
+  }, []);
+
   // 判断能不能用立体。在画出来之前做，免得普通版闪一下
   useLayoutEffect(() => {
     const evaluate = () => {
@@ -113,7 +138,10 @@ export function StageProvider({ children }: { children: ReactNode }) {
       setWant3D(want);
       if (!want) {
         setMode("flat");
-        setHtmlStage(null);
+        html(null);
+      } else if (!engineRef.current) {
+        // 从别的页面点进来（不是整页刷新，<head> 里的脚本不会再跑）：在画出来之前就盖上"显影中"的暗幕，免得先闪一下普通版
+        html("pending");
       }
     };
     evaluate();
@@ -135,8 +163,8 @@ export function StageProvider({ children }: { children: ReactNode }) {
       if (process.env.NODE_ENV !== "production") console.warn("[stage] 退回普通版：", reason, detail ?? "");
       teardown();
       setMode("flat");
-      setHtmlStage(null);
-      setCurtain(false);
+      html(null);
+      curtainHere(false);
       pendingRef.current = null;
       flyerRef.current?.cancel();
       delete document.documentElement.dataset.stageArrival;
@@ -147,15 +175,25 @@ export function StageProvider({ children }: { children: ReactNode }) {
 
   // 要用立体、页面也说了要哪一幕：加载引擎（第一次）并显示这一幕
   useEffect(() => {
-    // 这个页面没有立体场景（例如还没做的幕）：引擎停着，显示普通版
+    // 页面还没说要哪一幕：等一会儿，还是没有就揭开暗幕显示普通版
+    if (want3D && !req && !engineRef.current) {
+      const t = window.setTimeout(() => {
+        if (!engineRef.current) {
+          setMode("flat");
+          html(null);
+        }
+      }, 1500);
+      return () => window.clearTimeout(t);
+    }
+    // 这个页面没有立体场景：引擎停着，显示普通版
     if (want3D && !req) {
       engineRef.current?.idle();
       store.set(null);
       if (engineRef.current) {
         setMode("flat");
-        setHtmlStage(null);
+        html(null);
       }
-      setCurtain(false);
+      curtainHere(false);
       if (pendingRef.current) dropHandoff();
       return;
     }
@@ -164,7 +202,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
     const firstTime = !engineRef.current;
     if (firstTime) {
       setMode("loading");
-      setHtmlStage("pending");
+      html("pending");
     }
     const timer = firstTime ? window.setTimeout(() => !cancelled && fallBack("timeout"), STAGE_READY_TIMEOUT_MS) : 0;
 
@@ -187,7 +225,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
                 flyer().show(handoff);
                 pendingRef.current = { h: handoff, at: performance.now() };
               }
-              if (curtain) setCurtain(true);
+              if (curtain) curtainHere(true);
               router.push(href, { scroll: false });
             },
             tag: tagRef.current!,
@@ -198,14 +236,14 @@ export function StageProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
         window.clearTimeout(timer);
         setMode("on");
-        setHtmlStage("on");
+        html("on");
         // 上一幕交了物件过来：让替身飞到这一幕里对应的位置（照片 → 晾片幕，主题卡 → 纸页幕）
         const p = pendingRef.current;
         pendingRef.current = null;
         if (p && performance.now() - p.at < 8000 && ((p.h.kind === "print" && req.kind === "line") || (p.h.kind === "card" && req.kind === "sheet"))) {
           void arrive(p.h, engineRef.current);
         } else if (p) dropHandoff();
-        setCurtain(false);
+        curtainHere(false);
       } catch (err) {
         if (!cancelled) fallBack(err instanceof Error && /chunk|import|fetch/i.test(err.message) ? "load-error" : "init-error", err);
       }
@@ -250,8 +288,12 @@ export function StageProvider({ children }: { children: ReactNode }) {
   useEffect(
     () => () => {
       teardown();
-      document.documentElement.removeAttribute("data-stage");
-      setCurtain(false);
+      // 等这一轮更新跑完再看：下一个页面也有立体场景的话，<html> 上的状态交给它，不去撤
+      queueMicrotask(() => {
+        if (mountedProviders > 0) return;
+        document.documentElement.removeAttribute("data-stage");
+        setCurtain(false);
+      });
     },
     [teardown]
   );
@@ -261,7 +303,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
     if (v === "flat") {
       setWant3D(false);
       setMode("flat");
-      setHtmlStage(null);
+      html(null);
     } else {
       const ok = deviceAllows3D() && webglAvailable();
       setWant3D(ok);
@@ -289,7 +331,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
   const go = useCallback(
     (href: string, curtain = true) => {
       delete document.documentElement.dataset.stageLanded;
-      if (curtain && engineRef.current) setCurtain(true);
+      if (curtain && engineRef.current) curtainHere(true);
       router.push(href, { scroll: false });
     },
     [router]
@@ -348,7 +390,12 @@ function FocusProxy({ active }: { active: boolean }) {
       const main = t?.closest?.("[data-shell-main]");
       if (!t || !main || t.closest("[data-stage-show]")) return setText(null);
       const label = (t.getAttribute("aria-label") ?? t.textContent ?? "").replace(/\s+/g, " ").trim();
-      setText(label ? (label.length > 48 ? `${label.slice(0, 48)}……` : label) : null);
+      // 场景已经在对应的物件周围画了黄铜框（例如景点卡片、主题链接、首页的入口）时不用再写
+      window.setTimeout(() => {
+        if (document.activeElement !== t) return;
+        const ringShown = (document.querySelector(".stage-ring") as HTMLElement | null)?.style.opacity === "1";
+        setText(!ringShown && label ? (label.length > 48 ? `${label.slice(0, 48)}……` : label) : null);
+      }, 60);
     };
     const onOut = () => setText(null);
     document.addEventListener("focusin", onIn);

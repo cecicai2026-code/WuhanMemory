@@ -296,3 +296,131 @@
 .overlay.under {
   z-index: 1;
 }
+
+/* ---------- 首页桌面（样式照样片 docs/design/prototypes/kit.css） ---------- */
+.deskHero {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13vh;
+  text-align: center;
+  transition: opacity 0.8s var(--ease-silk), transform 1.2s var(--ease-silk);
+}
+.deskHero[data-off] {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+.deskKicker {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.3em;
+  color: var(--brass);
+}
+.deskName {
+  margin: 14px 0 10px;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(54px, 8vw, 116px);
+  letter-spacing: 0.14em;
+  color: var(--paper);
+  text-shadow: 0 6px 34px rgba(0, 0, 0, 0.85);
+}
+.deskSub {
+  margin: 0;
+  font-family: var(--font-paper);
+  font-size: 18px;
+  color: var(--paper);
+  text-shadow: 0 2px 12px #000;
+}
+.deskSkip {
+  margin-top: 18px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+/* 停在某件物件时旁边的说明 */
+.deskStop {
+  position: absolute;
+  top: 50%;
+  width: min(400px, 40vw);
+  padding: 26px 30px;
+  background: rgba(7, 5, 4, 0.66);
+  box-shadow: 0 0 50px 30px rgba(7, 5, 4, 0.66);
+  opacity: 0;
+  transform: translateY(-50%) translateY(18px);
+  transition: opacity 0.7s var(--ease-silk), transform 1s var(--ease-silk);
+}
+.deskStop.right {
+  right: 6vw;
+}
+.deskStop.left {
+  left: 6vw;
+}
+.deskStop[data-on] {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+.deskStop[data-on] .deskGo {
+  pointer-events: auto;
+}
+.deskTitle {
+  margin: 12px 0 14px;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(30px, 3.2vw, 44px);
+  color: var(--paper);
+}
+.deskText {
+  margin: 0 0 18px;
+  font-family: var(--font-paper);
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--paper);
+  text-shadow: 0 2px 10px #000;
+}
+/* 入口：标注字的小字加箭头（规范第 7 节"文字链接"），不用红色手写字 */
+.overlay .deskGo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--brass);
+  text-decoration: none;
+  pointer-events: none;
+  transition: color var(--t-micro);
+}
+.overlay .deskGo:hover {
+  color: var(--brass-bright);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.deskPager .range {
+  min-width: 170px;
+  text-align: center;
+}
+/* 平板宽度：说明挪到画面下方中间，不压在物件上 */
+@media (max-width: 1067px) {
+  .deskStop.left,
+  .deskStop.right {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: calc(4.5vh + 76px);
+    width: min(560px, calc(100vw - 2 * var(--edge)));
+    padding: 18px 24px;
+    transform: translateX(-50%) translateY(18px);
+  }
+  .deskStop[data-on] {
+    transform: translateX(-50%);
+  }
+  .deskTitle {
+    margin: 8px 0 8px;
+  }
+  .deskText {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+}

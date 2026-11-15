@@ -75,6 +75,16 @@ export interface SheetData {
   topics: Array<{ id: string; name: string }>;
 }
 
+/** 首页桌面：四件物件各通往哪个页面 */
+export interface DeskData {
+  /** 顺序：胶卷罐、灯箱、两台打字机、笔记本 */
+  stops: Array<{ label: string; href: string }>;
+  /** 一开始停在第几站（0 是全景） */
+  at?: number;
+  /** 要不要播开场（这次访问的第一个页面是首页、还没播过） */
+  intro: boolean;
+}
+
 /** 胶卷罐侧面的一行小字，只放真实的值 */
 export function rollLabel(d: RollsData): string {
   return `${d.district ?? "WUHAN MEMORY"} · ${pad2(d.frames.length)} EXP`;
