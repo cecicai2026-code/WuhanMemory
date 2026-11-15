@@ -51,7 +51,7 @@
 - [x] 第 8 步：重写 `README.md`（只写已做的功能，没做的列在"计划中"；评测数字取自 `eval/results/`，写明三次之间链路改过）。截图清单在 `docs/screenshots/README.md`，截图还没截。
 - [x] 第 10 步：上线办法比较 `docs/operations/hosting-options.md`（六种办法，附出处）。Claude 推荐香港轻量服务器，同时准备录屏备用。等 Cecilia 选。不管选哪种，上线前都要先改代码：浏览器只连网站一个地址（前端把 `/api`、`/_AMapService`、`/media` 转给后端）。
 - [x] 第 11 步：演示录屏步骤清单 `docs/demo-script.md`。
-- [ ] 第 9 步：项目说明 `docs/project-statement.md`：提纲已给 Cecilia，等确认，还要 `WuHan-Memory` 老仓库的链接来核对 2026-06-28。
+- [x] 第 9 步：项目说明 `docs/project-statement.md`（Cecilia 确认提纲后写）。Claude 在浏览器面板打开了 GitHub：`cecicai2026-code/WuHan-Memory` 是公开的，只有一次提交（`404a5bc`，2026-06-28，Initial commit），`package.json` 用 Express，`.env.example` 是 DeepSeek。`cecicai2026-code/WuhanMemory` 没登录时打开是 404，现在是私有仓库，学校看不到；要不要公开由 Cecilia 定。等 Cecilia 读过、改过再定稿。
 - [ ] Cecilia 运行 `pnpm build`。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
