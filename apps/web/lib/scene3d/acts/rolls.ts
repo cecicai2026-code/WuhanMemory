@@ -505,6 +505,10 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
     filmX = filmTarget();
     await Promise.all(slots.filter((s) => Math.floor(s.i / G) === group).map(loadPhoto));
   })();
+  // 准备好以后，其余照片一张一张在后台取
+  void ready.then(async () => {
+    for (const s of slots) await loadPhoto(s);
+  });
 
   return {
     scene,

@@ -44,6 +44,28 @@ export function rollsFrame(p: PoiSummary, no: number): RollsFrame {
   };
 }
 
+/** 晾片绳上的一张照片 = 一个景点。和胶片格同样的字段 */
+export type LinePrint = RollsFrame;
+
+/** 显影盘里的一张主题卡 */
+export interface LineTopic {
+  /** 地址里的主题 id：overview、tips、gallery、food */
+  id: string;
+  name: string;
+  /** 这张纸盖哪个章，和普通版的信纸一致 */
+  status: "verified" | "pending" | "expired";
+}
+
+export interface LineData {
+  /** 全部景点，晾在绳子上 */
+  prints: LinePrint[];
+  /** 当前景点 */
+  sel: string;
+  /** 标题下面一行："区 · 类别" */
+  sub: string;
+  topics: LineTopic[];
+}
+
 /** 胶卷罐侧面的一行小字，只放真实的值 */
 export function rollLabel(d: RollsData): string {
   return `${d.district ?? "WUHAN MEMORY"} · ${pad2(d.frames.length)} EXP`;

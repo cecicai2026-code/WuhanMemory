@@ -8,11 +8,12 @@
  * Tab 停到某张卡片时，看片器滑到那一格，画框周围出现黄铜框；回车时镜头推近，再进入那个景点。
  * 方向键一格一格走，PageUp / PageDown 换组。立体版没打开时这里什么都不显示。
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { RollsData } from "@/lib/scene3d/data";
 import { pad2 } from "@/lib/places";
+import { Grain, typingInto, useSlideTitle } from "./StageBits";
 import s from "./stage.module.css";
 
 const G = 5;
@@ -36,24 +37,8 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
   const entering = on && Boolean(st.entering);
   const frame = sel >= 0 ? data.frames[sel] : undefined;
 
-  // 标题换的时候先滑出去再滑进来（样片的做法）
-  const [shown, setShown] = useState<{ i: number; phase: "in" | "out" | "" }>({ i: -1, phase: "" });
-  useEffect(() => {
-    if (sel < 0 || sel === shown.i) return;
-    if (shown.i < 0) {
-      setShown({ i: sel, phase: "" });
-      return;
-    }
-    setShown((p) => ({ ...p, phase: "out" }));
-    const t1 = window.setTimeout(() => setShown({ i: sel, phase: "in" }), 180);
-    const t2 = window.setTimeout(() => setShown({ i: sel, phase: "" }), 220);
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sel]);
-  const titleFrame = shown.i >= 0 ? data.frames[shown.i] : undefined;
+  const title = useSlideTitle(sel);
+  const titleFrame = title.shown >= 0 ? data.frames[title.shown] : undefined;
 
   // 地址里记着停在哪一格（?at=），刷新或分享后停在同一格。停稳 400 毫秒再改，免得鼠标划过时一直改
   const lastAt = useRef<string | null>(null);
@@ -86,11 +71,12 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
       e.preventDefault();
       stage.command({ type: "enter", id });
     };
-    const links = () => [...document.querySelectorAll<HTMLAnchorElement>("[data-shell-main] a")].filter((a) => placeIdOf(a));
+    // Next 会把上一个页面藏在 hidden 的容器里留着，跳过那些
+    const links = () => [...document.querySelectorAll<HTMLAnchorElement>("[data-shell-main] a")].filter((a) => placeIdOf(a) && !a.closest("[hidden]"));
     const onKey = (e: KeyboardEvent) => {
       if (e.altKey || e.metaKey || e.ctrlKey) return;
       const t = e.target as HTMLElement;
-      if (t.closest("input, textarea, select, [role=dialog], [aria-expanded=true]")) return;
+      if (typingInto(t)) return;
       const dir = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
       const inList = placeIdOf(t) !== null;
       if (dir) {
@@ -138,7 +124,7 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
           <div className={s.head} aria-hidden="true" data-entering={entering || undefined}>
             <div className={s.no}>{titleFrame ? `第 ${pad2(titleFrame.no)} 格 / ${pad2(data.total)}` : ""}</div>
             <div className={s.title}>
-              <span className={shown.phase ? s[shown.phase] : undefined}>{titleFrame?.name}</span>
+              <span className={title.className}>{titleFrame?.name}</span>
             </div>
             {titleFrame && (
               <div className={s.sub}>
@@ -182,22 +168,4 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
         )}
     </>
   );
-}
-
-/** 全页一层细颗粒（设计规范 3.2、G7）。降级时由 CSS 关掉 */
-function Grain() {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const c = ref.current;
-    const g = c?.getContext("2d");
-    if (!c || !g) return;
-    const d = g.createImageData(256, 256);
-    for (let i = 0; i < d.data.length; i += 4) {
-      const v = Math.random() * 255;
-      d.data[i] = d.data[i + 1] = d.data[i + 2] = v;
-      d.data[i + 3] = 255;
-    }
-    g.putImageData(d, 0, 0);
-  }, []);
-  return <canvas ref={ref} className={s.grain} width={256} height={256} aria-hidden="true" />;
 }
