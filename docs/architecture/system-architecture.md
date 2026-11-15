@@ -123,16 +123,16 @@ MVP provider:
 ### Planning Orchestrator
 
 - 将自然语言需求转成结构化约束。
-- 通过 `LLMGateway` 调用豆包、Qwen 或 mock provider。
+- 通过 `LLMGateway` 调用豆包或 Qwen。
 - 调用 POI、路线、天气、内容检索和预算工具。
 - 生成候选路线，排序后输出可验证的 itinerary JSON。
 
 ### LLM Gateway
 
-- 对业务层提供统一 `complete_json` 和 `complete_with_tools` 接口。
-- 支持 `qwen`、`doubao` 和 `mock` provider。
-- 支持 fixed、fallback 和 shadow provider 选择策略。
-- 统一结构化输出校验、错误码、token usage、latency 和 trace。
+- 对业务层提供统一的 `complete_json` 接口（板块 4 已实现；工具调用没有做）。
+- 支持 `qwen` 和 `doubao` 两个 provider；`.env` 设默认模型，每次请求可以另外指定。
+- 统一超时、重试、限流等待、输出检查和修复、错误类型；每次调用记到 SQLite 的 `llm_calls`。
+- 详见 `llm-provider-gateway.md`。
 
 ### POI Service
 

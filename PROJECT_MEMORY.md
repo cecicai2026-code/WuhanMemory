@@ -1,6 +1,6 @@
 # WuhanMemory Project Memory
 
-最后更新: 2026-11-14
+最后更新: 2026-11-15
 
 ## 项目定位
 
@@ -13,7 +13,7 @@ WuhanMemory 是一个基于地图的 AI 旅游行程规划 Web 应用。用户�
 - 当前目录已经初始化为 Git 仓库。
 - Phase 1 工程骨架已完成。
 - 已建立 Next.js 前端、FastAPI 后端、共享 TypeScript schema、mock 武汉 3 日行程、LLM provider gateway 骨架和基础数据库迁移。
-- 本地默认使用 mock LLM provider，不依赖真实豆包、Qwen 或高德 key。
+- 2026-11-15（板块 4）：千问和豆包已经能通过 `LLMGateway` 真实调用和切换，mock provider 已移出应用代码。现在做到哪一步以 `docs/progress/current-progress.md` 为准。
 
 ## 下次进入项目时建议先读
 
@@ -33,12 +33,12 @@ WuhanMemory 是一个基于地图的 AI 旅游行程规划 Web 应用。用户�
 - 后端: FastAPI + Python，承载 AI 编排、路线规划、POI 聚合、分享页生成和异步任务。
 - 数据库: JSON 种子文件 + SQLite（ADR 0003，2026-11-14 取代原来的 PostgreSQL + PostGIS + pgvector）。景点资料以 `data/pois/*.json` 为准，启动时导入 SQLite；读写经过 repository 层，以后可以换 PostgreSQL。
 - 缓存: 高德路线等外部结果缓存在 SQLite 的表里，带 `checkedAt` 和 `expiresAt`。不使用 Redis 和任务队列。
-- AI: 使用 `LLMGateway` 支持豆包和 Qwen 可切换。模型负责规划推理，后端工具负责真实数据查询、路线计算、结构化输出校验和持久化。
+- AI: 使用 `LLMGateway` 支持豆包和 Qwen 可切换（`.env` 设默认模型，每次请求可以另外指定，界面上有模型选择）。模型负责规划推理，后端工具负责真实数据查询、路线计算、结构化输出校验和持久化。
 
 ## 近期目标
 
 1. 接入真实高德地图 JS API provider，替换 mock map 渲染层。
-2. 接入豆包和 Qwen provider 的真实 API 调用、schema repair 和工具调用。
+2. （已完成，板块 4）豆包和 Qwen provider 的真实调用、输出修复。工具调用没有做。
 3. 建立 SQLite repository 层，替换 mock repository。
 4. 加入规划 job 队列、SSE 状态流和 provider 观测指标。
 5. 增强景点内容来源、媒体资产和授权内容管理。

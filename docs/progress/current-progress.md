@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 3 完成）
+最后更新: 2026-11-15（板块 4 代码完成，等 Cecilia 看界面和跑 build）
 
 ## 当前阶段
 
@@ -18,6 +18,32 @@
 **板块 2（已完成，2026-11-15 合进 main）**：景点数据格式、数据检查脚本、SQLite 导入和接口、地点档案接真实接口。10 个景点的资料全部是占位（官网、旅游平台、媒体），实地核实等 Cecilia 以后去了再补。分支 `block-2-poi-data` 保留。
 
 **板块 3（已完成，2026-11-15 合进 main）**：高德地图（2D/3D、图钉、卡片）、后端路线规划（步行、公交地铁、驾车）、SQLite 路线缓存、`/map` 上临时的"两点之间怎么走"。分支 `block-3-amap-routes` 保留。
+
+**板块 4（代码完成，还没合进 main）**：千问和豆包通过 `LLMGateway` 真实调用和切换。在分支 `block-4-llm-gateway` 上。两个模型的冒烟测试已通过（2026-11-15）；还差 Cecilia 在浏览器里看 `/map` 上的模型选择、跑 `pnpm build`、同意合并。
+
+## 板块 4 完成情况
+
+- [x] 开工前讲清楚网关现状、缺什么、两家接口的差别；Cecilia 用临时脚本验证了千问 key、豆包 key 和豆包接入点都能用（2026-11-15：千问 `qwen-plus` 约 0.6 秒；豆包接入点对应 `doubao-seed-2-1-pro-260915`，默认开着深度思考；两家都接受 JSON 输出模式）。
+- [x] Cecilia 的选择（2026-11-15）：自动换备用模型默认关；板块 5 之前在界面上加一个临时的"试一句"；调用记录存 SQLite、不存提示词和回答；超时 60 秒、最多重试 2 次、限流最多等 20 秒；工具调用和 shadow 模式这次不做；继续用 httpx 不引入 SDK；mock 只留给测试；豆包的深度思考保持模型默认。
+- [x] 网关重写：每次请求可指定模型、超时、重试、限流等待、输出不合格时让模型重答一次、12 种错误类型。
+- [x] 千问、豆包两个 provider：错误码对着两家官方文档翻译；额度用完和限流分开；豆包的 `DOUBAO_THINKING` 开关；对方不支持 JSON 模式时的退路。
+- [x] 调用记录：SQLite 表 `llm_calls`（模型、耗时、请求次数、是否重试、是否修复、成功或错误类型、token 数）。
+- [x] 接口 `GET /api/llm/providers`（有哪些模型、各自是否已配置）和临时的 `POST /api/llm/ping`（试一句）。
+- [x] 冒烟测试脚本 `corepack pnpm llm:smoke`。Cecilia 运行通过（2026-11-15）：千问 `qwen-plus` 901 毫秒，豆包 `doubao-seed-2-1-pro-260915` 2491 毫秒，都是一次成功，没有重试和修复。关掉豆包思考再跑一次也通过（千问 783 毫秒，豆包 2064 毫秒）。这 4 次调用都记在了 `llm_calls` 里。
+- [x] `/map` 对话纸上的模型选择和"试一句"（`apps/web/app/map/ModelPicker.tsx`）。前端类型检查通过。
+- [x] 单元测试不调用真实接口：用假 provider 测切换、重试、限流等待、超时、输出修复；用假的 HTTP 返回测两家的错误码翻译和 key 不外漏。后端测试 199 个通过。
+- [x] 文档：`llm-provider-gateway.md` 按代码重写，ADR 0002 追加 2026-11-15 更新，`api-contracts.md`"模型"一节，`data-model.md` 第 11 节，`frontend-ux.md`、`system-architecture.md`。
+- [ ] Cecilia 重启后端（`.env` 的 `LLM_PROVIDER` 从 mock 改成 qwen 之后还没重启，后端现在仍然认为默认模型是 mock），在浏览器里看 `/map` 上的模型选择，点"试一句"。
+- [ ] Cecilia 运行 `pnpm build`。
+- [ ] Cecilia 同意后合进 main。
+
+板块 4 留给后面的事：
+
+- "试一句"和接口 `POST /api/llm/ping` 是临时的，板块 5 接上对话后去掉；选中的模型改为跟着每条消息发给后端（`Workbench.tsx` 里的 `provider` 状态已经留好）。
+- 设计规范第 7 节说四角标注里显示"当前模型"，这次没做，板块 5 有了对话再加。
+- 豆包的深度思考开着还是关着，板块 5 有了真实的规划提示词后用实际效果再比一次。
+- 对方说"不支持 JSON 输出模式"时的报错原文还没在真实接口上见过，退路是按文档推断写的。
+- 千问官方错误码那一页很长，后半部分只对了摘要。
 
 ## 板块 3 完成情况
 
@@ -101,6 +127,14 @@ cd ~/WuhanMemory-project2 && corepack pnpm dev
 cd ~/WuhanMemory-project2 && corepack pnpm check:data
 ```
 
+测千问和豆包通不通（真实调用，会花一点 token）：
+
+```bash
+cd ~/WuhanMemory-project2 && corepack pnpm llm:smoke
+```
+
+改了 `apps/api/.env` 要重启后端才生效。
+
 ## 板块 0 完成情况
 
 - [x] 读现有代码，列出保留和重写的部分（结论见 `docs/progress/dev-log.md` 2026-11-14）。
@@ -113,11 +147,11 @@ cd ~/WuhanMemory-project2 && corepack pnpm check:data
 
 ## 代码现状
 
-前端（`apps/web`）在板块 1A 重写过，结构见 `docs/architecture/frontend-ux.md` 的"前端代码结构"。后端仍是 2026-07-05 的骨架。`docs/design/prototypes/` 里的样片是独立的设计稿（单个网页加 three.js），不属于网站代码。
+前端（`apps/web`）在板块 1A 重写过，结构见 `docs/architecture/frontend-ux.md` 的"前端代码结构"。后端的景点、路线、模型网关已在板块 2、3、4 重写；对话、规划、行程、分享接口还是空的（板块 5、7）。`docs/design/prototypes/` 里的样片是独立的设计稿（单个网页加 three.js），不属于网站代码。
 
 保留:
 
-- `apps/api/app/services/llm/`：`LLMGateway` 和 provider 边界。
+- `apps/api/app/services/llm/`：`LLMGateway` 和 provider 边界（板块 4 重写，边界不变）。
 - `packages/map-core`：地图 provider 接口。
 - `apps/api/app/main.py`、`core/config.py`、`schemas/itinerary.py`、`packages/shared/src/index.ts`：入口、配置和行程数据结构（景点字段要扩充）。
 - monorepo 工程结构。
@@ -171,7 +205,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 4：千问和豆包真实接入与切换。开工前新建分支。
+板块 4 收尾：Cecilia 看界面、跑 `pnpm build`、同意后合进 main。然后是板块 5：AI 规划链路和行程校验。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
