@@ -352,6 +352,116 @@
   color: var(--expired-paper);
 }
 
+/* ---------- 模型选择和临时的"试一句"（板块 4）。在对话纸上，输入横线的上方 ---------- */
+.models {
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px dashed rgba(107, 94, 76, 0.45);
+  font-size: var(--size-ui);
+}
+.modelsLegend {
+  padding: 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.modelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+/* 一个模型一张小签。选中的那张除了颜色变深，前面还有一个勾 */
+.model {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  color: var(--ink-soft);
+  font-family: var(--font-paper);
+  cursor: pointer;
+}
+.model input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.model:hover,
+.model[data-checked] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.model[data-checked] {
+  background: rgba(201, 164, 92, 0.25);
+}
+.model:focus-within {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.model[data-disabled] {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modelTick:empty {
+  display: none;
+}
+.tryOne {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.tryOne:hover:not(:disabled),
+.tryOne:focus-visible {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: rgba(201, 164, 92, 0.25);
+}
+.tryOne:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.tryOne:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modelsNote {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+}
+.pingResult {
+  margin-top: 6px;
+}
+.pingResult p {
+  margin: 2px 0 0;
+}
+.pingReply {
+  font-family: var(--font-paper);
+  color: var(--ink);
+}
+
 /* ---------- 平板：地图在上，对话和行程在下面并排 ---------- */
 @media (max-width: 1067px) {
   .bench {

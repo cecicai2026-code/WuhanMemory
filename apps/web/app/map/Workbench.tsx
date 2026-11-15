@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
-import type { PoiSummary, Route } from "@wuhanmemory/shared";
+import type { LlmProviderId, PoiSummary, Route } from "@wuhanmemory/shared";
 import { BrassButton, LineInput, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule } from "@/components/ui";
 import { MapPanel } from "./MapPanel";
+import { ModelPicker } from "./ModelPicker";
 import { RouteFinder } from "./RouteFinder";
 import s from "./map.module.css";
 
@@ -13,6 +14,7 @@ type Tab = "chat" | "plan";
 /**
  * 地图工作台的布局（设计规范 9.1）。板块 1A 只做布局：
  * 对话在板块 5 接入，行程卡在板块 5 有数据后才出现。地图（板块 3）在 MapPanel 里。
+ * 模型选择（板块 4）在 ModelPicker 里。
  * 所以这里没有任何示例对话、示例行程或示例数字。
  *
  * 电脑上三栏并排。手机上地图在上，对话和行程收在底部面板里，
@@ -21,6 +23,8 @@ type Tab = "chat" | "plan";
 export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: string | null }) {
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
+  // 选中的模型（板块 4）。板块 5 发消息时把它带给后端
+  const [provider, setProvider] = useState<LlmProviderId | null>(null);
   // "两点之间怎么走"选中的那一种交通方式，画在地图上
   const [shownRoute, setShownRoute] = useState<Route | null>(null);
   const routes = useMemo<MapRoute[]>(
@@ -57,6 +61,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
             <p>在这里用日常的话说你想怎么玩，例如几天、想看什么、走路多不多。回复会打在这张纸上。</p>
           </div>
           <form className={s.ask} onSubmit={(e) => e.preventDefault()}>
+            <ModelPicker value={provider} onChange={setProvider} />
             <LineInput id="ask" label="想怎么玩" placeholder="对话还没有接入" disabled />
             <div className={s.askRow}>
               <PencilNote>板块 5 接入</PencilNote>
