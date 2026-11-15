@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 7 主体已合进 main；下一个是板块 1B）
+最后更新: 2026-11-15（板块 7 主体已合进 main；上线选了香港轻量服务器，在分支 `deploy-hk` 上准备；之后是板块 1B）
 
 ## 当前阶段
 
@@ -55,7 +55,10 @@
 - [x] Cecilia 在 `block-7-share` 上运行 `pnpm build`，通过（2026-11-15）：编译、类型检查和 10 个页面（含 `/s/[slug]`、`/trips/[versionId]`、自定义 404）都没有报错。
 - [x] Cecilia 同意，合进 main（2026-11-15，合并提交 `02bdf32`）。合并后在 main 上后端测试 419 个通过，前端类型检查通过。
 - [ ] Cecilia 在 GitHub Desktop 推送 main；决定仓库公开还是邀请学校查看。
-- [ ] 还要 Cecilia 定的：上线办法（`docs/operations/hosting-options.md`）、截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
+- [x] 上线办法：Cecilia 选了 D，香港轻量服务器（2026-11-15）。在分支 `deploy-hk` 上准备（从 main 的 `6a94f9b` 分出来）：
+  - [x] 浏览器只连网站一个地址：`/api`、`/_AMapService`、`/media` 由网站转给后端（本机靠 `next.config.ts` 的 rewrites，服务器上靠 Caddy）。前端类型检查通过；Claude 在浏览器面板看过地图工作台、照片、分享页、我的行程，浏览器的请求都只到 localhost:3000。
+  - [ ] 部署步骤和脚本：Claude 列了要定的几件事，等 Cecilia 选。
+- [ ] 还要 Cecilia 定的：截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
 
