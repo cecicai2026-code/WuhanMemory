@@ -42,6 +42,9 @@ class RouteOut(BaseModel):
     status: Literal["ok", "none", "error"]
     durationMinutes: int | None = None
     distanceMeters: int | None = None
+    # 要走的路：步行就是全程距离；公交地铁是换乘和进出站要走的（高德 transit 返回里的 walking_distance）；
+    # 打车是 0。旧缓存里没有这个字段时为 null，由路线预热脚本从缓存的原始返回里补
+    walkingDistanceMeters: int | None = None
     cost: RouteCost | None = None
     # 公交地铁坐哪几条线，例如"地铁2号线 → 地铁4号线"
     summary: str | None = None
