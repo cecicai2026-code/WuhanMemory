@@ -62,7 +62,7 @@ GENERATE_SYSTEM = f"""你是武汉旅行规划助手的"排行程"环节。根�
 - 每天最早 {fmt(DAY_EARLIEST)} 到达第一站，最晚 {fmt(DAY_LATEST)} 离开最后一站。
 - 每天从第一站到达到最后一站离开的总时长不超过：轻松 {DAY_LIMIT_MINUTES['relaxed'] // 60} 小时，适中 {DAY_LIMIT_MINUTES['moderate'] // 60} 小时，紧凑 {DAY_LIMIT_MINUTES['intensive'] // 60} 小时。
 - 到达和离开都要在开放时间内，到达不能晚于最晚入场时间（lastEntry），不要排在闭馆日（closedWeekdays，1 是周一，7 是周日）。开放时间写"未知"的景点可以排，但尽量放在白天。
-- 相邻两站之间要留出交通时间：程序会用高德查真实的交通时间来校验，空档短于真实时间就算错。给了两两之间的直线距离做参考，实际路程比直线长，地铁还要换乘和步行进出站，宁可多留；在估计的交通时间之外再多留 {TRANSPORT_SLACK_MINUTES} 分钟余量。
+- 相邻两站之间要留出交通时间：程序会用高德查真实的交通时间来校验，空档短于真实时间就算错。【两站之间的真实交通】里是程序会选的交通方式和高德查到的分钟数，校验用的就是这些：空档至少留"表里的分钟数 + {TRANSPORT_SLACK_MINUTES} 分钟"。表里写"没查到真实时间"的只有直线距离，实际路程比直线长，地铁还要换乘和步行进出站，宁可多留。
 - 停留时间参考 recommendedDurationMinutes，"未知"的按景点类型估计。
 - 同一天尽量排在同一片区域（武昌、汉口、汉阳），少来回跨江。
 - reason 用一两句中文说明为什么这样排（顺路、对得上哪个兴趣、什么时段去合适），不要写开放时间、票价、交通时间这些事实，这些由程序从景点库和高德取。
@@ -90,7 +90,7 @@ def generate_user_prompt(
     frame: TripFrame,
     transport_label: str,
     candidates: list[dict[str, Any]],
-    distances: list[str],
+    transit: list[str],
     previous: PlanDraft | None,
     emphasis: str | None = None,
 ) -> str:
@@ -107,8 +107,8 @@ def generate_user_prompt(
         "【候选景点】",
         _json(candidates),
         "",
-        "【两两直线距离】",
-        "；".join(distances),
+        "【两站之间的真实交通】（程序会选的方式和高德查到的分钟数；↔ 表示来回一样，→ 是单程）",
+        "；".join(transit),
     ]
     if previous is not None:
         parts += ["", "【上一版行程】这是同一侧重上一次排的，用户在它的基础上提了新要求，按新要求调整：", previous.model_dump_json()]

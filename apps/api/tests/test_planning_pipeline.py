@@ -201,7 +201,7 @@ async def test_candidates_reach_the_model_with_ids(tmp_path: Path) -> None:
     prompt = s.prompt(1)
     for poi_id in ("a", "b", "c"):
         assert f'"id": "{poi_id}"' in prompt
-    assert "a—b" in prompt  # 直线距离表
+    assert "【两站之间的真实交通】" in prompt and "a—b 没查到真实时间，直线" in prompt  # 缓存还是空的
 
 
 # ---------- 交通方式 ----------

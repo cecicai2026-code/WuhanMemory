@@ -39,11 +39,11 @@ from app.schemas.poi_api import SourceOut
 from app.services.llm.errors import LLMError
 from app.services.llm.gateway import LLMGateway
 from app.services.planning import prompts
-from app.services.planning.candidates import Candidates, candidate_brief, distance_table, select_candidates
+from app.services.planning.candidates import Candidates, candidate_brief, select_candidates
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
 from app.services.planning.preferences import TRANSPORT_LABELS, Frame, frame_for, merge, question_for
-from app.services.planning.transport import MODE_LABELS, choose_leg
+from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
 from app.services.poi_view import fact_status
 from app.services.routing.service import RouteService
@@ -202,7 +202,7 @@ class PlanningPipeline:
         # ④ 三份同时生成
         await stage("generating")
         for plan in plans:
-            plan.prompt = _generate_prompt(plan, message, prefs, self._previous_draft(previous, plan.emphasis.id))
+            plan.prompt = _generate_prompt(plan, message, prefs, self._previous_draft(previous, plan.emphasis.id), self._transit(plan))
         generated = await asyncio.gather(
             *(self._generate(plan, provider_name) for plan in plans),
             return_exceptions=True,
@@ -311,12 +311,15 @@ class PlanningPipeline:
         emphasis: str,
         provider: str,
         on_stage: OnStage | None = None,
+        transit: list[str] | None = None,
     ) -> SingleOutcome:
         """板块 6：拿给定的偏好，按一种侧重、用指定的模型排一份。不抽偏好、不反问、不进对话。
 
         和 handle 里的每一份走同样的步骤：筛候选 → 生成 → 查交通 → 校验（含侧重规则）→ 有错误修正一次 → 保存版本。
         双模型对比时两边各调用一次，偏好、候选、侧重都一样，只有 provider 不同。
         模型出错不抛出，写在 SingleOutcome.error 里（另一边照常排）。
+        transit：给模型看的真实交通表。双模型对比时由调用方先算好一份、两边共用（transit_for）：
+        两边同时跑，后开始的一边可能读到先开始的一边刚查进缓存的路线，各算各的提示词就不一样了。
         """
 
         async def stage(name: Stage) -> None:
@@ -333,18 +336,8 @@ class PlanningPipeline:
         labels = {p.id: p.label for p in self.gateway.providers()}
 
         await stage("selecting")
-        trip = frame_for(prefs)
-        library = self.pois.list_pois()
-        base = select_candidates(library, prefs)
-        defaults = _defaults(trip, base)
-        e = EMPHASES[emphasis]
-        plan = _Plan(
-            emphasis=e,
-            candidates=candidates_for(e, base, library),
-            trip=Frame(frame=emphasis_frame(e, trip.frame), transport=trip.transport, defaults_used=defaults),
-            walk_max=walk_limit(e),
-        )
-        plan.prompt = _generate_prompt(plan, message, prefs, None)
+        plan, defaults = self._single_plan(prefs, emphasis)
+        plan.prompt = _generate_prompt(plan, message, prefs, None, transit if transit is not None else self._transit(plan))
 
         await stage("generating")
         try:
@@ -369,6 +362,30 @@ class PlanningPipeline:
         data = self._version_data(plan, prefs, defaults, provider, labels, today)
         version = self.itineraries.add_version(self.itineraries.create_itinerary(None), data)
         return SingleOutcome(provider=provider, version=version, defaults=defaults, repair_error=repair_error)
+
+    def _single_plan(self, prefs: TravelerPreferences, emphasis: str) -> tuple[_Plan, list[str]]:
+        trip = frame_for(prefs)
+        library = self.pois.list_pois()
+        base = select_candidates(library, prefs)
+        defaults = _defaults(trip, base)
+        e = EMPHASES[emphasis]
+        plan = _Plan(
+            emphasis=e,
+            candidates=candidates_for(e, base, library),
+            trip=Frame(frame=emphasis_frame(e, trip.frame), transport=trip.transport, defaults_used=defaults),
+            walk_max=walk_limit(e),
+        )
+        return plan, defaults
+
+    def transit_for(self, prefs: TravelerPreferences, emphasis: str) -> list[str]:
+        """plan_single 会给模型看的真实交通表。双模型对比先算一份，两边共用。"""
+        if prefs.startDate is None and not prefs.dateUndecided:
+            prefs = prefs.model_copy(update={"dateUndecided": True})
+        return self._transit(self._single_plan(prefs, emphasis)[0])
+
+    def _transit(self, plan: _Plan) -> list[str]:
+        """候选两两之间的真实交通（只读缓存，不调用高德；板块 6B）。按这份方案的交通偏好和步行上限选方式，和校验一样。"""
+        return transit_table(self.routes, list(plan.candidates.pois.values()), plan.trip.transport, walk_max=plan.walk_max)
 
     async def _generate(self, plan: _Plan, provider: str):  # type: ignore[no-untyped-def]
         return await self.gateway.complete_json(
@@ -509,14 +526,16 @@ def _defaults(trip: Frame, base: Candidates) -> list[str]:
     return defaults
 
 
-def _generate_prompt(plan: _Plan, message: str, prefs: TravelerPreferences, previous: PlanDraft | None) -> str:
+def _generate_prompt(
+    plan: _Plan, message: str, prefs: TravelerPreferences, previous: PlanDraft | None, transit: list[str]
+) -> str:
     return prompts.generate_user_prompt(
         message=message,
         prefs=prefs,
         frame=plan.trip.frame,
         transport_label=TRANSPORT_LABELS[plan.trip.transport],
         candidates=candidate_brief(plan.candidates, prefs),
-        distances=distance_table(plan.candidates),
+        transit=transit,
         previous=previous,
         emphasis=plan.emphasis.prompt,
     )

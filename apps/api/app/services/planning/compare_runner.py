@@ -90,12 +90,16 @@ class ModelComparer:
         library_ids = {p.id for p in library}
         names = {p.id: p.name for p in library}
 
+        # 给模型看的真实交通表先算一份，两边共用（板块 6B）：两边同时跑，各算各的话，
+        # 后开始的一边可能读到先开始的一边刚查进缓存的路线，提示词就不一样了
+        transit = self.pipeline.transit_for(prefs, emphasis)
+
         async def one_side(provider: str) -> tuple[SideResult, ItineraryVersion | None, list[str]]:
             started = perf_counter()
             with collect_calls() as calls:
                 out = await self.pipeline.plan_single(
                     message=request, prefs=prefs, emphasis=emphasis, provider=provider,
-                    on_stage=lambda s: progress(provider, s),
+                    on_stage=lambda s: progress(provider, s), transit=transit,
                 )
             wall = round((perf_counter() - started) * 1000)
             side = side_result(

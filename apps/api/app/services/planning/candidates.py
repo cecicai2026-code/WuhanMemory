@@ -76,7 +76,7 @@ def select_candidates(library: list[PoiFile], prefs: TravelerPreferences) -> Can
 
 
 def distance_km(a: PoiFile, b: PoiFile) -> float:
-    """两点直线距离（公里）。只给模型做参考，真实交通时间由程序向高德查。"""
+    """两点直线距离（公里）。交通表里缓存没有真实时间的两站用它（板块 6B），真实交通时间由程序向高德查。"""
     assert a.location and a.location.value and b.location and b.location.value
     la1, lo1 = math.radians(a.location.value.lat), math.radians(a.location.value.lng)
     la2, lo2 = math.radians(b.location.value.lat), math.radians(b.location.value.lng)
@@ -118,12 +118,3 @@ def candidate_brief(c: Candidates, prefs: TravelerPreferences) -> list[dict[str,
         )
     return out
 
-
-def distance_table(c: Candidates) -> list[str]:
-    """候选两两之间的直线距离，例如 "a—b 3.2km"。"""
-    pois = list(c.pois.values())
-    rows = []
-    for i, a in enumerate(pois):
-        for b in pois[i + 1 :]:
-            rows.append(f"{a.id}—{b.id} {distance_km(a, b):.1f}km")
-    return rows

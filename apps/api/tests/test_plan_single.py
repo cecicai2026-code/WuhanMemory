@@ -48,9 +48,11 @@ class TwoModels:
                                          conversations=SqliteConversationRepository(db),
                                          rounds=SqlitePlanningRoundRepository(db), today=lambda: TODAY)
 
-    async def run(self, provider: str, emphasis: str = "classic", prefs: TravelerPreferences = PREFS):
+    async def run(self, provider: str, emphasis: str = "classic", prefs: TravelerPreferences = PREFS,
+                  transit: list[str] | None = None):
         with collect_calls() as calls:
-            out = await self.pipeline.plan_single(message="测试请求", prefs=prefs, emphasis=emphasis, provider=provider)
+            out = await self.pipeline.plan_single(message="测试请求", prefs=prefs, emphasis=emphasis, provider=provider,
+                                                  transit=transit)
         return out, calls
 
 
@@ -99,12 +101,24 @@ async def test_repair_error_keeps_first_round(tmp_path: Path) -> None:
 
 async def test_two_models_in_parallel_get_same_prompt_and_own_calls(tmp_path: Path) -> None:
     s = TwoModels(tmp_path, [GOOD], [plan([("a", "10:00", "12:00"), ("b", "12:30", "14:30")])])
-    (q, q_calls), (d, d_calls) = await asyncio.gather(s.run("qwen"), s.run("doubao"))
-    # 两边收到的提示词一模一样：同样的偏好、候选、侧重
+    # 真实交通表先算一份、两边共用（ModelComparer 就是这样做的）：同时跑时，各算各的会读到对方刚查进缓存的路线
+    transit = s.pipeline.transit_for(PREFS, "classic")
+    (q, q_calls), (d, d_calls) = await asyncio.gather(s.run("qwen", transit=transit), s.run("doubao", transit=transit))
+    # 两边收到的提示词一模一样：同样的偏好、候选、侧重、交通表
     assert s.qwen.calls[0] == s.doubao.calls[0]
+    assert "【两站之间的真实交通】" in s.qwen.calls[0][-1].content
     # 每边只收集到自己的调用
     assert [c.provider for c in q_calls] == ["qwen"] and [c.provider for c in d_calls] == ["doubao"]
     assert q.version.planner.provider == "qwen" and d.version.planner.provider == "doubao"  # type: ignore[union-attr]
+
+
+async def test_transit_table_reaches_the_prompt(tmp_path: Path) -> None:
+    s = TwoModels(tmp_path, [GOOD, GOOD], [])
+    await s.run("qwen")  # 第一次排完，a 和 b 之间的步行进了缓存
+    await s.run("qwen")
+    first, second = s.qwen.calls[0][-1].content, s.qwen.calls[1][-1].content
+    assert "a—b 没查到真实时间，直线" in first
+    assert "a↔b 步行 12 分钟" in second or "a→b 步行 12 分钟" in second
 
 
 async def test_emphasis_rules_apply(tmp_path: Path) -> None:
