@@ -192,6 +192,11 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
   }
   function measure(now: number, dt: number) {
     if (now < measureFrom) return;
+    // 两帧之间隔了 0.25 秒以上：浏览器在节流（窗口被挡住、面板在后台等），不是画不动，从头算
+    if (dt > 0.25) {
+      resetMeasure(1000);
+      return;
+    }
     frames.push(dt);
     let sum = 0;
     for (let i = frames.length - 1; i >= 0; i--) {
