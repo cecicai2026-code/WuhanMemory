@@ -1,0 +1,203 @@
+{
+  "id": "hubei-museum",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "湖北省博物馆",
+      "en": "Hubei Provincial Museum"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "历史",
+      "en": "History"
+    },
+    "tags.1": {
+      "zh": "文物",
+      "en": "Relics"
+    },
+    "tags.2": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "tags.3": {
+      "zh": "室内",
+      "en": "Indoors"
+    },
+    "tags.4": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.5": {
+      "zh": "5A",
+      "en": "5A"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区东湖路160号",
+      "en": "No. 160 Donghu Road, Wuchang District, Wuhan"
+    },
+    "intro.value": {
+      "zh": "荆楚文化的核心场馆，镇馆之宝包括越王勾践剑、曾侯乙编钟、元青花四爱图梅瓶等。新馆建筑群取形「鼎」，临东湖一侧是 270 度观湖玻璃幕墙。免费但必须预约，热门时段放票即满。",
+      "en": "The key museum of Jing-Chu culture. Its greatest treasures include the Sword of Goujian, King of Yue, the chime bells of Marquis Yi of Zeng, and the Yuan blue-and-white meiping vase with the \"Four Loves\" scenes. The new building complex takes the shape of a ding cauldron, and on the East Lake side there is a 270-degree glass curtain wall looking out over the lake. Free, but booking is required, and popular time slots fill as soon as tickets are released."
+    },
+    "history.value": {
+      "zh": "湖北省博物馆筹建于 1953 年，是国家一级博物馆、中央与地方共建的八家国家级博物馆之一。馆藏以礼乐青铜器、战国秦汉漆木简牍、明代金玉器为特色。三期扩建后建筑群从高空俯瞰呈「鼎」字，曾侯乙编钟、越王勾践剑为最具代表性的藏品。",
+      "en": "The Hubei Provincial Museum was set up in 1953. It is a national first-class museum and one of eight national-level museums built jointly by the central and local governments. The collection is known for ritual and musical bronzes, lacquerware, wooden objects and bamboo slips from the Warring States, Qin and Han periods, and Ming dynasty gold and jade. After the third-phase expansion, the building complex seen from above forms the character for \"ding\" (鼎). The chime bells of Marquis Yi of Zeng and the Sword of Goujian are its most representative pieces."
+    },
+    "openingHours.value.note": {
+      "zh": "法定节假日按周六、周日的时段。 周二至周五 9:00—17:00（16:00 停止入馆）；周六、周日及法定节假日 9:00—20:30（19:30 停止入馆），夜场延时自 2026 年 9 月 5 日起执行；周一闭馆（法定节假日除外），除夕闭馆。白天东馆、西馆、南馆、北馆四馆全开，夜场仅开南馆、北馆。",
+      "en": "Public holidays follow the Saturday/Sunday hours. Tue–Fri 9:00–17:00 (last entry 16:00); Sat, Sun and public holidays 9:00–20:30 (last entry 19:30), with the evening extension in effect from 5 September 2026; closed Mondays (except public holidays) and on Lunar New Year's Eve. In the daytime all four halls (East, West, South and North) are open; in the evening only the South and North halls."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用：基本陈列免费，无学生票。 免票：全部观众免费，需预约。 馆内另有付费项目：编钟乐舞演出、《穿越青铜纪》VR、《遇见·楚庄王》全息剧等，票价另计（英文参观指南列的 158 元成人票/128 元优待票是《穿越青铜纪》VR 的价格，具体以现场为准）。",
+      "en": "Concessions: not applicable—the main exhibitions are free and there are no student tickets. Free: all visitors free, booking required. There are paid extras inside the museum: the chime-bell music and dance performance, the \"Journey Through the Bronze Age\" VR experience, the \"Meeting King Zhuang of Chu\" hologram show and others, priced separately (the ¥158 adult / ¥128 concession tickets listed in the English visitor guide are the prices for the \"Journey Through the Bronze Age\" VR; check on site)."
+    },
+    "reservation.value.how": {
+      "zh": "湖北省博物馆官方微信公众号、官网或预约小程序",
+      "en": "The museum's official WeChat account, official website or booking mini-program"
+    },
+    "reservation.value.note": {
+      "zh": "必须实名预约（分时段）。渠道：湖北省博物馆官方微信公众号、官网或预约小程序。放票时间有两种说法：官网服务页写每日 0 点，本地宝写每日 17:18，最多可提前 5 天；散客每单最多 5 张，下单后不可改签、可退票；14 周岁（含）以下需实名预约并由成人关联带入。团队需在官网注册账号、至少提前 1 天预约，最多 7 天，每批至少 5 人。",
+      "en": "Real-name booking (by time slot) is required. Channels: the Hubei Provincial Museum's official WeChat account, official website or booking mini-program. There are two accounts of when tickets are released: the official service page says midnight each day, Bendibao says 17:18 each day; you can book up to 5 days ahead. Individual visitors can book at most 5 tickets per order; orders can't be changed but can be refunded; children aged 14 and under need real-name booking and must be linked to and accompanied by an adult. Groups must register an account on the official website and book at least 1 day and at most 7 days ahead, with at least 5 people per group."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "省博湖北日报",
+      "en": "Provincial Museum Hubei Daily (Shengbo Hubei Ribao)"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "8 号线",
+      "en": "Line 8"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "A",
+      "en": "A"
+    },
+    "transport.value.note": {
+      "zh": "地铁 8 号线「省博湖北日报」站 A 口或黄鹂路人行通道出口，经黄鹂路、省博路步行约 600—700 米至南门。公交 14、402、411、578、709、810 至「东湖路省博物馆」站。打车建议定位南门，自驾定位西南门（车位紧张）。",
+      "en": "Metro Line 8, Provincial Museum Hubei Daily station, exit A or the Huangli Road pedestrian passage exit, then about 600–700 m on foot via Huangli Road and Shengbo Road to the south gate. Buses 14, 402, 411, 578, 709, 810 to the Donghu Road Provincial Museum stop. By taxi, set the south gate as the destination; if driving, the southwest gate (parking is tight)."
+    },
+    "bestTime.value": {
+      "zh": "工作日上午 9:00—11:00 人相对少；周六、周日晚可走夜场到 20:30。",
+      "en": "Weekday mornings 9:00–11:00 are relatively quiet; on Saturday and Sunday evenings you can stay for the evening session until 20:30."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "编钟展厅长廊",
+      "en": "Chime-bell gallery corridor"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "南馆曾侯乙编钟展厅。长廊纵深构图，古风氛围；避免使用闪光灯",
+      "en": "The Marquis Yi of Zeng chime-bell gallery in the South Hall. Use the depth of the corridor for an old-world atmosphere; don't use flash."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "国宝展柜 45° 侧拍",
+      "en": "National treasure cases at 45°"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "南馆二楼越王勾践剑等展柜。45 度侧拍避开玻璃反光，贴近展柜压低机位",
+      "en": "Cases such as the one for the Sword of Goujian on the South Hall's first floor. Shoot at 45 degrees to avoid glass reflections, close to the case with the camera low."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "大厅中央穹顶",
+      "en": "Central dome of the main hall"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "南馆/北馆大厅。广角仰拍穹顶与结构线条",
+      "en": "The South/North Hall lobby. Shoot upward with a wide lens to capture the dome and its structural lines."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "北门/南门外立面",
+      "en": "North/South gate façade"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "馆区入口。对称构图拍楚式大坡屋顶，上午顺光",
+      "en": "At the museum entrances. A symmetrical shot of the big Chu-style sloping roof; the light is behind you in the morning."
+    },
+    "food.0.value.name": {
+      "zh": "隐茗·湖仙小院（东湖省博店）",
+      "en": "Yinming · Huxian Xiaoyuan (East Lake Provincial Museum branch)"
+    },
+    "food.0.value.note": {
+      "zh": "省博隔壁独栋小院，主打湖鲜，步行可达（具体分钟数未核实）",
+      "en": "A detached courtyard restaurant next to the museum, focusing on lake fish and seafood; reachable on foot (walking time not checked)."
+    },
+    "food.1.value.name": {
+      "zh": "楚天粤海国际大酒店",
+      "en": "Chutian Yuehai International Hotel"
+    },
+    "food.1.value.note": {
+      "zh": "省博对面，星级酒店餐饮，需提前 1 天预约",
+      "en": "Opposite the museum; hotel restaurant, book 1 day ahead."
+    },
+    "food.2.value.name": {
+      "zh": "鹤公馆",
+      "en": "He Gongguan"
+    },
+    "food.2.value.note": {
+      "zh": "省博旁、东湖边私房菜，人均偏高",
+      "en": "Private-kitchen dining beside the museum on East Lake; on the pricey side per person."
+    },
+    "photos.0.caption": {
+      "zh": "湖北省博物馆正门",
+      "en": "Main entrance of the Hubei Provincial Museum"
+    },
+    "photos.0.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：图虫创意（摄影师上传，EXIF 显示 2021-05-02 摄）。付费图库，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (uploaded by the photographer; EXIF shows it was taken 2021-05-02). Paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "越王勾践剑",
+      "en": "Sword of Goujian, King of Yue"
+    },
+    "photos.1.author": {
+      "zh": "网络图片站 / 原作者",
+      "en": "Web image site / original author"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：ecywang 图片站（越王勾践剑展柜实拍）。来源为图片聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: the ecywang image site (photo of the Sword of Goujian display case). The source is an image aggregator; use with caution for commercial purposes. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "编钟演奏厅",
+      "en": "Chime-bell performance hall"
+    },
+    "photos.2.author": {
+      "zh": "夏俊俊 / 湖北日报",
+      "en": "Xia Junjun / Hubei Daily"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：国际在线（转载湖北日报，2023-08-30）。新闻媒体图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: CRI Online (reposted from Hubei Daily, 2023-08-30). News media image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "曾侯乙编钟全景",
+      "en": "Panorama of the Marquis Yi of Zeng chime bells"
+    },
+    "photos.3.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：视觉中国 VCG（编钟图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (chime-bell gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "编钟另一角度",
+      "en": "The chime bells from another angle"
+    },
+    "photos.4.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：视觉中国 VCG（编钟图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (chime-bell gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

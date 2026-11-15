@@ -1,0 +1,223 @@
+{
+  "id": "hankou-river-beach",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "汉口江滩",
+      "en": "Hankou Riverside (Hankou Jiangtan)"
+    },
+    "district": {
+      "zh": "江岸区",
+      "en": "Jiang'an District"
+    },
+    "tags.0": {
+      "zh": "江景",
+      "en": "River views"
+    },
+    "tags.1": {
+      "zh": "夜景",
+      "en": "Night views"
+    },
+    "tags.2": {
+      "zh": "日落",
+      "en": "Sunset"
+    },
+    "tags.3": {
+      "zh": "灯光秀",
+      "en": "Light show"
+    },
+    "tags.4": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.5": {
+      "zh": "散步",
+      "en": "Walking"
+    },
+    "tags.6": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "address.value": {
+      "zh": "武汉市江岸区沿江大道（江汉门至长江二桥，全长约 7 公里，总面积约 160 万平方米）",
+      "en": "Yanjiang Avenue, Jiang'an District, Wuhan (from Jianghan Gate to the Second Yangtze River Bridge, about 7 km long, about 1.6 million m² in total)"
+    },
+    "intro.value": {
+      "zh": "武汉的「城市会客厅」，一侧是沿江大道十几幢百年老建筑，一侧是三层观水平台。傍晚看日落、晚上看两江灯光秀，江汉门进、三阳门出是最顺的走法。秋冬芦苇荡金黄，是全年最好拍的季节。",
+      "en": "Wuhan's \"city living room\": on one side, a dozen or so century-old buildings along Yanjiang Avenue; on the other, three tiers of riverside terraces. Watch the sunset in the late afternoon and the light show over the two rivers at night; entering at Jianghan Gate and leaving at Sanyang Gate is the easiest route. In autumn and winter the reed beds turn gold, the best time of year for photos."
+    },
+    "history.value": {
+      "zh": "汉口江滩是「大武汉」兴衰的见证。近代武汉曾是仅次于上海的中国第二大工业和贸易中心，沿江大道保留着德国领事馆（现市政府）、汇丰银行汉口分行、花旗银行汉口分行等十几幢百年老建筑；江汉关大楼 1924 年建成，一直作为武汉海关办公场所至 2012 年。江滩公园分三期建设，一期从武汉客运港至粤汉码头长 1.04 公里，二期 2003 年 9 月开放，形成 3.4 公里滨江长廊。2026 年 11 月《武汉市江滩管理办法》修订发布，明确江滩每日定时开放、开闭园时间由管理机构公布。",
+      "en": "Hankou Riverside bears witness to the rise and fall of \"Greater Wuhan\". In the modern era Wuhan was China's second-largest industrial and trading centre after Shanghai, and Yanjiang Avenue keeps a dozen or so century-old buildings, including the former German Consulate (now the city government), the Hankou branch of HSBC and the Hankou branch of Citibank. The Jianghan Customs House was completed in 1924 and served as Wuhan's customs office until 2012. The riverside park was built in three phases: phase one runs 1.04 km from the Wuhan passenger port to the Yuehan Wharf, and phase two opened in September 2003, forming a 3.4 km riverside promenade. In November 2026 the revised Wuhan Riverside Management Measures were issued, stating that the riverside opens at set times each day, with opening and closing times announced by the management agency."
+    },
+    "openingHours.value.note": {
+      "zh": "5—10 月 5:00—23:00；11—4 月 5:00—22:30（武汉江滩统一口径）。灯光秀常规时段 19:30—22:00，节假日延长。汛期亲水平台可能临时封闭。",
+      "en": "May–October 5:00–23:00; November–April 5:00–22:30 (the standard hours for Wuhan's riversides). The light show usually runs 19:30–22:00, longer on holidays. Waterside terraces may close temporarily in flood season."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用。 免票：全部游客免费。 江滩内横渡长江博物馆免费但需公众号预约；游船、观光车、餐饮另计。",
+      "en": "Concessions: not applicable. Free: all visitors free. The Yangtze Crossing Museum inside the riverside park is free but needs booking via its WeChat account; boats, sightseeing shuttles and food are extra."
+    },
+    "reservation.value.note": {
+      "zh": "无需预约。江滩为开放式公共空间；仅横渡长江博物馆需在公众号预约。",
+      "en": "No booking needed. The riverside is an open public space; only the Yangtze Crossing Museum needs booking via its WeChat account."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "江汉路",
+      "en": "Jianghan Road"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "2/6 号线",
+      "en": "Lines 2/6"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "C",
+      "en": "C"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "三阳路",
+      "en": "Sanyang Road"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "1/7 号线",
+      "en": "Lines 1/7"
+    },
+    "transport.value.metro.1.exit": {
+      "zh": "B",
+      "en": "B"
+    },
+    "transport.value.metro.2.station": {
+      "zh": "黄浦路",
+      "en": "Huangpu Road"
+    },
+    "transport.value.metro.2.line": {
+      "zh": "1/8 号线",
+      "en": "Lines 1/8"
+    },
+    "transport.value.note": {
+      "zh": "江汉门（主入口，看江汉关与灯光秀）：地铁 2/6 号线「江汉路」站 C 口出，步行约 1.3 公里；三阳门（日落最佳）：地铁 1/7 号线「三阳路」站 B 口出，步行约 5 分钟；永清门（长江二桥段、芦苇荡）：地铁 1/8 号线「黄浦路」站出，步行约 300 米。公交 1、30、402、606 等至「沿江大道武汉关」站。",
+      "en": "Jianghan Gate (main entrance, for the Customs House and the light show): Metro Lines 2/6, Jianghan Road station, exit C, about 1.3 km on foot. Sanyang Gate (best for sunset): Metro Lines 1/7, Sanyang Road station, exit B, about 5 minutes on foot. Yongqing Gate (Second Yangtze River Bridge section, reed beds): Metro Lines 1/8, Huangpu Road station, about 300 m on foot. Buses 1, 30, 402, 606 and others to the Yanjiang Avenue Wuhan Customs stop."
+    },
+    "bestTime.value": {
+      "zh": "下午 3 点后入园，先看日落再到三阳广场等灯光秀；10—11 月芦苇金黄、人相对少。",
+      "en": "Enter after 3 p.m., watch the sunset, then wait for the light show at Sanyang Square; in October–November the reeds are golden and it's relatively quiet."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "江汉门台阶",
+      "en": "Steps at Jianghan Gate"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "江汉门入口。登上台阶回身拍江汉关钟楼与门楼，人物站台阶中轴",
+      "en": "At the Jianghan Gate entrance. Climb the steps and turn back to shoot the Customs House clock tower and the gate; put people on the centre line of the steps."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "江汉关钟楼同框",
+      "en": "With the Jianghan Customs House clock tower"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "江汉门外沿江大道。整点报时前后拍钟楼，night 模式压暗天空让灯光更亮",
+      "en": "On Yanjiang Avenue outside Jianghan Gate. Shoot the clock tower around the hourly chime; use night mode to darken the sky so the lights stand out."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "三阳广场",
+      "en": "Sanyang Square"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "三阳门内大草坪。拍橘子海日落与对岸灯光秀，广角带上前景人群",
+      "en": "The big lawn inside Sanyang Gate. Shoot the orange sunset over the water and the light show on the far bank; go wide to include the crowd in the foreground."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "观芦栈道",
+      "en": "Reed-viewing boardwalk"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "长江二桥附近，江滩三期。10—11 月芦苇花穗最盛，橙色栏杆作引导线，低机位拍花海",
+      "en": "Near the Second Yangtze River Bridge, phase three of the riverside park. The reed plumes peak in October–November; use the orange railings as leading lines and shoot low across the sea of reeds."
+    },
+    "food.0.value.name": {
+      "zh": "吉庆街",
+      "en": "Jiqing Street"
+    },
+    "food.0.value.note": {
+      "zh": "老汉口夜市，宵夜集中；从江汉门步行约 15 分钟（平台口径）",
+      "en": "An old Hankou night market, full of late-night food; about 15 minutes on foot from Jianghan Gate (according to platforms)."
+    },
+    "food.1.value.name": {
+      "zh": "江汉路水塔美食街 / Happy 站台",
+      "en": "Jianghan Road Water Tower food street / Happy Platform"
+    },
+    "food.1.value.note": {
+      "zh": "从江汉门步行约 10 分钟进江汉路商圈",
+      "en": "About 10 minutes on foot from Jianghan Gate into the Jianghan Road shopping area."
+    },
+    "food.2.value.name": {
+      "zh": "黎黄陂路咖啡馆",
+      "en": "Cafés on Lihuangpi Road"
+    },
+    "food.2.value.note": {
+      "zh": "从江汉门往北步行到黎黄陂路，咖啡与西餐集中",
+      "en": "Walk north from Jianghan Gate to Lihuangpi Road, where coffee and Western food are concentrated."
+    },
+    "photos.0.caption": {
+      "zh": "汉口江滩的芦荻和栈道",
+      "en": "Reeds and boardwalk at Hankou Riverside"
+    },
+    "photos.0.author": {
+      "zh": "湖北日报",
+      "en": "Hubei Daily"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：湖北日报《汉口江滩芦荻花开秋意浓》（2025-10-26，文件名 DJI_20251026162625）。新闻媒体图，商用需授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Hubei Daily, \"Reeds bloom at Hankou Riverside as autumn deepens\" (2025-10-26, file name DJI_20251026162625). News media image; commercial use requires permission. The image carries a watermark or stock-library badge. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "夜景备选图",
+      "en": "Alternative night view"
+    },
+    "photos.1.author": {
+      "zh": "今日头条 / 原作者",
+      "en": "Toutiao / original author"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：今日头条（EXIF 显示 2018-10-02 摄，「知音号」游船与江滩夜景）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao (EXIF shows it was taken 2018-10-02; the \"Zhiyin\" cruise boat and the riverside at night). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "长江二桥灯光秀航拍",
+      "en": "Aerial view of the light show on the Second Yangtze River Bridge"
+    },
+    "photos.2.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "二桥夜色",
+      "en": "The Second Bridge at night"
+    },
+    "photos.3.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "两岸灯光秀全景",
+      "en": "Panorama of the light show on both banks"
+    },
+    "photos.4.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：视觉中国 VCG（武汉江滩图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Wuhan riverside gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

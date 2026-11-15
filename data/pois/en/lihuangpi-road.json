@@ -1,0 +1,215 @@
+{
+  "id": "lihuangpi-road",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "黎黄陂路",
+      "en": "Lihuangpi Road"
+    },
+    "district": {
+      "zh": "江岸区",
+      "en": "Jiang'an District"
+    },
+    "tags.0": {
+      "zh": "历史街区",
+      "en": "Historic quarter"
+    },
+    "tags.1": {
+      "zh": "欧式建筑",
+      "en": "European architecture"
+    },
+    "tags.2": {
+      "zh": "咖啡",
+      "en": "Coffee"
+    },
+    "tags.3": {
+      "zh": "拍照",
+      "en": "Photography"
+    },
+    "tags.4": {
+      "zh": "Citywalk",
+      "en": "Citywalk"
+    },
+    "tags.5": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "address.value": {
+      "zh": "武汉市江岸区黎黄陂路（东南起沿江大道，西北至中山大道，全长约 604 米）",
+      "en": "Lihuangpi Road, Jiang'an District, Wuhan (from Yanjiang Avenue in the southeast to Zhongshan Avenue in the northwest, about 604 m long)"
+    },
+    "intro.value": {
+      "zh": "604 米长的旧俄租界老街，两侧 17 栋百年欧式建筑，被称为「汉口露天街头博物馆」。现在是武汉咖啡文化最集中的一条街：红砖墙、梧桐影、老洋房改的咖啡馆，适合什么都不干地坐一下午。",
+      "en": "A 604 m old street in the former Russian Concession, lined with 17 century-old European-style buildings and called \"Hankou's open-air street museum\". Today it's the street with the most cafés in Wuhan: red-brick walls, plane-tree shade, and cafés in old Western-style houses—good for sitting an afternoon away doing nothing."
+    },
+    "history.value": {
+      "zh": "黎黄陂路始建于 1900 年，最初叫黄陂路，划入俄租界后改称夷玛街；1946 年为纪念辛亥首义领袖黎元洪（人称「黎黄陂」）改为现名。街区内保留 17 处欧式历史建筑，涵盖俄式、法式、文艺复兴式等风格。地标巴公房子 1901 年动工、1910 年建成，是当时汉口最大的高等公寓楼，2019 年列入《中国世界文化遗产预备名单》，2021 年列为湖北省文物保护单位，2024 年修缮后作为酒店开业。街区已入选国家级旅游休闲街区。",
+      "en": "Lihuangpi Road was built in 1900. It was first called Huangpi Road, then renamed Yima Street after it became part of the Russian Concession; in 1946 it took its present name in memory of Li Yuanhong, a leader of the 1911 Wuchang Uprising, known as \"Li Huangpi\". The quarter keeps 17 European-style historic buildings in Russian, French, Renaissance and other styles. Its landmark, the Pakhoff House, was begun in 1901 and completed in 1910, and was then the largest high-end apartment building in Hankou; it was put on China's Tentative List for World Cultural Heritage in 2019, listed as a Hubei Provincial Protected Cultural Relic in 2021, and opened as a hotel after restoration in 2024. The quarter has been named a national-level tourism and leisure quarter."
+    },
+    "openingHours.value.note": {
+      "zh": "街区全天开放；店铺多在 10:00 后营业，部分店周一休息；街区内纪念馆（宋庆龄汉口旧居、八七会议会址、中共中央机关旧址）周二至周日 9:00—17:00，周一闭馆。",
+      "en": "The quarter is open all day; most shops open after 10:00, and some close on Mondays. The memorial halls in the quarter (Soong Ching-ling's former residence in Hankou, the site of the August 7th Meeting, the former site of the CPC Central Committee offices) open Tue–Sun 9:00–17:00, closed Mondays."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用（开放式街区）；汉口二厂游乐乐乐场需单独购票。 免票：街区免费；纪念馆免费但需预约。 咖啡馆、餐厅、手作店为自费项目。",
+      "en": "Concessions: not applicable (open street quarter); the Hankou Erchang playground needs a separate ticket. Free: the quarter is free; the memorial halls are free but need booking. Cafés, restaurants and craft shops are paid."
+    },
+    "reservation.value.note": {
+      "zh": "街区无需预约。宋庆龄汉口旧居、八七会议会址、中共中央机关旧址纪念馆需在官方公众号提前 1—3 天预约。",
+      "en": "No booking needed for the quarter. Soong Ching-ling's former residence in Hankou, the August 7th Meeting site and the former CPC Central Committee offices memorial need booking 1–3 days ahead on their official WeChat accounts."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "大智路",
+      "en": "Dazhi Road"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "1/6 号线",
+      "en": "Lines 1/6"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "B",
+      "en": "B"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "江汉路",
+      "en": "Jianghan Road"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "2/6 号线",
+      "en": "Lines 2/6"
+    },
+    "transport.value.note": {
+      "zh": "地铁 1/6 号线「大智路」站 B 口出，步行约 8 分钟；或 2/6 号线「江汉路」站步行约 10—15 分钟。公交 559、598、707 至「黎黄陂路」站。街边游客中心可免费寄存行李。",
+      "en": "Metro Lines 1/6, Dazhi Road station, exit B, about 8 minutes on foot; or Lines 2/6, Jianghan Road station, about 10–15 minutes on foot. Buses 559, 598, 707 to the Lihuangpi Road stop. The visitor centre on the street stores luggage for free."
+    },
+    "bestTime.value": {
+      "zh": "早上 8:00—10:00 人少光柔，梧桐影打在红砖墙上；下午 16:00—18:00 逆光与树影最好，可顺路走到江滩看日落。",
+      "en": "8:00–10:00 in the morning is quiet with soft light, and plane-tree shadows fall on the red-brick walls; 16:00–18:00 in the afternoon is best for backlight and tree shadows, and you can walk on to the riverside for the sunset."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "巴公房子转角",
+      "en": "Pakhoff House corner"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "鄱阳街与洞庭街交汇处，黎黄陂路口。三角形红砖楼，斜对角拍全景；上午 9—10 点顺光，工作日 10 点前人少",
+      "en": "Where Poyang Street meets Dongting Street, at the end of Lihuangpi Road. A triangular red-brick building; shoot the whole thing from the diagonal corner. Front-lit 9–10 a.m.; few people before 10 on weekdays."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "同兴里",
+      "en": "Tongxingli"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "黎黄陂路中段巷内。红砖墙、复古门廊与古着店，下午 3—5 点阳光斜照",
+      "en": "In a lane midway along Lihuangpi Road. Red-brick walls, vintage porches and vintage-clothing shops; slanting sunlight 3–5 p.m."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "东正教堂",
+      "en": "Orthodox church"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "鄱阳街与天津路一带。拜占庭式穹顶，仰拍塔身与天空",
+      "en": "Around Poyang Street and Tianjin Road. A Byzantine-style dome; shoot upward at the tower against the sky."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "老时光咖啡馆露台",
+      "en": "Terrace of the Old Times Café"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "主街中段。露台正对欧式老街，二楼俯拍街景与行人",
+      "en": "Midway along the main street. The terrace faces the old European street; from the first floor, shoot down on the street and passers-by."
+    },
+    "food.0.value.name": {
+      "zh": "三镇民生甜食馆",
+      "en": "Sanzhen Minsheng Sweet Food Restaurant"
+    },
+    "food.0.value.note": {
+      "zh": "本地过早老字号，热干面、豆皮、糊米酒",
+      "en": "A long-established local breakfast shop: hot dry noodles, doupi, hu mijiu (rice wine soup)."
+    },
+    "food.1.value.name": {
+      "zh": "魔界咖啡",
+      "en": "Mojie Café"
+    },
+    "food.1.value.note": {
+      "zh": "俄领事馆旧址，武汉最早一批猫咖",
+      "en": "In the former Russian Consulate; one of Wuhan's earliest cat cafés."
+    },
+    "food.2.value.name": {
+      "zh": "甲一糖水",
+      "en": "Jiayi Tangshui"
+    },
+    "food.2.value.note": {
+      "zh": "广式糖水，老街里的小店",
+      "en": "Cantonese sweet soups; a small shop on the old street."
+    },
+    "food.3.value.name": {
+      "zh": "兰陵路美食街",
+      "en": "Lanling Road food street"
+    },
+    "food.3.value.note": {
+      "zh": "过早与夜宵都集中，步行约 5 分钟",
+      "en": "Breakfast and late-night food in one place; about 5 minutes on foot."
+    },
+    "photos.0.caption": {
+      "zh": "修缮后的巴公房子",
+      "en": "The Pakhoff House after restoration"
+    },
+    "photos.0.author": {
+      "zh": "原新闻媒体 / 原作者",
+      "en": "Original news outlet / original author"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：新闻图（巴公房子修缮后重新开放，2024）。新闻媒体图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: news photo (the Pakhoff House reopening after restoration, 2024). News media image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "老洋房咖啡馆街巷",
+      "en": "Lane of cafés in old Western-style houses"
+    },
+    "photos.1.author": {
+      "zh": "今日头条 / 摄影师",
+      "en": "Toutiao / photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：今日头条（江岸打卡地）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao (Jiang'an photo spots). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "雨后倒影街景",
+      "en": "Street reflections after rain"
+    },
+    "photos.2.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：视觉中国 VCG（黎黄陂路图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Lihuangpi Road gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "巴公房子竖构图",
+      "en": "The Pakhoff House, vertical frame"
+    },
+    "photos.3.author": {
+      "zh": "光厂 / 供稿摄影师",
+      "en": "VJShi / contributing photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：光厂 VJSHI（图库）。图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: VJShi (stock library). Preview image from a stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "街口望巴公房子",
+      "en": "Looking at the Pakhoff House from the street corner"
+    },
+    "photos.4.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：视觉中国 VCG（黎黄陂路图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Lihuangpi Road gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

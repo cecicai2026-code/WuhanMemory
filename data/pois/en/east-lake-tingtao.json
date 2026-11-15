@@ -1,0 +1,207 @@
+{
+  "id": "east-lake-tingtao",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "东湖听涛景区",
+      "en": "East Lake Tingtao Scenic Area"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "湖景",
+      "en": "Lake views"
+    },
+    "tags.1": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.2": {
+      "zh": "散步",
+      "en": "Walking"
+    },
+    "tags.3": {
+      "zh": "骑行",
+      "en": "Cycling"
+    },
+    "tags.4": {
+      "zh": "日落",
+      "en": "Sunset"
+    },
+    "tags.5": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "tags.6": {
+      "zh": "5A",
+      "en": "5A"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区东湖路特1号（梨园大门 / 东湖大门）。平台另载「黄鹂路88号」，两说并存。",
+      "en": "Te No. 1 Donghu Road, Wuchang District, Wuhan (Liyuan Gate / Donghu Gate). Platforms also list \"No. 88 Huangli Road\"; both addresses are in use."
+    },
+    "intro.value": {
+      "zh": "东湖四大片区中开发最早的一片，也是离省博最近、最适合散步的一片。核心是纪念屈原的行吟阁，三面环水；沿湖还有碧潭观鱼、长天楼、先月亭、听涛泳场。全程免费，适合半天慢慢走。",
+      "en": "The earliest-developed of East Lake's four main areas, and the one closest to the Hubei Provincial Museum and best for a stroll. At its heart is the Xingyin Pavilion in memory of Qu Yuan, surrounded by water on three sides; along the lake are Bitan Fish Viewing, Changtian Tower, Xianyue Pavilion and the Tingtao swimming area. Free throughout; good for half a day of slow walking."
+    },
+    "history.value": {
+      "zh": "听涛是东湖最早建成开放的景区，前身是私家园林「海光农圃」，被称为东湖源头。行吟阁建于 1955 年，三层绿瓦方形阁，四面环水，由荷风、落羽两桥连通，阁名取自《楚辞·渔父》「行吟泽畔」，匾额为郭沫若手书，阁前立 3.6 米屈原全身像。长天楼 1956 年建成，楼名取自《滕王阁序》「秋水共长天一色」。",
+      "en": "Tingtao was the first area of East Lake to be built and opened. It grew out of a private garden, the Haiguang Farm Garden, and is called the source of East Lake. Xingyin Pavilion was built in 1955: a three-storey square pavilion with green tiles, surrounded by water on all sides and linked by the Hefeng and Luoyu bridges. Its name comes from the line \"wandering and chanting by the marsh\" in \"The Fisherman\" of the Chu Ci; the name board is in Guo Moruo's handwriting, and a 3.6 m full-length statue of Qu Yuan stands in front. Changtian Tower was completed in 1956; its name comes from the line \"the autumn water and the endless sky share one colour\" in the Preface to the Pavilion of Prince Teng."
+    },
+    "openingHours.value.note": {
+      "zh": "景区全天开放（07:00—21:00 可环湖漫步的说法见平台笔记）。内部场馆按白天时段开放：碧潭观鱼每日 8:00—17:30；周苍柏纪念室、周小燕纪念室周二至周日 8:30—17:00。观光车 9:00—16:30。",
+      "en": "The scenic area is open all day (platform notes say you can walk around the lake 07:00–21:00). Venues inside open in daytime: Bitan Fish Viewing daily 8:00–17:30; the Zhou Cangbai and Zhou Xiaoyan memorial rooms Tue–Sun 8:30–17:00. Sightseeing shuttle 9:00–16:30."
+    },
+    "ticket.value.items.0.name": {
+      "zh": "听涛专线观光车",
+      "en": "Tingtao sightseeing shuttle"
+    },
+    "ticket.value.note": {
+      "zh": "优惠：景区免费，无半票政策；收费项目（观光车、游船、皮划艇等）按项目计价。 免票：全部游客免费入园。 听涛专线观光车 30 元/人（9:00—16:30，当日 16:30 前有效，90cm 以下儿童免票）；东湖听涛泳场 2026-06-26 至 08-31 每日 16:00—20:00 免费开放。",
+      "en": "Concessions: the scenic area is free, so there are no half-price tickets; paid items (shuttle, boats, kayaks, etc.) are priced separately. Free: all visitors enter free. The Tingtao sightseeing shuttle is ¥30 per person (9:00–16:30, valid until 16:30 that day, children under 90 cm free); the East Lake Tingtao swimming area was open free daily 16:00–20:00 from 26 June to 31 August 2026."
+    },
+    "reservation.value.note": {
+      "zh": "无需预约，到场即可入园。2026 年政府通稿与本地宝活动页均明确「景区免费开放，各活动无需预约」。注意：2025 年一篇本地宝攻略写「免费，需要预约」，属旧说法，已按最新口径取「无需预约」。",
+      "en": "No booking needed; just turn up. A 2026 government press release and a Bendibao event page both say \"the scenic area is free and no activities need booking\". Note: a 2025 Bendibao guide said \"free, booking required\"; that is the old rule, and the latest wording, \"no booking needed\", is used here."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "梨园",
+      "en": "Liyuan"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "8 号线",
+      "en": "Line 8"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "C",
+      "en": "C"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "省博湖北日报",
+      "en": "Provincial Museum Hubei Daily (Shengbo Hubei Ribao)"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "8 号线",
+      "en": "Line 8"
+    },
+    "transport.value.note": {
+      "zh": "地铁 8 号线「梨园」站 C 口出，导航「梨园大门」，步行约 5 分钟；也可乘 8 号线到「省博湖北日报」站，逛完省博从北门方向进景区。公交 402、411 等至「东湖路」相关站点。",
+      "en": "Metro Line 8, Liyuan station, exit C, navigate to \"Liyuan Gate\", about 5 minutes on foot; or take Line 8 to Provincial Museum Hubei Daily station and, after the museum, enter the scenic area from the north gate side. Buses 402, 411 and others to stops on Donghu Road."
+    },
+    "bestTime.value": {
+      "zh": "傍晚看日落（听涛泳场栈桥视角好）；清晨人少、湖面安静。",
+      "en": "Late afternoon for the sunset (the pier at the Tingtao swimming area has a good view); early morning is quiet with few people."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "行吟阁",
+      "en": "Xingyin Pavilion"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "听涛景区中部小岛，荷风桥/落羽桥连通。隔水拍三层绿瓦阁与屈原像；登阁顶层可拍湖面与磨山远景",
+      "en": "On a small island in the middle of Tingtao, linked by the Hefeng and Luoyu bridges. Shoot across the water to get the three-storey green-tiled pavilion and the Qu Yuan statue; from the top floor you can photograph the lake and Moshan Hill in the distance."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "听涛泳场圆形装置栈桥",
+      "en": "Ring installation on the Tingtao swimming-area pier"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "听涛泳场岸边。透过金属圆环框住湖中亭与栈桥，对称构图；阴天也很出片",
+      "en": "On the shore of the Tingtao swimming area. Frame the lake pavilion and the pier through the metal ring for a symmetrical shot; good even on cloudy days."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "碧潭观鱼九曲回廊",
+      "en": "Zigzag corridor at Bitan Fish Viewing"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "碧潭观鱼。俯拍回廊与锦鲤，树荫多、适合亲子",
+      "en": "Bitan Fish Viewing. Shoot down onto the corridor and the koi; lots of shade, good for families."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "先月亭",
+      "en": "Xianyue Pavilion"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "景区南部靠近武大方向。人少林密，拍森系与湖景；可远眺武汉大学方向",
+      "en": "In the south of the scenic area, towards Wuhan University. Few people and thick woods, good for forest-style and lake shots; you can look out towards Wuhan University."
+    },
+    "food.0.value.name": {
+      "zh": "喜玥小馆（东湖黄鹂路）",
+      "en": "Xiyue Xiaoguan (Huangli Road, East Lake)"
+    },
+    "food.0.value.note": {
+      "zh": "东湖黄鹂路一带的湖北菜馆，主打鱼嘴、武昌鱼，步行距离未核实",
+      "en": "A Hubei restaurant around Huangli Road by East Lake, known for fish head (fish lips) and Wuchang bream; walking distance not checked."
+    },
+    "food.1.value.name": {
+      "zh": "翠蝈蝈的饭馆（东湖店）",
+      "en": "Cui Guoguo's Restaurant (East Lake branch)"
+    },
+    "food.1.value.note": {
+      "zh": "东湖景区内湖北菜，适合小聚",
+      "en": "Hubei food inside the East Lake scenic area; good for a small get-together."
+    },
+    "photos.0.caption": {
+      "zh": "听涛泳场的装置和栈桥",
+      "en": "The installation and pier at the Tingtao swimming area"
+    },
+    "photos.0.author": {
+      "zh": "武汉市人民政府门户网站",
+      "en": "Wuhan Municipal Government portal"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：武汉市人民政府门户网站《东湖听涛泳场即日起免费开放》（2026-06-26）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Wuhan Municipal Government portal, \"East Lake Tingtao swimming area opens free from today\" (2026-06-26). Officially published; reposting requires credit. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "行吟阁航拍",
+      "en": "Aerial view of Xingyin Pavilion"
+    },
+    "photos.1.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "行吟阁正面",
+      "en": "Front of Xingyin Pavilion"
+    },
+    "photos.2.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "碧潭落日栈桥",
+      "en": "Sunset over the Bitan pier"
+    },
+    "photos.3.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "湖面晚霞",
+      "en": "Evening glow over the lake"
+    },
+    "photos.4.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}
