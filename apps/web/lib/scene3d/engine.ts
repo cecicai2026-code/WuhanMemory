@@ -258,8 +258,7 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
       actKind = kind;
       next.resize(w, h);
       next.setQuality(env.quality);
-      // 先画一帧，让贴图传到显卡，再算准备好了
-      renderer.compile(next.scene, next.camera);
+      // 先画一帧，让贴图传到显卡（着色器已经在 show 里编译好了）
       next.step(0);
       renderer.render(next.scene, next.camera);
     }
@@ -293,6 +292,8 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
       next.setQuality(env.quality);
       next.resize(w, h);
       await next.ready;
+      // 着色器在后台编译（浏览器支持并行编译时不卡主线程），编好了再换上，换的那一帧不卡
+      if (!disposed) await renderer.compileAsync(next.scene, next.camera);
       if (disposed) {
         next.dispose();
         return;

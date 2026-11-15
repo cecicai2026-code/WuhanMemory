@@ -296,3 +296,48 @@ export function disposeShared() {
   woodCache = null;
   aoTex = null;
 }
+
+/**
+ * 取一张照片做贴图。照片在后台线程解码并缩到 maxWidth 宽（createImageBitmap），
+ * 取到就先传到显卡（initTexture），不在画面切换的那一帧里现解码、现上传，免得卡一下。
+ * 浏览器不支持这些参数时退回普通的 TextureLoader。超时或取不到时抛错，调用的地方继续用空白底片。
+ */
+export async function loadPhotoTexture(url: string, renderer: THREE.WebGLRenderer, { maxWidth = 1024, timeoutMs = 4000 } = {}): Promise<THREE.Texture> {
+  const work = (async () => {
+    let t: THREE.Texture;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`照片取不到：${res.status}`);
+      const blob = await res.blob();
+      const bmp = await createImageBitmap(blob, { resizeWidth: maxWidth, resizeQuality: "high", imageOrientation: "flipY", premultiplyAlpha: "none" });
+      t = new THREE.Texture(bmp);
+      t.flipY = false;
+    } catch (err) {
+      if (err instanceof Error && err.message.startsWith("照片取不到")) throw err;
+      t = await new THREE.TextureLoader().loadAsync(url);
+    }
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    t.needsUpdate = true;
+    renderer.initTexture(t);
+    return t;
+  })();
+  let timer = 0;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error("照片超时")), timeoutMs);
+  });
+  try {
+    return await Promise.race([work, timeout]);
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
+/** 等浏览器空闲时再做（没有 requestIdleCallback 的浏览器等 200 毫秒） */
+export function whenIdle(timeout = 2000): Promise<void> {
+  return new Promise((resolve) => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(() => resolve(), { timeout });
+    else window.setTimeout(resolve, 200);
+  });
+}

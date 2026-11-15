@@ -10,7 +10,7 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { COLORS, MONO, NOTE, SERIF, TYPE, add, contact, damp, disposeTree, ensureFonts, makeCanister, makeTable, materials, pad, rnd, reseed, sh, tex } from "../common";
+import { COLORS, MONO, NOTE, SERIF, TYPE, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, rnd, reseed, sh, tex } from "../common";
 import type { LineData, LinePrint, LineTopic } from "../data";
 import { addLights, applyShadowQuality } from "../engine";
 import type { Act, ActEnv } from "../engine";
@@ -35,7 +35,7 @@ function coverCrop(t: THREE.Texture, aspect: number) {
     t.repeat.set(1, ia / aspect);
     t.offset.set(0, (1 - ia / aspect) / 2);
   }
-  t.needsUpdate = true;
+  // 只改裁切（repeat、offset），不用 needsUpdate：那会让显卡把整张图重新传一遍
 }
 
 /** 没有照片时的空白相纸（设计规范第 15 节第 3 条） */
@@ -175,34 +175,21 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   });
   const printMeshes = prints.flatMap((p) => p.meshes);
 
-  const loader = new THREE.TextureLoader();
   function loadPhoto(pr: Print): Promise<void> {
     if (pr.photo !== "none" || !pr.p.photoUrl) return Promise.resolve();
     pr.photo = "loading";
-    return new Promise((resolve) => {
-      const timer = window.setTimeout(resolve, 3000);
-      loader.load(
-        pr.p.photoUrl!,
-        (t) => {
-          window.clearTimeout(timer);
-          t.colorSpace = THREE.SRGBColorSpace;
-          t.anisotropy = env.renderer.capabilities.getMaxAnisotropy();
-          coverCrop(t, PH_W / PH_H);
-          owned.push(t);
-          pr.pm.map = t;
-          pr.pm.emissiveMap = t;
-          pr.pm.needsUpdate = true;
-          pr.photo = "done";
-          resolve();
-        },
-        undefined,
-        () => {
-          window.clearTimeout(timer);
-          pr.photo = "done";
-          resolve();
-        }
-      );
-    });
+    return loadPhotoTexture(pr.p.photoUrl, env.renderer).then(
+      (t) => {
+        coverCrop(t, PH_W / PH_H);
+        owned.push(t);
+        pr.pm.map = t;
+        pr.pm.emissiveMap = t;
+        pr.photo = "done";
+      },
+      () => {
+        pr.photo = "done";
+      }
+    );
   }
 
   /* ---------- 显影盘和四张主题卡 ---------- */
@@ -260,7 +247,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
       const t = cardTexture(k, topic);
       owned.push(t);
       c.mat.map = t;
-      c.mat.needsUpdate = true;
+      env.renderer.initTexture(t); // 先传到显卡，不在下一帧里现传
     });
   }
 
@@ -495,13 +482,11 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
       p.blank = t2;
       p.pm.map = t2;
       p.pm.emissiveMap = t2;
-      p.pm.needsUpdate = true;
     }
     cards.forEach((c, k) => {
       const t2 = cardTexture(k, c.topic);
       owned.push(t2);
       c.mat.map = t2;
-      c.mat.needsUpdate = true;
     });
     dropIn();
     emit();

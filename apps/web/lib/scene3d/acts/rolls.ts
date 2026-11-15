@@ -12,7 +12,7 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { COLORS, MONO, SERIF, add, contact, damp, disposeTree, ensureFonts, makeCanister, makeTable, materials, pad, sh, tex } from "../common";
+import { COLORS, MONO, SERIF, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, sh, tex } from "../common";
 import { rollLabel } from "../data";
 import type { RollsData, RollsFrame } from "../data";
 import { addLights, applyShadowQuality } from "../engine";
@@ -45,7 +45,7 @@ function coverCrop(t: THREE.Texture, aspect: number) {
     t.repeat.set(1, ia / aspect);
     t.offset.set(0, (1 - ia / aspect) / 2);
   }
-  t.needsUpdate = true;
+  // 只改裁切（repeat、offset），不用 needsUpdate：那会让显卡把整张图重新传一遍
 }
 
 /** 没有照片时：没曝光的空白底片，印着景点名和区（设计规范第 15 节第 3 条） */
@@ -269,43 +269,29 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
   let viewerHover = 0;
 
   /* ---------- 照片：当前组和前后一组先取，其余走到附近再取 ---------- */
-  const loader = new THREE.TextureLoader();
   function loadPhoto(s: Slot): Promise<void> {
     if (s.photo !== "none" || !s.f.photoUrl) return Promise.resolve();
     s.photo = "loading";
-    return new Promise((resolve) => {
-      const timer = window.setTimeout(resolve, 3000); // 太慢就先用空白底片，照片到了再换
-      loader.load(
-        s.f.photoUrl!,
-        (t) => {
-          window.clearTimeout(timer);
-          t.colorSpace = THREE.SRGBColorSpace;
-          t.anisotropy = env.renderer.capabilities.getMaxAnisotropy();
-          coverCrop(t, FW / FH);
-          const sq = t.clone();
-          coverCrop(sq, 1);
-          owned.push(t, sq);
-          s.frameTex = t;
-          s.squareTex = sq;
-          s.mesh.material.map = t;
-          s.mesh.material.emissiveMap = t;
-          s.mesh.material.needsUpdate = true;
-          if (s.i === sel) {
-            screenMat.emissiveMap = sq;
-            screenMat.needsUpdate = true;
-            screenMat.emissiveIntensity = 0.04; // 像显影一样亮起来
-          }
-          s.photo = "done";
-          resolve();
-        },
-        undefined,
-        () => {
-          window.clearTimeout(timer);
-          s.photo = "done"; // 取不到就一直用空白底片
-          resolve();
+    return loadPhotoTexture(s.f.photoUrl, env.renderer).then(
+      (t) => {
+        coverCrop(t, FW / FH);
+        const sq = t.clone(); // 和 t 共用同一份图，显卡上只有一份
+        coverCrop(sq, 1);
+        owned.push(t, sq);
+        s.frameTex = t;
+        s.squareTex = sq;
+        s.mesh.material.map = t;
+        s.mesh.material.emissiveMap = t;
+        if (s.i === sel) {
+          screenMat.emissiveMap = sq;
+          screenMat.emissiveIntensity = 0.04; // 像显影一样亮起来
         }
-      );
-    });
+        s.photo = "done";
+      },
+      () => {
+        s.photo = "done"; // 取不到就一直用空白底片
+      }
+    );
   }
   function loadAround(g: number) {
     for (const s of slots) if (Math.abs(Math.floor(s.i / G) - g) <= 1) void loadPhoto(s);
@@ -340,8 +326,8 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
     if (i !== sel) {
       sel = i;
       const s = slots[i];
+      // 换贴图不用 needsUpdate：贴图一直都有，着色器不变，标了反而每次重新检查一遍
       screenMat.emissiveMap = s.squareTex;
-      screenMat.needsUpdate = true;
       screenMat.emissiveIntensity = 0.04;
       drawPlate(s.f.name);
     }
@@ -498,7 +484,6 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
       owned.push(a, b);
       s.mesh.material.map = a;
       s.mesh.material.emissiveMap = a;
-      s.mesh.material.needsUpdate = true;
     }
     sel = -1;
     select(startAt);
