@@ -1,0 +1,17 @@
+# 武汉记忆的前端（Next.js 正式版）。复制到 /etc/systemd/system/，见 docs/operations/deploy-hk.md。
+# 只监听本机 127.0.0.1:3000，外面通过 Caddy 访问。启动前要先 corepack pnpm build。
+[Unit]
+Description=WuhanMemory Web (Next.js)
+After=network-online.target wuhanmemory-api.service
+Wants=network-online.target
+
+[Service]
+User=wuhan
+WorkingDirectory=/opt/wuhanmemory/apps/web
+Environment=NODE_ENV=production
+ExecStart=/opt/wuhanmemory/apps/web/node_modules/.bin/next start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

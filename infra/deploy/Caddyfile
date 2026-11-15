@@ -1,0 +1,22 @@
+# 武汉记忆的 Caddy 配置（香港轻量服务器，见 docs/operations/deploy-hk.md）。
+# 复制到 /etc/caddy/Caddyfile，把下面的 example.com 换成你的域名。
+# Caddy 会自动申请和续期 HTTPS 证书（要求域名已经解析到这台服务器，80 和 443 端口已开）。
+#
+# 浏览器只连这一个地址：
+#   /api/*、/_AMapService/*、/media/*  → 后端 FastAPI（127.0.0.1:8000）
+#   其余                               → 前端 Next.js（127.0.0.1:3000）
+# Caddy 会把访客的真实地址写进 X-Forwarded-For（不信任访客自己带来的这个头），
+# 所以后端 .env 要设 TRUST_PROXY_HEADERS=true，次数限制才按每个访客算。
+
+example.com {
+	encode zstd gzip
+
+	@backend path /api/* /_AMapService/* /media/*
+	handle @backend {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3000
+	}
+}
