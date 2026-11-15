@@ -50,7 +50,8 @@
 - [x] 实测体积（正式版）：立体版多下载 JS 约 133KB（three.js 127KB），`/map` 等页面不含 three.js。照片原来是原图，胶卷幕 10 张封面 5.10MB，超过 3MB；Cecilia 选了后端生成缩略图（`GET /media/thumbs/...`，Pillow，缓存在 `data/thumbs/`），降到 1.28MB。测试先写，14 个；后端测试 433 个通过。
   - 装 Pillow 时 pip 报证书验证失败：Cecilia 的 Python 是 python.org 的安装包，没带根证书文件。用 `pip install --use-deprecated=legacy-certs "pillow>=11"`（pip 自带的证书包，照样验证证书）装上了。一劳永逸的办法是双击"应用程序 → Python 3.13 → Install Certificates.command"。
   - Claude 的浏览器面板在后台时帧率很低，曾被误判成"太卡"退回普通版；改成两帧之间隔 0.25 秒以上不算。
-- [ ] Cecilia 把四个页面的帧率（`?debug=fps`）告诉 Claude；打开"减弱动态效果"看是否直接是普通版。
+- [x] 帧率：Cecilia 在自己 Mac 的 Chrome 里看了首页和三幕（`?debug=fps`），都是 60 帧（2026-11-15）。
+- [ ] "减弱动态效果"打开后是否直接显示普通版：还没回结果。
 - [ ] Cecilia 看过、同意后合进 main。
 
 ## 板块 7 完成情况（主体）
