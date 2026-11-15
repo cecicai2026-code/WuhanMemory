@@ -310,3 +310,37 @@ def test_every_issue_names_its_place() -> None:
     for issue in report.issues:
         if issue.poiId:
             assert "某测试馆" in issue.message
+
+
+# ---------- 暂停开放（2026-11-15 加） ----------
+
+
+def closed(poi: dict[str, Any]) -> dict[str, Any]:
+    poi["operatingStatus"] = {
+        "value": {"code": "closed-temporarily", "note": "测试：修缮"},
+        "verification": "confirmed",
+        "sourceId": "official",
+        "lastCheckedAt": "2026-11-10",
+        "expiresAt": "2026-12-14",
+    }
+    return poi
+
+
+def test_closed_poi_is_an_error() -> None:
+    pois = library(closed(clean_poi("a")))
+    report = run(draft([("a", "09:30", "11:30")]), pois)
+    assert "poi-closed" in codes(report, "error")
+
+
+def test_closed_poi_is_not_a_candidate() -> None:
+    from app.schemas.planning import TravelerPreferences
+    from app.services.planning.candidates import select_candidates
+
+    a, b = closed(clean_poi("a")), clean_poi("b")
+    a["name"], b["name"] = "关着的寺", "开着的楼"
+    lib = [PoiFile.model_validate(a), PoiFile.model_validate(b)]
+
+    c = select_candidates(lib, TravelerPreferences(mustVisit=["关着的寺", "不存在的塔"]))
+    assert list(c.pois) == ["b"]
+    assert c.closed_requested == ["关着的寺"]
+    assert c.not_in_library == ["不存在的塔"]
