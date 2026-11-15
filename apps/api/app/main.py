@@ -12,7 +12,8 @@ from app.api.llm import router as llm_router
 from app.api.planning import router as planning_router
 from app.api.pois import router as pois_router
 from app.api.routing import router as routing_router
-from app.api.routes import router
+from app.api.shares import router as shares_router
+from app.api.trips import router as trips_router
 from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.db.import_pois import import_pois
@@ -50,7 +51,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(shares_router)
+app.include_router(trips_router)
 app.include_router(planning_router)
 app.include_router(pois_router)
 app.include_router(amap_proxy_router)
@@ -60,11 +62,13 @@ app.include_router(comparisons_router)
 
 # 景点照片。自己拍的在 data/photos/，官网占位的在 data/photos-placeholder/（不进 git）
 app.mount("/media/photos", StaticFiles(directory=settings.data_dir / "photos", check_dir=False), name="photos")
-app.mount(
-    "/media/photos-placeholder",
-    StaticFiles(directory=settings.data_dir / "photos-placeholder", check_dir=False),
-    name="photos-placeholder",
-)
+# 公开模式下不提供占位照片（见 app/core/site_policy.py）
+if not settings.public_mode:
+    app.mount(
+        "/media/photos-placeholder",
+        StaticFiles(directory=settings.data_dir / "photos-placeholder", check_dir=False),
+        name="photos-placeholder",
+    )
 
 
 @app.get("/health")

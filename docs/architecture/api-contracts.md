@@ -19,6 +19,8 @@
 >
 > 2026-11-15（板块 5）：对话、规划任务、行程版本的接口已实现，见"对话和规划"一节；临时的 `POST /api/llm/ping` 已删掉。
 > 分享接口在板块 7 之前，发布返回 501，查询返回 404。
+>
+> 2026-11-15（板块 7）：分享接口和我的行程接口已实现，见"分享（板块 7）"和"我的行程（板块 7）"两节；下面草案里的旧"发布分享页""获取分享页"已删掉。
 
 ### 景点列表
 
@@ -454,6 +456,96 @@ GET /api/comparisons/{id}
 - `diff`：两边都排出来时才有。`days[].orders` 是两边这一天的景点（第一个是左边），`sameOrder` 在都有的景点不到 2 个时为 null。
 - 没有这次对比时 404。
 
+## 分享（板块 7）
+
+代码：`apps/api/app/api/shares.py`，数据结构 `apps/api/app/schemas/share.py`，前端类型 `packages/shared/src/share.ts`。表结构见 `data-model.md` 第 13 节。
+
+规则（2026-11-15 Cecilia 定）：只有通过校验或只有警告的版本能分享；同一个版本再分享给回同一个链接；可以撤回，撤回后再分享换新链接；链接是 8 位随机小写字母和数字，不带名字和日期。链接绑定版本，版本本身不可变，所以原行程以后再改（加新版本）也不影响分享页。
+
+### 生成分享链接
+
+```http
+POST /api/itinerary-versions/{versionId}/share
+```
+
+没有请求体。新建的返回 201，这个版本已经有没撤回的链接时返回那一个（200）：
+
+```json
+{ "slug": "k3f9x2qa", "versionId": "ver_…", "createdAt": "…", "revokedAt": null, "path": "/s/k3f9x2qa" }
+```
+
+- `path` 是网站上的路径；完整网址由前端按当前网站拼（后端不知道网站开在哪个域名）。
+- 没有这个版本：404。没通过校验的版本：409，`detail` 是"这份行程没通过校验，不能分享"。
+- 两个请求同时分享同一个版本时，数据库的唯一索引保证只建一个链接。
+
+### 查这个版本现在的链接
+
+```http
+GET /api/itinerary-versions/{versionId}/share
+```
+
+返回和上面一样的结构；没有没撤回的链接时 404。
+
+### 打开分享页
+
+```http
+GET /api/share/{slug}
+```
+
+```json
+{ "slug": "k3f9x2qa", "createdAt": "…", "version": { "…完整的 ItineraryVersion，见"获取行程版本"…": "" } }
+```
+
+- 没有这个链接：404。撤回了：410，`detail` 是"这个分享链接已经撤回"。
+
+### 撤回
+
+```http
+DELETE /api/share/{slug}
+```
+
+返回撤回后的链接（`revokedAt` 有值）。撤回过的再撤回一次不改时间。没有这个链接：404。
+
+## 我的行程（板块 7）
+
+```http
+GET /api/trips
+```
+
+代码：`apps/api/app/api/trips.py`、`apps/api/app/services/trips.py`，数据结构 `apps/api/app/schemas/trips.py`。
+
+只列 `/map` 上生成的行程（属于某段对话的）；`/compare` 产生的行程不属于对话，不列。按对话分组，最近有新版本的在前：
+
+```json
+[
+  {
+    "conversationId": "conv_…",
+    "updatedAt": "…",
+    "request": "武汉两天，喜欢历史和美食，坐地铁",
+    "itineraries": [
+      {
+        "itineraryId": "itin_…",
+        "emphasis": "classic",
+        "emphasisLabel": "经典必去",
+        "versions": [
+          {
+            "id": "ver_…", "versionNumber": 2, "createdAt": "…", "title": "…",
+            "providerLabel": "豆包", "model": "…", "validationStatus": "warning", "errorCount": 0, "warningCount": 9,
+            "days": 2, "startDate": "2026-11-28", "poiNames": ["…"],
+            "share": { "slug": "…", "path": "/s/…", "…": "…" }
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
+- `request` 是这段对话里用户的第一句话。
+- 一段对话里的行程按 经典必去 → 轻松少走路 → 深度文化 排；板块 5B 之前存的单份行程没有侧重（`emphasis` 为 null），排在最后。
+- 每份行程的版本新的在前；`share` 是没撤回的链接，没有为 null。
+- **没有登录**：列的是这个数据库里的全部行程。公开上线时这个接口和 `/trips` 要关掉或加口令（和上线方式一起定）。
+
 ## 以后的接口（设计草案）
 
 ### 修改行程
@@ -480,51 +572,6 @@ Response:
 }
 ```
 
-### 发布分享页
-
-```http
-POST /api/itinerary-versions/{versionId}/share
-```
-
-Request:
-
-```json
-{
-  "visibility": "public",
-  "expiresAt": null
-}
-```
-
-Response:
-
-```json
-{
-  "shareId": "uuid",
-  "url": "https://example.com/s/wuhan-abc123"
-}
-```
-
-### 获取分享页
-
-```http
-GET /api/share/{slug}
-```
-
-Response:
-
-```json
-{
-  "title": "武汉 3 日历史文化与美食路线",
-  "versionId": "uuid",
-  "readOnly": true,
-  "days": [],
-  "map": {
-    "pois": [],
-    "routes": []
-  }
-}
-```
-
 ## 错误格式
 
 ```json
@@ -539,6 +586,16 @@ Response:
 ```
 
 ## 权限规则
+
+> 2026-11-15（板块 7）：现在没有登录，也没有匿名 session。分享页只读、撤回后打不开（410）已经做到。
+>
+> **公开模式**（ADR 0008，后端 `.env` 的 `PUBLIC_MODE=true`；本机开发时关着，下面这些都不查）：
+>
+> - 要网站主人口令的接口（请求头 `X-Owner-Passcode`）：`GET /api/trips`、`POST /api/itinerary-versions/{id}/share`、`GET /api/itinerary-versions/{id}/share`、`DELETE /api/share/{slug}`。没带或不对是 401（`detail`："这个功能需要网站主人的口令"）；后端没设 `OWNER_PASSCODE` 是 403。`GET /api/share/{slug}` 不要口令。
+> - 限次数的接口：`POST /api/conversations/{id}/messages` 算 1 次，`POST /api/comparisons` 算 2 次。同一个地址每小时、全站每天各有上限，超了是 429，`detail` 是中文说明（"每小时最多……"或"今天全站的试用次数……用完了"）。带对口令的不限。
+> - 景点接口不返回占位照片（`placeholder` 为 true 的那些），`/media/photos-placeholder` 不挂。
+>
+> 下面是早期草案。
 
 - 未登录用户可以创建临时对话和分享页，但需要匿名 session id。
 - 登录用户可以保存多个行程。

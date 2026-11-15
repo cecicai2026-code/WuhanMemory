@@ -172,6 +172,16 @@
   .top {
     min-height: 56px;
   }
+  /* 手机上右上角的计数（例如地图工作台的"模型 豆包 · 校验 有警告"）放不下一行时换成两行，不截断 */
+  .count {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    text-align: right;
+    line-height: 1.35;
+  }
   .head {
     margin-bottom: 28px;
   }

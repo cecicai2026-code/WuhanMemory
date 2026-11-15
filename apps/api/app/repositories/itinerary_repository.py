@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import Protocol
 from uuid import uuid4
 
+from pydantic import BaseModel
+
 from app.db.sqlite import connect, init_schema
 from app.schemas.itinerary import ItineraryVersion, ItineraryVersionData
 
@@ -23,6 +25,16 @@ class ItineraryRepository(Protocol):
     def get_version(self, version_id: str) -> ItineraryVersion | None: ...
 
     def list_versions(self, itinerary_id: str) -> list[ItineraryVersion]: ...
+
+    def list_conversation_itineraries(self, *, limit: int = 200) -> list[ItineraryRef]: ...
+
+
+class ItineraryRef(BaseModel):
+    """一份行程本身（不含版本）。"""
+
+    id: str
+    conversationId: str | None
+    createdAt: datetime
 
 
 def _now() -> datetime:
@@ -115,3 +127,18 @@ class SqliteItineraryRepository:
         finally:
             conn.close()
         return [self._row_to_version(r) for r in rows]
+
+    def list_conversation_itineraries(self, *, limit: int = 200) -> list[ItineraryRef]:
+        """属于某段对话（/map 上生成）的行程，新的在前。/compare 产生的行程不属于对话，不在里面。"""
+        conn = self._conn()
+        try:
+            rows = conn.execute(
+                "SELECT * FROM itineraries WHERE conversation_id IS NOT NULL ORDER BY created_at DESC, rowid DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        finally:
+            conn.close()
+        return [
+            ItineraryRef(id=r["id"], conversationId=r["conversation_id"], createdAt=datetime.fromisoformat(r["created_at"]))
+            for r in rows
+        ]

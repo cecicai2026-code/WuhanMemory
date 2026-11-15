@@ -20,3 +20,5 @@ export * from "./llm";
 export * from "./planning";
 // 双模型对比（板块 6）
 export * from "./comparison";
+// 分享链接和我的行程（板块 7）
+export * from "./share";

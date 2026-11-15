@@ -1,0 +1,62 @@
+/* 我的行程：一本摊开的笔记本，每段对话是一页，每个版本是夹在页上的一条印样（设计规范 9.3） */
+.notebook {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 920px;
+}
+.notice {
+  max-width: 640px;
+}
+.notice > * + * {
+  margin-top: 12px;
+}
+.request {
+  margin-top: 6px;
+}
+.plan {
+  margin-top: 16px;
+}
+.planLabel {
+  margin: 12px 0 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+}
+.proofs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.proof {
+  padding: 14px 0;
+}
+.proof + .proof {
+  border-top: 1px dashed var(--paper-shade);
+}
+.proofHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.proofTitle {
+  margin: 0;
+  font-weight: 600;
+}
+.proofMeta,
+.proofPois {
+  margin: 4px 0 0;
+  font-size: var(--size-ui);
+  color: var(--ink-soft);
+}
+.proofActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 10px;
+}
+.proofActions > :last-child {
+  flex: 1 1 18em;
+}

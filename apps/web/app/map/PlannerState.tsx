@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, Fragment, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import type { LlmProviderId, ValidationStatus } from "@wuhanmemory/shared";
 import { Label } from "@/components/ui";
 
@@ -67,5 +67,18 @@ export function PlannerCorner() {
     const other = validationBy && validationBy !== providerLabel ? `${validationBy}排的行程 ` : "";
     parts.push(`${other}校验 ${VALIDATION_TEXT[validation]}`);
   }
-  return <Label>{parts.join(" · ")}</Label>;
+  // 每一段不在中间断开；手机上放不下一行时在段与段之间换行
+  return (
+    <Label>
+      {parts.map((part, i) => (
+        <Fragment key={part}>
+          {i > 0 ? " " : ""}
+          <span style={{ whiteSpace: "nowrap" }}>
+            {part}
+            {i < parts.length - 1 ? " ·" : ""}
+          </span>
+        </Fragment>
+      ))}
+    </Label>
+  );
 }

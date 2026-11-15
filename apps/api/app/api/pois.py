@@ -8,6 +8,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.core.site_policy import Policy
 from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.repositories.poi_repository import PoiRepository, SqlitePoiRepository
@@ -39,17 +40,18 @@ def list_pois(
     repo: Repo,
     today: Today,
     data_dir: DataDir,
+    policy: Policy,
     district: Annotated[str | None, Query(description="按所在区筛选，例如 武昌区")] = None,
     category: Annotated[str | None, Query(description="按类别筛选")] = None,
 ) -> PoiListOut:
-    presenter = PoiPresenter(data_dir, today)
+    presenter = PoiPresenter(data_dir, today, hide_placeholder_photos=policy.public_mode)
     pois = repo.list_pois(district=district, category=category)
     return PoiListOut(asOf=today, pois=[presenter.summary(p) for p in pois])
 
 
 @router.get("/{poi_id}", response_model=PoiDetailResponse)
-def get_poi(poi_id: str, repo: Repo, today: Today, data_dir: DataDir) -> PoiDetailResponse:
+def get_poi(poi_id: str, repo: Repo, today: Today, data_dir: DataDir, policy: Policy) -> PoiDetailResponse:
     poi = repo.get_poi(poi_id)
     if poi is None:
         raise HTTPException(status_code=404, detail=f"没有这个景点：{poi_id}")
-    return PoiDetailResponse(asOf=today, poi=PoiPresenter(data_dir, today).detail(poi))
+    return PoiDetailResponse(asOf=today, poi=PoiPresenter(data_dir, today, hide_placeholder_photos=policy.public_mode).detail(poi))

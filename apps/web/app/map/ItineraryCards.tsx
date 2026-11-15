@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type {
   FactStatus,
   ItineraryDay,
@@ -8,9 +8,12 @@ import type {
   ItineraryStop,
   ItineraryVersion,
   PoiFact,
+  ShareLink,
   ValidationIssue,
 } from "@wuhanmemory/shared";
 import { NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule, Soft, Stamp, TextLink } from "@/components/ui";
+import { ShareControls } from "@/components/trip/ShareControls";
+import { getVersionShare } from "@/lib/planning-client";
 import { formatOpeningHours, formatPayment, formatReservation, formatTicket } from "@/lib/format-poi";
 import { DAY_COLOR_NAMES, dayColor } from "./day-colors";
 import s from "./map.module.css";
@@ -157,12 +160,34 @@ function DayCard({ day, issues, tilt }: { day: ItineraryDay; issues: ValidationI
   );
 }
 
+/** 地图工作台上的分享按钮：先查这个版本有没有分享链接，再显示生成或复制、撤回 */
+function MapShare({ versionId }: { versionId: string }) {
+  const [state, setState] = useState<{ kind: "loading" } | { kind: "ready"; link: ShareLink | null } | { kind: "error"; message: string }>({
+    kind: "loading",
+  });
+  useEffect(() => {
+    let closed = false;
+    setState({ kind: "loading" });
+    getVersionShare(versionId)
+      .then((link) => !closed && setState({ kind: "ready", link }))
+      .catch((err: unknown) => !closed && setState({ kind: "error", message: err instanceof Error ? err.message : String(err) }));
+    return () => {
+      closed = true;
+    };
+  }, [versionId]);
+  if (state.kind === "loading") return <Soft>正在查分享链接……</Soft>;
+  if (state.kind === "error") return <Soft>分享链接查不到：{state.message}</Soft>;
+  return <ShareControls key={versionId} versionId={versionId} failed={false} initial={state.link} />;
+}
+
 interface Props {
   version: ItineraryVersion | null;
   loading: boolean;
   error: string | null;
   shownDay: number | "all" | null;
   onShowDay: (day: number | "all") => void;
+  /** 地图工作台上给 true：总卡上放分享按钮。分享页和我的行程不给（它们自己有） */
+  shareable?: boolean;
 }
 
 /**
@@ -171,7 +196,7 @@ interface Props {
  * 没通过校验的行程只显示问题清单，不显示时间线，地图上也不画（2026-11-15 Cecilia 确认）。
  * 其余每天一张：时间线、每段交通（高德查的真实时间）、预约和支付提示（景点库里的资料，旁边标着待确认、待补充）。
  */
-export function ItineraryCards({ version, loading, error, shownDay, onShowDay }: Props) {
+export function ItineraryCards({ version, loading, error, shownDay, onShowDay, shareable = false }: Props) {
   if (loading) {
     return (
       <Paper kind="card" tilt={1}>
@@ -250,6 +275,13 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay }:
             <summary>警告 {warnings.length} 条</summary>
             <Issues issues={warnings} />
           </details>
+        )}
+        {shareable && !failed && (
+          <>
+            <Rule dashed />
+            <p className={s.issuesHead}>分享这一版</p>
+            <MapShare versionId={v.id} />
+          </>
         )}
         {!failed && (
           <p className={s.legend}>

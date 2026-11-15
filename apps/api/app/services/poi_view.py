@@ -60,9 +60,16 @@ def poi_status(counts: FactCounts) -> PoiStatus:
 
 
 class PoiPresenter:
-    def __init__(self, data_dir: Path, today: date):
+    def __init__(self, data_dir: Path, today: date, *, hide_placeholder_photos: bool = False):
         self.data_dir = data_dir
         self.today = today
+        # 公开模式下占位照片（官网、第三方）不对外，见 app/core/site_policy.py
+        self.hide_placeholder_photos = hide_placeholder_photos
+
+    def _photos(self, poi: PoiFile) -> list[Photo]:
+        if self.hide_placeholder_photos:
+            return [p for p in poi.photos if p.license not in PLACEHOLDER_LICENSES]
+        return list(poi.photos)
 
     def photo(self, poi_id: str, p: Photo) -> PhotoOut:
         placeholder = p.license in PLACEHOLDER_LICENSES
@@ -74,7 +81,7 @@ class PoiPresenter:
         return PhotoOut(**p.model_dump(), placeholder=placeholder, url=url)
 
     def _cover(self, poi: PoiFile) -> PhotoOut | None:
-        photos = [self.photo(poi.id, p) for p in poi.photos]
+        photos = [self.photo(poi.id, p) for p in self._photos(poi)]
         own = [p for p in photos if not p.placeholder]
         shown = [p for p in photos if p.placeholder and p.url]
         return (own or shown or [None])[0]
@@ -126,7 +133,7 @@ class PoiPresenter:
                 "photoSpots": [fact(f) for f in poi.photoSpots],
                 "food": [fact(f) for f in poi.food],
                 "reviews": poi.reviews,
-                "photos": [self.photo(poi.id, p) for p in poi.photos],
+                "photos": [self.photo(poi.id, p) for p in self._photos(poi)],
             }
         )
 

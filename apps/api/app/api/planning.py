@@ -22,6 +22,7 @@ import httpx
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
 from app.core.config import settings
+from app.core.site_policy import rate_limited
 from app.data_quality.rules import today_in_city
 from app.repositories.conversation_repository import ConversationRepository, SqliteConversationRepository
 from app.repositories.itinerary_repository import ItineraryRepository, SqliteItineraryRepository
@@ -155,7 +156,13 @@ async def _run(job: PlanningJob, content: str, factory: PipelineFactory, convers
     job.status = "completed"
 
 
-@router.post("/conversations/{conversation_id}/messages", response_model=SendMessageResponse, status_code=202)
+@router.post(
+    "/conversations/{conversation_id}/messages",
+    response_model=SendMessageResponse,
+    status_code=202,
+    # 公开模式下限次数（app/core/site_policy.py）
+    dependencies=[Depends(rate_limited(1))],
+)
 async def send_message(
     conversation_id: str,
     request: SendMessageRequest,

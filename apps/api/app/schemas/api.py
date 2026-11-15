@@ -72,14 +72,3 @@ class PlanningJobOut(BaseModel):
     itineraryVersionId: str | None = None
     planningRoundId: str | None = None
     error: LLMErrorOut | None = None
-
-
-class PublishShareRequest(BaseModel):
-    visibility: Literal["public", "private"] = "public"
-    expiresAt: str | None = None
-
-
-class ShareResponse(BaseModel):
-    shareId: str
-    slug: str
-    url: str

@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
 import type { ItineraryVersion, PlanningRound, PoiSummary, Route } from "@wuhanmemory/shared";
 import { NoteButton } from "@/components/ui";
+import { itineraryPins, itineraryRoutes, type PinOverride } from "@/lib/itinerary-map";
 import { getRound, getVersion } from "@/lib/planning-client";
 import { ChatPaper, type PlanResult } from "./ChatPaper";
-import { dayColor } from "./day-colors";
 import { ItineraryCards } from "./ItineraryCards";
-import { MapPanel, type PinOverride } from "./MapPanel";
+import { MapPanel } from "./MapPanel";
 import { PlanCompare } from "./PlanCompare";
 import { usePlannerState } from "./PlannerState";
 import { RouteFinder } from "./RouteFinder";
@@ -101,38 +101,13 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
     show(round.versions[index]);
   }
 
-  const ok = version && version.validation.status !== "failed" ? version : null;
-  const shownDays = ok ? ok.days.filter((d) => shownDay === "all" || d.dayNumber === shownDay) : [];
-  const all = shownDay === "all";
-
   const routes = useMemo<MapRoute[]>(() => {
-    if (shownDays.length) {
-      return shownDays.map((d) => ({
-        id: `day-${d.dayNumber}`,
-        dayNumber: d.dayNumber,
-        // 全部天：按天分色，交通方式只用线型区分；一天：按交通方式分色
-        color: all ? dayColor(d.dayNumber) : undefined,
-        lines: d.legs.filter((l) => l.route.polyline.length > 1).map((l) => ({ mode: l.route.mode, path: l.route.polyline })),
-      }));
-    }
+    const days = itineraryRoutes(version, shownDay);
+    if (days.length) return days;
     return shownRoute ? [{ id: shownRoute.mode, dayNumber: null, lines: [{ mode: shownRoute.mode, path: shownRoute.polyline }] }] : [];
-    // shownDays 由 version 和 shownDay 算出来
   }, [version, shownDay, shownRoute]);
 
-  const pins = useMemo<PinOverride[] | null>(
-    () =>
-      shownDays.length
-        ? shownDays.flatMap((d) =>
-            d.stops.map((st, i) => ({
-              id: st.poiId,
-              // 一天："2 · 黄鹤楼"；全部天："1-2 · 黄鹤楼"（第 1 天第 2 站）
-              name: `${all ? `${d.dayNumber}-` : ""}${i + 1} · ${st.name}`,
-              location: st.location,
-            })),
-          )
-        : null,
-    [version, shownDay],
-  );
+  const pins = useMemo<PinOverride[] | null>(() => itineraryPins(version, shownDay), [version, shownDay]);
 
   function choose(next: Tab) {
     setTab(next);
@@ -181,6 +156,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
             error={versionError}
             shownDay={shownDay}
             onShowDay={setShownDay}
+            shareable
           />
           <RouteFinder pois={pois} shown={shownRoute?.mode ?? null} onShow={setShownRoute} />
         </div>

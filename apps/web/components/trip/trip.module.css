@@ -1,0 +1,154 @@
+/* 一份行程的只读视图：明信片 + 地图 + 行程卡（分享页和我的行程共用） */
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ---------- 明信片 ---------- */
+.postcard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: start;
+  max-width: 920px;
+}
+.postcardText > * + * {
+  margin-top: 8px;
+}
+.facts {
+  margin: 0;
+  font-size: var(--size-paper-body);
+}
+.by {
+  margin: 0;
+  color: var(--ink-soft);
+}
+.note {
+  display: block;
+  font-size: var(--size-ui);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+/* 邮戳：日期是行程生成的真实日期（设计规范 6.2） */
+.postmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 128px;
+  height: 128px;
+  border: 2px dashed var(--ink-soft);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  transform: rotate(-8deg);
+}
+.postmark strong {
+  margin: 4px 0;
+  font-size: var(--size-ui);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+/* ---------- 地图和行程卡 ---------- */
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  gap: 28px;
+  align-items: start;
+}
+.mapBox {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  height: min(72vh, 680px);
+}
+.cards {
+  min-width: 0;
+  padding: 6px 10px 24px 4px;
+}
+.cards > * + * {
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mapBox {
+    position: relative;
+    top: 0;
+    height: 56vh;
+    height: 56dvh;
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 733px) {
+  .postcard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .postmark {
+    width: 96px;
+    height: 96px;
+    justify-self: end;
+    order: -1;
+    margin-bottom: -48px;
+  }
+}
+
+/* ---------- 分享链接的按钮 ---------- */
+.share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--size-ui);
+}
+.shareUrl {
+  flex: 1 1 16em;
+  min-width: 0;
+}
+.shareUrl input {
+  width: 100%;
+  min-height: 40px;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 1px solid var(--ink-soft);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-label);
+  font-size: var(--size-ui);
+}
+.shareUrl input:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.shareHint {
+  font-size: var(--size-ui);
+}
+.shareError {
+  flex-basis: 100%;
+  color: var(--expired-paper);
+}
+
+/* 网站主人的口令（公开模式） */
+.passcode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 28em;
+}
+.passcode p {
+  margin: 0;
+}
