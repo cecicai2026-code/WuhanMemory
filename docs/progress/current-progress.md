@@ -73,7 +73,8 @@
   - [x] 部署说明 `docs/operations/deploy-hk.md` 和 `infra/deploy/`（Caddyfile、两个服务文件、`update.sh`）。脚本做过语法检查；Caddy 和 systemd 的配置本机没法跑，要在服务器上才验证得了。
   - [x] 自查时发现：服务器 `.env` 打开公开模式后，17 个测试会被口令和次数限制拦住，更新脚本会停在测试那一步。加了 `tests/conftest.py`，测试默认用本机模式；用 `PUBLIC_MODE=true` 和平常各跑一遍，都是 419 个通过。
   - [x] Cecilia 同意，`deploy-hk` 合进 main（2026-11-15）。合并时进度文档和开发日志和 main 上"仓库公开前的检查"那次提交冲突，两边内容都保留。
-  - [ ] Cecilia 在 GitHub Desktop 推送 main（服务器拉的是 GitHub 上的 main）。
+  - [x] 仓库公开以后，部署说明第 6、7 步改成服务器直接用 HTTPS 拉代码，不再加部署密钥（2026-11-15，Cecilia 同意）。第 0 步加上：合并后先在 Mac 上跑一次 `pnpm build`（合并后只跑过类型检查）。
+  - [ ] Cecilia 在 Mac 上运行 `pnpm build`，通过后在 GitHub Desktop 推送 main（服务器拉的是 GitHub 上的 main）。
   - [ ] Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
 - [ ] 还要 Cecilia 定的：读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
