@@ -41,11 +41,11 @@ const outline = (g: CanvasRenderingContext2D, path: () => void) => {
 };
 
 /** 四张贴纸，顺序和四个主题一致 */
-const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRenderingContext2D, w: number, h: number) => void }> = [
+const STICKERS: Array<{ w: number; h: number; label: { zh: string; en: string }; draw: (g: CanvasRenderingContext2D, w: number, h: number, en: boolean) => void }> = [
   {
     w: 2.4,
     h: 1.7,
-    label: "相机贴纸",
+    label: { zh: "相机贴纸", en: "Camera sticker" },
     draw: (g, w, h) => {
       const body = () => {
         g.beginPath();
@@ -89,8 +89,8 @@ const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRen
   {
     w: 2.6,
     h: 1.25,
-    label: "地铁票贴纸",
-    draw: (g, w, h) => {
+    label: { zh: "地铁票贴纸", en: "Metro ticket sticker" },
+    draw: (g, w, h, en) => {
       const body = () => {
         g.beginPath();
         g.roundRect(30, 30, w - 60, h - 60, 18);
@@ -106,8 +106,8 @@ const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRen
       g.fillStyle = "#16332a";
       g.fillRect(30, 60, w - 60, 46);
       g.fillStyle = COLORS.ink;
-      g.font = `600 52px ${SERIF}`;
-      g.fillText("地铁 · 单程票", 60, 170);
+      g.font = `600 ${en ? 44 : 52}px ${SERIF}`;
+      g.fillText(en ? "Metro · Single" : "地铁 · 单程票", 60, 170);
       g.fillStyle = COLORS.oxblood;
       g.font = `22px ${MONO}`;
       g.fillText("WUHAN MEMORY", 62, 208);
@@ -122,7 +122,7 @@ const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRen
   {
     w: 2.3,
     h: 1.6,
-    label: "一段胶片贴纸",
+    label: { zh: "一段胶片贴纸", en: "Film strip sticker" },
     draw: (g, w, h) => {
       const body = () => {
         g.beginPath();
@@ -149,7 +149,7 @@ const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRen
   {
     w: 2.2,
     h: 2.2,
-    label: "一碗面贴纸",
+    label: { zh: "一碗面贴纸", en: "Noodle bowl sticker" },
     draw: (g, w, h) => {
       const bowl = () => {
         g.beginPath();
@@ -195,6 +195,9 @@ const STICKERS: Array<{ w: number; h: number; label: string; draw: (g: CanvasRen
 
 export function createSheet(env: ActEnv, req0: StageRequest): Act {
   let data = (req0 as StageRequest<SheetData>).data;
+  // 场景里画的字按搭场景时的语言；换了语言 update 返回 false，引擎重搭
+  const lang = data.lang;
+  const en = lang === "en";
   const M = materials();
   const owned: THREE.Texture[] = [];
   const topicIndex = () => Math.max(0, data.topics.findIndex((t) => t.id === data.topic));
@@ -242,13 +245,13 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
     add(pen, new THREE.BoxGeometry(0.75, 0.025, 0.05), M.brass, 1.5, 0.115, 0);
   }
   pen.position.y = 0.14;
-  thing(pen, "钢笔", [0.6, -0.55], 1.05);
+  thing(pen, en ? "Fountain pen" : "钢笔", [0.6, -0.55], 1.05);
 
   /* 贴纸：纸的左边，只显示当前主题那一张 */
   const stickers = STICKERS.map((st) => {
     const t = tex(512, Math.round((512 * st.h) / st.w), (g, cw, ch) => {
       g.lineJoin = g.lineCap = "round";
-      st.draw(g, cw, ch);
+      st.draw(g, cw, ch, en);
     });
     owned.push(t);
     const g = new THREE.Group();
@@ -258,7 +261,7 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
     m.castShadow = true;
     g.add(m);
     contact(g, st.w * 1.25, st.h * 1.25).material.opacity = 0.5;
-    return { th: thing(g, st.label, [-0.7, -0.2], 0.3), draw: st.draw, w: st.w, h: st.h, mesh: m };
+    return { th: thing(g, en ? st.label.en : st.label.zh, [-0.7, -0.2], 0.3), draw: st.draw, w: st.w, h: st.h, mesh: m };
   });
 
   /* 右边露出的书：封面写下一个主题，点一下翻过去 */
@@ -281,11 +284,17 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
     g.strokeRect(18, 18, w - 36, h - 36);
     g.fillStyle = COLORS.oxblood;
     g.font = `26px ${MONO}`;
-    g.fillText("下一页", 50, 90);
+    g.fillText(en ? "NEXT PAGE" : "下一页", 50, 90);
     g.fillStyle = COLORS.ink;
-    g.font = `600 84px ${SERIF}`;
-    g.fillText(name.slice(0, 2), 50, 250);
-    g.fillText(name.slice(2), 50, 350);
+    if (en) {
+      // 英文的主题名按词分行
+      g.font = `600 64px ${SERIF}`;
+      name.split(" ").slice(0, 3).forEach((word, i) => g.fillText(word, 50, 230 + i * 84));
+    } else {
+      g.font = `600 84px ${SERIF}`;
+      g.fillText(name.slice(0, 2), 50, 250);
+      g.fillText(name.slice(2), 50, 350);
+    }
     g.fillStyle = COLORS.soft;
     g.font = `26px ${MONO}`;
     g.fillText(`${pad(nx + 1)} / ${pad(data.topics.length)}`, 50, 560);
@@ -296,7 +305,7 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
   cover.position.set(-0.9, 0.632, -0.6);
   book.add(cover);
   contact(book, 6.2, 8).position.x = 0.2;
-  const bookThing = thing(book, "下一页", [0.92, 0.1], -0.06, () => env.navigate(`/places/${encodeURIComponent(data.id)}/${nextTopic().id}`, { curtain: false }));
+  const bookThing = thing(book, en ? "Next page" : "下一页", [0.92, 0.1], -0.06, () => env.navigate(`/places/${encodeURIComponent(data.id)}/${nextTopic().id}`, { curtain: false }));
 
   /* ---------- 按屏幕位置摆物件：从镜头往桌面打一条射线，落点就是物件的位置 ---------- */
   const ray = new THREE.Raycaster();
@@ -373,7 +382,7 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
     if (hovered) {
       v.copy(hovered.g.position).project(camera);
       env.tag({
-        text: hovered === bookThing ? `下一页 · ${nextTopic().name}` : hovered.label,
+        text: hovered === bookThing ? `${en ? "Next page" : "下一页"} · ${nextTopic().name}` : hovered.label,
         x: (v.x * 0.5 + 0.5) * env.width(),
         y: (-v.y * 0.5 + 0.5) * env.height() + 54
       });
@@ -387,12 +396,12 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
   }
 
   const ready = (async () => {
-    await ensureFonts("地铁单程票下一页" + data.topics.map((t) => t.name).join("") + "WUHANMEMORY0123456789/·");
+    await ensureFonts((en ? "Metro·SingleNEXTPAGE" : "地铁单程票下一页") + data.topics.map((t) => t.name).join("") + "WUHANMEMORY0123456789/·");
     // 字体到了以后重画用到字的贴图（地铁票、书）
     const metro = stickers[1];
     const t2 = tex(512, Math.round((512 * metro.h) / metro.w), (g, cw, ch) => {
       g.lineJoin = g.lineCap = "round";
-      metro.draw(g, cw, ch);
+      metro.draw(g, cw, ch, en);
     });
     owned.push(t2);
     (metro.mesh.material as THREE.MeshStandardMaterial).map = t2;
@@ -407,6 +416,7 @@ export function createSheet(env: ActEnv, req0: StageRequest): Act {
     ready,
     update(next) {
       const d = (next as StageRequest<SheetData>).data;
+      if (d.lang !== lang) return false;
       const changed = d.topic !== data.topic;
       data = d;
       showTopic(!changed);

@@ -3,6 +3,7 @@
  * 普通版和立体版用的是同一次取到的同一份数据。这个文件不引用 three.js。
  */
 import type { PoiSummary } from "@wuhanmemory/shared";
+import { makeT, type Lang } from "@/lib/i18n";
 import { countsText, isClosed, pad2, photoCredit } from "@/lib/places";
 
 /** 胶片上的一格 = 一个景点 */
@@ -31,9 +32,12 @@ export interface RollsData {
   district: string | null;
   /** 地址里的 ?at=景点id：从晾片幕回来时停在这一格 */
   at: string | null;
+  /** 场景里画的字用哪种语言；换了语言场景要重搭 */
+  lang: Lang;
 }
 
-export function rollsFrame(p: PoiSummary, no: number): RollsFrame {
+export function rollsFrame(p: PoiSummary, no: number, lang: Lang): RollsFrame {
+  const t = makeT(lang);
   return {
     id: p.id,
     name: p.name,
@@ -41,9 +45,9 @@ export function rollsFrame(p: PoiSummary, no: number): RollsFrame {
     no,
     photoUrl: p.coverPhoto?.url ? (p.coverPhoto.thumbUrl ?? p.coverPhoto.url) : null,
     photoFull: p.coverPhoto?.url ?? null,
-    credit: p.coverPhoto?.url ? photoCredit(p.coverPhoto) : null,
+    credit: p.coverPhoto?.url ? photoCredit(p.coverPhoto, t) : null,
     closed: isClosed(p),
-    counts: countsText(p.counts)
+    counts: countsText(p.counts, t)
   };
 }
 
@@ -67,6 +71,7 @@ export interface LineData {
   /** 标题下面一行："区 · 类别" */
   sub: string;
   topics: LineTopic[];
+  lang: Lang;
 }
 
 /** 纸页幕：桌上的物件只和主题有关（纸本身是网页文字，不在场景里） */
@@ -76,6 +81,7 @@ export interface SheetData {
   /** 当前主题 id */
   topic: string;
   topics: Array<{ id: string; name: string }>;
+  lang: Lang;
 }
 
 /** 首页桌面：四件物件各通往哪个页面 */
@@ -86,9 +92,13 @@ export interface DeskData {
   at?: number;
   /** 要不要播开场（这次访问的第一个页面是首页、还没播过） */
   intro: boolean;
+  /** 物件上画的字用哪种语言；换了语言场景要重搭 */
+  lang: Lang;
 }
 
 /** 胶卷罐侧面的一行小字，只放真实的值 */
 export function rollLabel(d: RollsData): string {
-  return `${d.district ?? "WUHAN MEMORY"} · ${pad2(d.frames.length)} EXP`;
+  // 罐子上的区名：英文版的区名带"District"，太长，只留前面的地名
+  const district = d.district && d.lang === "en" ? d.district.replace(/ District$/, "").toUpperCase() : d.district;
+  return `${district ?? "WUHAN MEMORY"} · ${pad2(d.frames.length)} EXP`;
 }

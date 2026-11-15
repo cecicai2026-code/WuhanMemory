@@ -29,21 +29,38 @@ from app.schemas.itinerary import (
 )
 from app.schemas.planning import PlanDraft
 from app.schemas.poi import TicketItem
+from app.core.lang import L
 from app.services.planning.validate import parse_hhmm
 
 NIGHT_FROM = 19 * 60
-# 名字里带这些字的不是成人全价票
+# 名字里带这些字的不是成人全价票。英文版的行程存的是译文的票名（data/pois/en/），所以英文的说法也认
 NOT_ADULT_FULL = ("半票", "优惠", "学生", "儿童", "老人", "长者", "免票")
+NOT_ADULT_FULL_EN = ("half", "concession", "student", "child", "senior", "free")
+NIGHT_WORDS = ("夜场", "night")
 NEAR_DUPLICATE_END_MINUTES = 60
 NEAR_DUPLICATE_PLACES = 1
 
 MODE_ORDER = ("walk", "transit", "drive")
 MODE_LABELS = {"walk": "步行", "transit": "公交地铁", "drive": "打车"}
+MODE_EN = {"walk": "walk", "transit": "bus/metro", "drive": "taxi"}
 _WEEKDAY_CHARS = {"一": 1, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "日": 7, "天": 7}
+_WEEKDAY_EN = {"mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6, "sun": 7}
+_EN_DAY = r"(mon|tue|wed|thu|fri|sat|sun)[a-z]*"
+
+
+def _is_night(name: str) -> bool:
+    low = name.lower()
+    return any(w in low for w in NIGHT_WORDS)
 
 
 def _num(x: float) -> str:
     return str(int(x)) if float(x).is_integer() else f"{x:.1f}"
+
+
+def _price(lo: float, hi: float) -> str:
+    if lo == hi:
+        return L(f"{_num(lo)} 元", f"¥{_num(lo)}")
+    return L(f"{_num(lo)} 或 {_num(hi)} 元", f"¥{_num(lo)} or ¥{_num(hi)}")
 
 
 # ---------- 门票 ----------
@@ -57,24 +74,35 @@ def _weekdays_in(name: str) -> set[int] | None:
         found |= set(range(lo, hi + 1)) if lo <= hi else set(range(lo, 8)) | set(range(1, hi + 1))
     if not found:
         found = {_WEEKDAY_CHARS[c] for c in re.findall(r"周([一二三四五六日天])", name)}
+    if not found:
+        # 英文票名，例如 "Night ticket, adult (Fri–Sun and public holidays)"
+        low = name.lower()
+        for a, b in re.findall(_EN_DAY + r"\s*(?:[-–—~]|to)\s*" + _EN_DAY, low):
+            lo, hi = _WEEKDAY_EN[a], _WEEKDAY_EN[b]
+            found |= set(range(lo, hi + 1)) if lo <= hi else set(range(lo, 8)) | set(range(1, hi + 1))
+        if not found:
+            found = {_WEEKDAY_EN[c] for c in re.findall(r"\b" + _EN_DAY + r"\b", low)}
     return found or None
 
 
 def _adult(items: list[TicketItem]) -> list[TicketItem]:
-    return [i for i in items if not any(w in i.name for w in NOT_ADULT_FULL)]
+    return [
+        i for i in items
+        if not any(w in i.name for w in NOT_ADULT_FULL) and not any(w in i.name.lower() for w in NOT_ADULT_FULL_EN)
+    ]
 
 
 def stop_ticket(stop: ItineraryStop, day: ItineraryDay) -> StopTicket:
     base = {"dayNumber": day.dayNumber, "poiId": stop.poiId, "name": stop.name}
     fact = stop.facts.ticket
-    unknown = StopTicket(**base, minCny=None, maxCny=None, label="不详")
+    unknown = StopTicket(**base, minCny=None, maxCny=None, label=L("不详", "unknown"))
     if fact.status == "missing" or fact.value is None:
         return unknown
     if fact.value.free:
-        return StopTicket(**base, minCny=0, maxCny=0, label="免费")
+        return StopTicket(**base, minCny=0, maxCny=0, label=L("免费", "free"))
 
-    night = _adult([i for i in fact.value.items if "夜场" in i.name])
-    day_items = _adult([i for i in fact.value.items if "夜场" not in i.name])
+    night = _adult([i for i in fact.value.items if _is_night(i.name)])
+    day_items = _adult([i for i in fact.value.items if not _is_night(i.name)])
     arrive = parse_hhmm(stop.arrive)
     if arrive is not None and arrive >= NIGHT_FROM and night:
         chosen = night
@@ -85,13 +113,13 @@ def stop_ticket(stop: ItineraryStop, day: ItineraryDay) -> StopTicket:
             if matching:
                 chosen = matching
         else:
-            undecided = "（日期未定）" if len({i.priceCny for i in night}) > 1 else ""
+            undecided = L("（日期未定）", " (date not set)") if len({i.priceCny for i in night}) > 1 else ""
         lo, hi = min(i.priceCny for i in chosen), max(i.priceCny for i in chosen)
-        price = f"{_num(lo)} 元" if lo == hi else f"{_num(lo)} 或 {_num(hi)} 元"
-        return StopTicket(**base, minCny=lo, maxCny=hi, label=f"夜场成人票 {price}{undecided}")
+        price = _price(lo, hi)
+        return StopTicket(**base, minCny=lo, maxCny=hi, label=L(f"夜场成人票 {price}{undecided}", f"Adult night ticket {price}{undecided}"))
     if day_items:
         item = day_items[0]
-        return StopTicket(**base, minCny=item.priceCny, maxCny=item.priceCny, label=f"{item.name} {_num(item.priceCny)} 元")
+        return StopTicket(**base, minCny=item.priceCny, maxCny=item.priceCny, label=L(f"{item.name} {_num(item.priceCny)} 元", f"{item.name} ¥{_num(item.priceCny)}"))
     return unknown
 
 
@@ -186,31 +214,31 @@ def near_duplicate(a: PlanDraft, b: PlanDraft) -> str | None:
             continue
         if abs(ea - eb) >= NEAR_DUPLICATE_END_MINUTES:
             return None
-    places = "用到的景点相同" if diff == 0 else f"用到的景点只差 {diff} 个"
-    return f"{places}，每天结束时间相差不到 1 小时"
+    places = L("用到的景点相同", "the same places") if diff == 0 else L(f"用到的景点只差 {diff} 个", f"only {diff} place(s) differ")
+    return L(f"{places}，每天结束时间相差不到 1 小时", f"{places}, and each day ends less than an hour apart")
 
 
 # ---------- 比较表 ----------
 
 
 def _distance(meters: int) -> str:
-    return f"{meters} 米" if meters < 1000 else f"{_num(round(meters / 1000, 1))} 公里"
+    return L(f"{meters} 米", f"{meters} m") if meters < 1000 else L(f"{_num(round(meters / 1000, 1))} 公里", f"{_num(round(meters / 1000, 1))} km")
 
 
 def _ticket_text(m: PlanMetrics) -> str:
     lo, hi = m.ticketMinCny, m.ticketMaxCny
-    text = f"{_num(lo)} 元" if lo == hi else f"{_num(lo)} 或 {_num(hi)} 元"
+    text = _price(lo, hi)
     if not m.ticketComplete:
-        names = "、".join(t.name for t in m.tickets if t.minCny is None)
-        text += f"（不完整：{names} 票价不详）"
+        names = L("、", ", ").join(t.name for t in m.tickets if t.minCny is None)
+        text += L(f"（不完整：{names} 票价不详）", f" (incomplete: no price for {names})")
     return text
 
 
 def _validation_text(m: PlanMetrics) -> str:
     if m.validationStatus == "passed":
-        return "通过"
-    head = "有警告" if m.validationStatus == "warning" else "未通过"
-    return f"{head}：{m.errorCount} 条错误、{m.warningCount} 条警告"
+        return L("通过", "passed")
+    head = L("有警告", "warnings") if m.validationStatus == "warning" else L("未通过", "failed")
+    return L(f"{head}：{m.errorCount} 条错误、{m.warningCount} 条警告", f"{head}: {m.errorCount} errors, {m.warningCount} warnings")
 
 
 def compare_plans(labels: Sequence[str], plans: Sequence[ItineraryVersionData]) -> PlanComparison:
@@ -221,33 +249,51 @@ def compare_plans(labels: Sequence[str], plans: Sequence[ItineraryVersionData]) 
         return ComparisonRow(key=key, label=label, texts=texts, values=values or [None] * len(ms), note=note)
 
     rows = [
-        row("places", "用了哪些景点", ["、".join(m.poiNames) or "—" for m in ms]),
-        row("stopCount", "景点数", [f"{m.stopCount} 个" for m in ms], [float(m.stopCount) for m in ms]),
+        row("places", L("用了哪些景点", "Places used"), [L("、", ", ").join(m.poiNames) or "—" for m in ms]),
+        row("stopCount", L("景点数", "Number of places"), [L(f"{m.stopCount} 个", f"{m.stopCount}") for m in ms], [float(m.stopCount) for m in ms]),
         row(
             "transportMinutes",
-            "交通时间合计",
-            [f"{m.transportMinutes} 分钟" + (f"（{m.unknownLegs} 段没查到）" if m.unknownLegs else "") for m in ms],
+            L("交通时间合计", "Total travel time"),
+            [
+                L(f"{m.transportMinutes} 分钟", f"{m.transportMinutes} min")
+                + (L(f"（{m.unknownLegs} 段没查到）", f" ({m.unknownLegs} legs not found)") if m.unknownLegs else "")
+                for m in ms
+            ],
             [float(m.transportMinutes) for m in ms],
-            note="高德查到的时间，没查到的段没算进去",
+            note=L("高德查到的时间，没查到的段没算进去", "Times found on AMap; legs that weren't found aren't counted"),
         ),
         row(
             "byMode",
-            "其中",
-            ["、".join(f"{MODE_LABELS[k]} {m.minutesByMode.get(k, 0)} 分钟" for k in MODE_ORDER if m.minutesByMode.get(k)) or "—" for m in ms],
+            L("其中", "Of which"),
+            [
+                L("、", ", ").join(
+                    L(f"{MODE_LABELS[k]} {m.minutesByMode.get(k, 0)} 分钟", f"{MODE_EN[k]} {m.minutesByMode.get(k, 0)} min")
+                    for k in MODE_ORDER
+                    if m.minutesByMode.get(k)
+                )
+                or "—"
+                for m in ms
+            ],
         ),
         row(
             "walkingMeters",
-            "步行距离",
-            [_distance(m.walkingMeters) + (f"（{m.walkingUnknownLegs} 段不详）" if m.walkingUnknownLegs else "") for m in ms],
+            L("步行距离", "Walking distance"),
+            [_distance(m.walkingMeters) + (L(f"（{m.walkingUnknownLegs} 段不详）", f" ({m.walkingUnknownLegs} legs unknown)") if m.walkingUnknownLegs else "") for m in ms],
             [float(m.walkingMeters) for m in ms],
-            note="站与站之间：步行段的距离加公交地铁换乘、进出站的步行，不含景点里面走的路",
+            note=L(
+                "站与站之间：步行段的距离加公交地铁换乘、进出站的步行，不含景点里面走的路",
+                "Between stops: walking legs plus walking for metro/bus transfers and station entrances; walking inside the places isn't included",
+            ),
         ),
         row(
             "tickets",
-            "门票（每人）",
+            L("门票（每人）", "Tickets (per person)"),
             [_ticket_text(m) for m in ms],
             [m.ticketMinCny for m in ms],
-            note="成人日场全票，免费的算 0，园内另收费的项目不算；19:00 以后到达按夜场",
+            note=L(
+                "成人日场全票，免费的算 0，园内另收费的项目不算；19:00 以后到达按夜场",
+                "Adult full-price day tickets; free entry counts as 0; extra paid items inside aren't counted; arriving after 19:00 uses the night ticket",
+            ),
         ),
     ]
     for n in range(1, max((len(m.days) for m in ms), default=0) + 1):
@@ -255,6 +301,6 @@ def compare_plans(labels: Sequence[str], plans: Sequence[ItineraryVersionData]) 
         for m in ms:
             day = next((d for d in m.days if d.dayNumber == n), None)
             texts.append(day.end if day is not None and day.end is not None else "—")
-        rows.append(row(f"end-day-{n}", f"第 {n} 天几点结束", texts))
-    rows.append(row("validation", "校验", [_validation_text(m) for m in ms], [float(m.errorCount) for m in ms]))
+        rows.append(row(f"end-day-{n}", L(f"第 {n} 天几点结束", f"Day {n} ends at"), texts))
+    rows.append(row("validation", L("校验", "Checks"), [_validation_text(m) for m in ms], [float(m.errorCount) for m in ms]))
     return PlanComparison(labels=list(labels), rows=rows)

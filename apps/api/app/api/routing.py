@@ -18,6 +18,7 @@ from app.repositories.route_cache_repository import RouteCacheRepository, Sqlite
 from app.schemas.route import RouteCompareOut, RouteMode, RouteOut
 from app.services.routing.amap import AmapRouteProvider
 from app.services.routing.service import RouteProvider, RouteService, UnknownPoiError
+from app.core.lang import L
 
 router = APIRouter(prefix="/api/routes", tags=["routes"])
 
@@ -46,7 +47,7 @@ ToId = Annotated[str, Query(alias="to", description="终点景点 id")]
 
 def _places(service: RouteService, from_id: str, to_id: str):
     if from_id == to_id:
-        raise HTTPException(status_code=400, detail="起点和终点是同一个景点")
+        raise HTTPException(status_code=400, detail=L("起点和终点是同一个景点", "Start and end are the same place"))
     try:
         return service.places(from_id, to_id)
     except UnknownPoiError as exc:

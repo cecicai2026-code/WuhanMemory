@@ -189,3 +189,37 @@
     min-height: 72px;
   }
 }
+
+/* 中英双语：英文的幕名（"Scene 04 — The Paper"）比中文长，手机上放不下时左上角截断，菜单和语言铭牌不被挤出屏幕 */
+@media (max-width: 733px) {
+  .top {
+    gap: 10px;
+  }
+  /* 右边（计数、语言铭牌、菜单）按内容宽度排，计数最多四成宽、可以两行（地图工作台的"模型 · 校验"要看得到）；
+     装饰性的幕名让位，放不下就省略 */
+  .top > span:first-child {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topRight {
+    flex: none;
+    gap: 8px;
+  }
+  .count {
+    max-width: 40vw;
+  }
+  .menuWord {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .menuButton {
+    min-width: 44px;
+    justify-content: center;
+  }
+}

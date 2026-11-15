@@ -23,6 +23,16 @@ def _json(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, default=str)
 
 
+def language_rule() -> str:
+    """当前语言是英文时加在系统提示词后面：模型写给人看的字段用英文（中英双语，app/core/lang.py）。
+    规则本身仍用中文写，两个模型看到的是同一套规则，只多这一句。"""
+    from app.core.lang import current_lang
+
+    if current_lang() != "en":
+        return ""
+    return "\n\n语言：用户用的是英文网站。title、theme、reason 一律用英文写（景点名可以用候选清单里给的名字）。"
+
+
 # ---------- 抽偏好 ----------
 
 EXTRACT_SYSTEM = f"""你是武汉旅行规划助手的"需求理解"环节。你的任务只有一个：从用户的话里抽出旅行偏好，填进固定的 JSON 结构。

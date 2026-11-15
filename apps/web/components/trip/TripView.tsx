@@ -7,10 +7,20 @@ import { MapPanel } from "@/app/map/MapPanel";
 import { Paper, PaperMark, PaperTitle, Soft } from "@/components/ui";
 import { cityDate } from "@/lib/dates";
 import { itineraryPins, itineraryRoutes, type ShownDay } from "@/lib/itinerary-map";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT, modelName } from "@/lib/i18n";
 import s from "./trip.module.css";
 
-const EMPHASIS_TEXT: Record<string, string> = { classic: "经典必去", relaxed: "轻松少走路", culture: "深度文化" };
-const PACE_TEXT: Record<string, string> = { relaxed: "轻松", moderate: "适中", intensive: "紧凑" };
+const EMPHASIS_TEXT: Record<string, { zh: string; en: string }> = {
+  classic: { zh: "经典必去", en: "The classics" },
+  relaxed: { zh: "轻松少走路", en: "Easy, less walking" },
+  culture: { zh: "深度文化", en: "Deep culture" },
+};
+const PACE_TEXT: Record<string, { zh: string; en: string }> = {
+  relaxed: { zh: "轻松", en: "relaxed" },
+  moderate: { zh: "适中", en: "moderate" },
+  intensive: { zh: "紧凑", en: "packed" },
+};
 
 interface Props {
   version: ItineraryVersion;
@@ -32,40 +42,46 @@ export function TripView({ version: v, mark, note, actions }: Props) {
   const [shownDay, setShownDay] = useState<ShownDay>(v.days[0]?.dayNumber ?? null);
   const routes = useMemo(() => itineraryRoutes(v, shownDay), [v, shownDay]);
   const pins = useMemo(() => itineraryPins(v, shownDay), [v, shownDay]);
-  const start = v.frame.startDate ? v.frame.startDate.replaceAll("-", ".") : "日期未定";
+  const lang = useLang();
+  const t = makeT(lang);
+  const start = v.frame.startDate ? v.frame.startDate.replaceAll("-", ".") : t("日期未定", "date not set");
+  const emphasis = v.emphasis ? EMPHASIS_TEXT[v.emphasis] : undefined;
+  const pace = PACE_TEXT[v.frame.pace];
   const facts = [
-    `${v.frame.days} 天`,
-    v.frame.startDate ? `${start} 出发` : start,
-    v.emphasis ? EMPHASIS_TEXT[v.emphasis] ?? v.emphasis : null,
-    `节奏${PACE_TEXT[v.frame.pace] ?? v.frame.pace}`,
+    t(`${v.frame.days} 天`, `${v.frame.days} days`),
+    v.frame.startDate ? t(`${start} 出发`, `from ${start}`) : start,
+    v.emphasis ? (emphasis ? t(emphasis.zh, emphasis.en) : v.emphasis) : null,
+    pace ? t(`节奏${pace.zh}`, `${pace.en} pace`) : t(`节奏${v.frame.pace}`, `pace: ${v.frame.pace}`),
   ].filter(Boolean);
 
   return (
     <div className={s.view}>
-      <Paper as="section" className={s.postcard} aria-label="行程明信片">
+      <Paper as="section" className={s.postcard} aria-label={t("行程明信片", "Trip postcard")}>
         <div className={s.postcardText}>
           <PaperMark>{mark}</PaperMark>
-          <PaperTitle>{v.validation.status === "failed" ? "这份行程没通过校验" : v.title}</PaperTitle>
+          <PaperTitle>{v.validation.status === "failed" ? t("这份行程没通过校验", "This trip didn't pass the checks") : v.title}</PaperTitle>
           <p className={s.facts}>{facts.join(" · ")}</p>
           <p className={s.by}>
-            由 {v.planner.providerLabel}
-            {v.planner.model ? `（${v.planner.model}）` : ""}排，程序查交通、推钟点并校验
+            {t(
+              `由 ${v.planner.providerLabel}${v.planner.model ? `（${v.planner.model}）` : ""}排，程序查交通、推钟点并校验`,
+              `Planned by ${modelName(v.planner.providerLabel, lang)}${v.planner.model ? ` (${v.planner.model})` : ""}; the program looked up transport, worked out the times and ran the checks`
+            )}
           </p>
           <Soft className={s.note}>{note}</Soft>
           {actions ? <div className={s.actions}>{actions}</div> : null}
         </div>
-        <div className={s.postmark} aria-label={`生成于 ${cityDate(v.createdAt)}`}>
-          <span>武汉</span>
+        <div className={s.postmark} aria-label={t(`生成于 ${cityDate(v.createdAt)}`, `Made ${cityDate(v.createdAt)}`)}>
+          <span>{t("武汉", "WUHAN")}</span>
           <strong>{cityDate(v.createdAt)}</strong>
-          <span>第 {v.versionNumber} 版</span>
+          <span>{t(`第 ${v.versionNumber} 版`, `Ver. ${v.versionNumber}`)}</span>
         </div>
       </Paper>
 
       <div className={s.body}>
-        <section className={s.mapBox} aria-label="地图">
+        <section className={s.mapBox} aria-label={t("地图", "Map")}>
           <MapPanel pois={[]} poisError={null} routes={routes} pins={pins} />
         </section>
-        <section className={s.cards} aria-label="逐日行程">
+        <section className={s.cards} aria-label={t("逐日行程", "Day by day")}>
           <ItineraryCards version={v} loading={false} error={null} shownDay={shownDay} onShowDay={setShownDay} />
         </section>
       </div>

@@ -22,7 +22,9 @@ from typing import Literal
 from app.schemas.planning import PlanDraft, TripFrame, ValidationIssue, ValidationReport
 from app.schemas.poi import PoiFile
 from app.schemas.route import RouteOut
+from app.core.lang import L
 from app.services.planning.candidates import Candidates
+from app.services.poi_i18n import display_name
 from app.services.planning.validate import fmt, parse_hhmm
 
 EmphasisId = Literal["classic", "relaxed", "culture"]
@@ -38,15 +40,22 @@ RELAXED_WALK_MAX_MINUTES = 10
 @dataclass(frozen=True)
 class Emphasis:
     id: EmphasisId
-    label: str
+    label_zh: str
+    label_en: str
     # 给模型看的这份方案的要求
     prompt: str
+
+    @property
+    def label(self) -> str:
+        """当前语言的名称（中英双语，app/core/lang.py）"""
+        return L(self.label_zh, self.label_en)
 
 
 EMPHASES: dict[str, Emphasis] = {
     "classic": Emphasis(
         id="classic",
-        label="经典必去",
+        label_zh="经典必去",
+        label_en="The classics",
         prompt=(
             "这份方案的侧重是「经典必去」：第一次来武汉最该看的地方。标了 mustVisit 的景点一个都不能少；"
             "没标 mustVisit 的 5A 景点（tags 里有 5A）排得下就排，排不下可以不去；其余按顺路程度补充。"
@@ -54,7 +63,8 @@ EMPHASES: dict[str, Emphasis] = {
     ),
     "relaxed": Emphasis(
         id="relaxed",
-        label="轻松少走路",
+        label_zh="轻松少走路",
+        label_en="Easy, less walking",
         prompt=(
             f"这份方案的侧重是「轻松少走路」：每天最多 {RELAXED_MAX_STOPS} 站；每天 {fmt(RELAXED_LATEST_END)} 之前离开最后一站；"
             f"同一天的景点要挨得近，站与站之间步行加起来不超过 {RELAXED_WALK_METERS // 1000} 公里（程序会用高德查，含地铁换乘和进出站的步行）；"
@@ -63,7 +73,8 @@ EMPHASES: dict[str, Emphasis] = {
     ),
     "culture": Emphasis(
         id="culture",
-        label="深度文化",
+        label_zh="深度文化",
+        label_en="Deep culture",
         prompt=(
             "这份方案的侧重是「深度文化」：候选只有历史文化类的景点。每个景点停留时间不能少于它的 recommendedDurationMinutes"
             "（写\"未知\"的按景点类型估计，宁长勿短）；可以少排几站，把时间留给看得细。"
@@ -122,7 +133,7 @@ def check_emphasis(
 ) -> list[ValidationIssue]:
     """侧重的额外规则。不满足的是错误（交给模型修正）；没法判断的是警告。通用的规则在 validate_itinerary 里。"""
     del frame  # 轻松的节奏上限由 emphasis_frame 改了 frame，validate_itinerary 会按它查
-    tag = f"（{emphasis.label}）"
+    tag = L(f"（{emphasis.label}）", f"({emphasis.label}) ")
     out: list[ValidationIssue] = []
     pois = candidates.pois
 
@@ -138,21 +149,39 @@ def check_emphasis(
             if FIVE_A_TAG not in poi.tags or pid in used:
                 continue
             if pid in candidates.must_visit:
-                err("emphasis-must-5a", f"5A 景点{poi.name}没有排进去，这份方案要求 5A 景点都去。", poiId=pid)
+                err(
+                    "emphasis-must-5a",
+                    L(f"5A 景点{poi.name}没有排进去，这份方案要求 5A 景点都去。", f"The 5A site {display_name(poi)} isn't in the plan; this plan requires every 5A site."),
+                    poiId=pid,
+                )
             else:
                 # 用户点名了必去的景点，5A 就不强求（2026-11-15 Cecilia 定，评测 r07）
-                warn("emphasis-5a-skipped", f"5A 景点{poi.name}没有排进去。你点名了必去的景点，所以 5A 排不下时可以不去。", poiId=pid)
+                warn(
+                    "emphasis-5a-skipped",
+                    L(
+                        f"5A 景点{poi.name}没有排进去。你点名了必去的景点，所以 5A 排不下时可以不去。",
+                        f"The 5A site {display_name(poi)} isn't in the plan. You named must-see places, so 5A sites can be dropped when they don't fit.",
+                    ),
+                    poiId=pid,
+                )
 
     elif emphasis.id == "relaxed":
         for day in draft.days:
             d = day.dayNumber
             if len(day.stops) > RELAXED_MAX_STOPS:
-                err("emphasis-too-many-stops", f"第 {d} 天排了 {len(day.stops)} 站，这份方案每天最多 {RELAXED_MAX_STOPS} 站。", dayNumber=d)
+                err(
+                    "emphasis-too-many-stops",
+                    L(f"第 {d} 天排了 {len(day.stops)} 站，这份方案每天最多 {RELAXED_MAX_STOPS} 站。", f"Day {d} has {len(day.stops)} stops; this plan allows at most {RELAXED_MAX_STOPS} a day."),
+                    dayNumber=d,
+                )
             leaves = [t for t in (parse_hhmm(s.leave) for s in day.stops) if t is not None]
             if leaves and max(leaves) > RELAXED_LATEST_END:
                 err(
                     "emphasis-ends-late",
-                    f"第 {d} 天 {fmt(max(leaves))} 才离开最后一站，这份方案要在 {fmt(RELAXED_LATEST_END)} 之前结束。",
+                    L(
+                        f"第 {d} 天 {fmt(max(leaves))} 才离开最后一站，这份方案要在 {fmt(RELAXED_LATEST_END)} 之前结束。",
+                        f"Day {d} leaves the last stop at {fmt(max(leaves))}; this plan must finish before {fmt(RELAXED_LATEST_END)}.",
+                    ),
                     dayNumber=d,
                 )
             total = 0
@@ -168,13 +197,19 @@ def check_emphasis(
             if total > RELAXED_WALK_METERS:
                 err(
                     "emphasis-walk-too-far",
-                    f"第 {d} 天站与站之间要走 {total} 米（含地铁换乘和进出站），这份方案每天不超过 {RELAXED_WALK_METERS} 米。",
+                    L(
+                        f"第 {d} 天站与站之间要走 {total} 米（含地铁换乘和进出站），这份方案每天不超过 {RELAXED_WALK_METERS} 米。",
+                        f"Day {d} needs {total} m of walking between stops (including metro transfers and station walks); this plan allows at most {RELAXED_WALK_METERS} m a day.",
+                    ),
                     dayNumber=d,
                 )
             elif unknown:
                 warn(
                     "emphasis-walk-unknown",
-                    f"第 {d} 天有 {unknown} 段不知道要走多远，没法确认步行在 {RELAXED_WALK_METERS} 米以内（已知的 {total} 米）。",
+                    L(
+                        f"第 {d} 天有 {unknown} 段不知道要走多远，没法确认步行在 {RELAXED_WALK_METERS} 米以内（已知的 {total} 米）。",
+                        f"On day {d} the walking distance of {unknown} legs is unknown, so it can't be confirmed to be within {RELAXED_WALK_METERS} m ({total} m known).",
+                    ),
                     dayNumber=d,
                 )
 
@@ -192,7 +227,10 @@ def check_emphasis(
                 if b - a < rec:
                     err(
                         "emphasis-stay-short",
-                        f"第 {day.dayNumber} 天{poi.name}只停留 {b - a} 分钟，这份方案每站不少于建议游玩的 {rec} 分钟。",
+                        L(
+                            f"第 {day.dayNumber} 天{poi.name}只停留 {b - a} 分钟，这份方案每站不少于建议游玩的 {rec} 分钟。",
+                            f"Only {b - a} minutes at {display_name(poi)} on day {day.dayNumber}; this plan needs at least the suggested {rec} minutes at each stop.",
+                        ),
                         dayNumber=day.dayNumber,
                         poiId=s.poiId,
                     )

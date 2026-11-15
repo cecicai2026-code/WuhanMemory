@@ -4,7 +4,7 @@
 1. 每个景点必须有坐标（在武汉范围内）和记录在案的来源；
 2. 会变的信息必须有核实日期和过期日期，过期了要报出来；
 3. 每条信息要说明是实地核实、核对过来源、官网占位还是 TODO。
-另外检查照片文件在不在。
+另外检查照片文件在不在，以及 data/pois/en/ 里的英文译文是否跟得上中文资料（中英双语，见 app/services/poi_i18n.py）。
 
 问题分两级：
 - error：数据不合格，不能导入数据库；
@@ -438,4 +438,54 @@ def check_data_dir(data_dir: Path, today: date) -> CheckReport:
                 )
             seen[poi_id] = path.name
 
+    check_translations(data_dir, report)
     return report
+
+
+def check_translations(data_dir: Path, report: CheckReport) -> None:
+    """英文译文（data/pois/en/）。都是 warning：译文对不上时界面显示中文，不影响导入。"""
+    # 放在这里 import，免得 app.services 反过来依赖数据检查时出现循环引用
+    from app.services.poi_i18n import TRANSLATABLE, apply_translation, load_translation, translations_dir
+
+    d = translations_dir(data_dir)
+    if not d.is_dir():
+        return
+    by_id = {p.id: p for p in report.pois}
+    for path in sorted(d.glob("*.json")):
+        try:
+            t = load_translation(path)
+        except (json.JSONDecodeError, KeyError, AttributeError) as err:
+            report.issues.append(Issue("warning", "translation-bad-file", path.stem, "", f"译文文件读不出来：{err}"))
+            continue
+        poi = by_id.get(t.poi_id)
+        if poi is None:
+            report.issues.append(
+                Issue("warning", "translation-orphan", t.poi_id, "", f"en/{path.name} 对应的景点不存在或没通过检查")
+            )
+            continue
+        unknown = sorted(k for k in t.texts if not TRANSLATABLE.match(k))
+        if unknown:
+            report.issues.append(
+                Issue("warning", "translation-unknown-field", poi.id, "", f"译文里有不需要翻译的位置：{'、'.join(unknown)}")
+            )
+        result = apply_translation(poi, t)
+        if result.stale:
+            report.issues.append(
+                Issue(
+                    "warning",
+                    "translation-stale",
+                    poi.id,
+                    "",
+                    f"中文资料改过，这 {len(result.stale)} 条英文译文作废了（英文版显示中文），要重新翻译：{'、'.join(result.stale)}",
+                )
+            )
+        if result.missing:
+            report.issues.append(
+                Issue(
+                    "warning",
+                    "translation-missing",
+                    poi.id,
+                    "",
+                    f"这 {len(result.missing)} 条还没有英文译文（英文版显示中文）：{'、'.join(result.missing)}",
+                )
+            )

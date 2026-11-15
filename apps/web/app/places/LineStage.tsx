@@ -15,6 +15,7 @@ import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { LineData } from "@/lib/scene3d/data";
 import { pad2 } from "@/lib/places";
+import { makeT } from "@/lib/i18n";
 import { Grain, typingInto, useSlideTitle } from "@/components/stage/StageBits";
 import s from "@/components/stage/stage.module.css";
 
@@ -27,6 +28,7 @@ function linkTarget(el: EventTarget | null): { id: string; topic: string | null 
 }
 
 export function LineStage({ data }: { data: LineData }) {
+  const t = makeT(data.lang);
   const stage = useStage();
   const st = useStageState();
   const on = stage?.mode === "on" && st?.kind === "line";
@@ -112,7 +114,7 @@ export function LineStage({ data }: { data: LineData }) {
             <div className={s.vignette} aria-hidden="true" data-entering={entering || undefined} />
             <Grain />
             <div className={s.head} aria-hidden="true" data-entering={entering || undefined}>
-              <div className={s.no}>{shownPrint ? `第 ${pad2(shownPrint.no)} 张 / ${pad2(n)}` : ""}</div>
+              <div className={s.no}>{shownPrint ? t(`第 ${pad2(shownPrint.no)} 张 / ${pad2(n)}`, `Print ${pad2(shownPrint.no)} / ${pad2(n)}`) : ""}</div>
               <div className={s.title}>
                 <span className={title.className}>{shownPrint?.name}</span>
               </div>
@@ -120,12 +122,12 @@ export function LineStage({ data }: { data: LineData }) {
                 {showingCurrent ? data.sub : shownPrint?.district}
                 {shownPrint?.credit && <span className={s.credit}>{shownPrint.credit}</span>}
               </div>
-              {showingCurrent && current?.closed && <div className={s.closedStamp}>暂停开放</div>}
+              {showingCurrent && current?.closed && <div className={s.closedStamp}>{t("暂停开放", "Temporarily closed")}</div>}
             </div>
             <button
               type="button"
               className={`${s.btn} ${s.prev} ${s.side}`}
-              aria-label="上一个景点"
+              aria-label={t("上一个景点", "Previous place")}
               disabled={sel <= 0}
               data-entering={entering || undefined}
               onClick={() => stage?.command({ type: "step", dir: -1 })}
@@ -137,7 +139,7 @@ export function LineStage({ data }: { data: LineData }) {
             <button
               type="button"
               className={`${s.btn} ${s.next} ${s.side}`}
-              aria-label="下一个景点"
+              aria-label={t("下一个景点", "Next place")}
               disabled={sel >= n - 1}
               data-entering={entering || undefined}
               onClick={() => stage?.command({ type: "step", dir: 1 })}
@@ -148,14 +150,14 @@ export function LineStage({ data }: { data: LineData }) {
             </button>
             {/* 主题卡抬起来时提示字隐去（样片的做法），免得压在卡上 */}
             <div className={s.hint} aria-hidden="true" data-entering={entering || hoveredTopic ? true : undefined}>
-              显影盘 · 选一个主题
+              {t("显影盘 · 选一个主题", "Developing tray · pick a topic")}
             </div>
             <div className={s.enter} aria-hidden="true" data-entering={entering || undefined}>
               <div className={s.enterName}>
                 {current?.name}
                 {hoveredTopic && ` · ${hoveredTopic.name}`}
               </div>
-              <div className={s.enterSub}>进入纸页</div>
+              <div className={s.enterSub}>{t("进入纸页", "To the paper")}</div>
             </div>
             <div className={s.curtain} aria-hidden="true" data-entering={entering || undefined} />
           </div>,

@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from app.db.sqlite import connect, init_schema
 from app.schemas.comparison import ModelComparison, ModelComparisonData, ModelComparisonSummary, SideBrief
+from app.services.planning.emphasis import EMPHASES
 
 
 class ModelComparisonRepository(Protocol):
@@ -25,7 +26,8 @@ def summary_of(c: ModelComparison) -> ModelComparisonSummary:
         id=c.id,
         createdAt=c.createdAt,
         request=c.request,
-        emphasisLabel=c.emphasisLabel,
+        # 侧重名按当前请求的语言（中英双语）；认不出的侧重用存下来的名字
+        emphasisLabel=EMPHASES[c.emphasis].label if c.emphasis in EMPHASES else c.emphasisLabel,
         evalRequestId=c.evalRequestId,
         sides=[
             SideBrief(

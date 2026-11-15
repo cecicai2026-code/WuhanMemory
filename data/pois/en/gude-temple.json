@@ -1,0 +1,211 @@
+{
+  "id": "gude-temple",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "古德寺",
+      "en": "Gude Temple"
+    },
+    "district": {
+      "zh": "江岸区",
+      "en": "Jiang'an District"
+    },
+    "tags.0": {
+      "zh": "寺庙",
+      "en": "Temple"
+    },
+    "tags.1": {
+      "zh": "近代建筑",
+      "en": "Modern-era architecture"
+    },
+    "tags.2": {
+      "zh": "拍照",
+      "en": "Photography"
+    },
+    "tags.3": {
+      "zh": "小众",
+      "en": "Off the beaten path"
+    },
+    "operatingStatus.value.note": {
+      "zh": "2026 年 7 月 13 日起对圆通宝殿实施全封闭打围施工，预计工期 5 个月；修缮期间寺院关闭网络预约系统并暂停售票。",
+      "en": "From 13 July 2026 the Yuantong Hall has been fully fenced off for construction, expected to take five months; during the repairs the temple has closed its online booking system and stopped selling tickets."
+    },
+    "operatingStatus.value.reopenNote": {
+      "zh": "同程景区页标注「12 月 14 日开园」，不是寺方公告",
+      "en": "The LY.com (Tongcheng) scenic-area page says \"opens 14 December\"; this is not a notice from the temple"
+    },
+    "address.value": {
+      "zh": "武汉市江岸区工农兵路24号（同程景区页另载「黄浦大街上滑坡路74号」，两说并存；导航搜「古德寺」即可）",
+      "en": "No. 24 Gongnongbing Road, Jiang'an District, Wuhan (the LY.com page also lists \"No. 74 Shangpo Road, Huangpu Street\"; both addresses are in use; navigating to \"Gude Temple\" works)"
+    },
+    "intro.value": {
+      "zh": "藏在汉口老居民区里的一座百年寺庙，圆通宝殿把哥特尖拱、罗马柱、拜占庭穹顶和东南亚佛塔揉在一起，被称为「汉传佛寺第一奇观」。但要注意：2026 年 7 月起圆通宝殿封闭修缮，目前暂停售票、关闭预约系统。",
+      "en": "A century-old temple tucked into an old Hankou residential neighbourhood. Its Yuantong Hall blends Gothic pointed arches, Roman columns, Byzantine domes and Southeast Asian stupas, and is called \"the greatest wonder among Han Buddhist temples\". Note, though: since July 2026 the Yuantong Hall has been closed for repairs, and ticket sales and the booking system are currently suspended."
+    },
+    "history.value": {
+      "zh": "古德寺始建于清光绪三年（1877 年），初名「古德茅篷」，后由黎元洪题名「古德寺」。核心建筑圆通宝殿仿缅甸阿难陀寺建造，融合哥特式尖拱与玫瑰窗、罗马式方柱、拜占庭式穹顶和九座东南亚风格佛塔，殿顶「七显二隐」——平视任何角度只看得到七座塔。寺内供奉 1997 年由泰国请来的四面佛。现为全国重点文物保护单位，也是比丘尼修行道场。",
+      "en": "Gude Temple was founded in the third year of the Guangxu reign of the Qing dynasty (1877). It was first called the \"Gude Thatched Hut\" and was later given the name \"Gude Temple\" by Li Yuanhong. Its main building, the Yuantong Hall, was modelled on the Ananda Temple in Myanmar and combines Gothic pointed arches and rose windows, Roman square columns, Byzantine domes and nine Southeast Asian-style stupas. The roof is \"seven seen, two hidden\": from any angle at eye level you can see only seven stupas. The temple houses a Four-Faced Buddha brought from Thailand in 1997. It is now a Major Historical and Cultural Site Protected at the National Level and a practice centre for Buddhist nuns."
+    },
+    "openingHours.value.note": {
+      "zh": "恢复后参考口径：夏季（5—10 月）8:00—17:30，冬季（11—4 月）8:30—16:30，17:00 停止入场。当前暂停开放，恢复后以寺方公告为准。",
+      "en": "Reference hours after reopening: summer (May–October) 8:00–17:30, winter (November–April) 8:30–16:30, entry stops at 17:00. Currently closed; after reopening, follow the temple's announcements."
+    },
+    "ticket.value.items.0.name": {
+      "zh": "成人票（修缮前的价格）",
+      "en": "Adult ticket (price before the repairs)"
+    },
+    "ticket.value.note": {
+      "zh": "优惠：未查到公开的优惠票价格与适用条件；寺方仅公示成人票 13 元及免票对象，学生是否优惠未见说明，按成人票计。 免票：现役军人、退役军人、65 周岁（含）以上老人、残疾人、1.2 米（含）以下儿童，凭有效证件免票。 当前暂停售票，票价 13 元为修缮前执行价，恢复后可能调整。",
+      "en": "Concessions: no public concession prices or conditions found; the temple lists only the ¥13 adult ticket and who enters free. Whether students get a discount isn't stated, so the adult price is assumed. Free: active military, veterans, people aged 65 and over, people with disabilities, and children 1.2 m tall or under, with valid ID. Ticket sales are currently suspended; ¥13 was the price before the repairs and may change after reopening."
+    },
+    "reservation.value.how": {
+      "zh": "「汉口古德寺」官方微信公众号",
+      "en": "The official \"Hankou Gude Temple\" WeChat account"
+    },
+    "reservation.value.note": {
+      "zh": "恢复后需提前预约：2026 年 4 月 28 日起不再售卖当日票，需提前一天在「汉口古德寺」官方微信公众号预约；节假日也可能通过同程小程序分场次预订。当前预约系统已关闭。",
+      "en": "Booking ahead will be needed after reopening: from 28 April 2026 same-day tickets are no longer sold, and you book a day ahead on the official \"Hankou Gude Temple\" WeChat account; on holidays, timed slots may also be booked through the Tongcheng mini-program. The booking system is currently closed."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "头道街",
+      "en": "Toudaojie"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "1 号线",
+      "en": "Line 1"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "C",
+      "en": "C"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "罗家庄",
+      "en": "Luojiazhuang"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "3 号线",
+      "en": "Line 3"
+    },
+    "transport.value.metro.1.exit": {
+      "zh": "B",
+      "en": "B"
+    },
+    "transport.value.note": {
+      "zh": "地铁 1 号线「头道街」站 C 口出，或 3 号线「罗家庄」站 B 口出，步行到达（具体分钟数未核实）。公交 30、346、D112、电 3 至「工农兵路古德寺」站，下车步行约 260 米。无停车位，不建议自驾。",
+      "en": "Metro Line 1, Toudaojie station, exit C, or Line 3, Luojiazhuang station, exit B, then walk (walking time not checked). Buses 30, 346, D112 and Trolleybus 3 to the Gongnongbing Road Gude Temple stop, then about 260 m on foot. No parking; driving is not advised."
+    },
+    "bestTime.value": {
+      "zh": "工作日上午人少光好；寺庙场合需着装整齐，过于暴露谢绝入内。",
+      "en": "Weekday mornings have fewer people and good light; it is a temple, so dress neatly—overly revealing clothing will be turned away."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "观音殿二楼拱门",
+      "en": "Arch on the first floor of the Guanyin Hall"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "圆通宝殿旁观音殿，上二楼走廊。以拱门为前景框住廊台与庭院，公认最出片机位",
+      "en": "In the Guanyin Hall beside the Yuantong Hall, up to the first-floor corridor. Use the arch as a foreground frame for the gallery and courtyard; widely seen as the best photo spot."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "圆通宝殿正面",
+      "en": "Front of the Yuantong Hall"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "寺内广场。中轴正拍哥特式立面与九塔；当前围蔽施工，无法拍摄",
+      "en": "On the temple square. Shoot straight down the central axis to get the Gothic façade and the nine stupas; currently fenced off for construction, so it can't be photographed."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "天王殿",
+      "en": "Hall of the Heavenly Kings"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "圆通宝殿前。白墙黛瓦马头墙的徽派立面，适合竖构图",
+      "en": "In front of the Yuantong Hall. A Huizhou-style façade of white walls, dark tiles and horse-head gables; suits a vertical frame."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "广场鸽群",
+      "en": "Pigeons on the square"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "寺内广场。低机位与鸽群互动抓拍，背景带到殿顶塔尖",
+      "en": "On the temple square. Shoot low for candid shots with the pigeons, with the stupa tips on the hall roof in the background."
+    },
+    "food.0.value.name": {
+      "zh": "为群社区过早街",
+      "en": "Weiqun Community breakfast street"
+    },
+    "food.0.value.note": {
+      "zh": "寺旁老社区里的早点摊，热干面、面窝、豆皮",
+      "en": "Breakfast stalls in the old neighbourhood next to the temple: hot dry noodles, mianwo (fried rice-batter rings), doupi (sticky rice in tofu skin)."
+    },
+    "food.1.value.name": {
+      "zh": "汉味小镇",
+      "en": "Hanwei Xiaozhen"
+    },
+    "food.1.value.note": {
+      "zh": "附近湖北菜馆，步行距离未核实",
+      "en": "A Hubei restaurant nearby; walking distance not checked."
+    },
+    "photos.0.caption": {
+      "zh": "圆通宝殿正面",
+      "en": "Front of the Yuantong Hall"
+    },
+    "photos.0.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：图虫创意（EXIF 显示 2018-09-21 摄，圆通宝殿正面）。付费图库，商用需购买授权。拍摄于 2026 年 7 月闭殿修缮之前。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (EXIF shows it was taken 2018-09-21; front of the Yuantong Hall). Paid stock library; commercial use requires a licence. Taken before the hall closed for repairs in July 2026. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "殿顶雕塑群",
+      "en": "Sculptures on the hall roof"
+    },
+    "photos.1.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：视觉中国 VCG（古德寺图集）。付费图库预览图，商用需购买授权。拍摄于 2026 年 7 月闭殿修缮之前。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Gude Temple gallery). Preview image from a paid stock library; commercial use requires a licence. Taken before the hall closed for repairs in July 2026. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "香炉上的鸽群",
+      "en": "Pigeons on the incense burner"
+    },
+    "photos.2.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：视觉中国 VCG（古德寺图集）。付费图库预览图，商用需购买授权。拍摄于 2026 年 7 月闭殿修缮之前。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Gude Temple gallery). Preview image from a paid stock library; commercial use requires a licence. Taken before the hall closed for repairs in July 2026. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "观音殿拱门",
+      "en": "Arch of the Guanyin Hall"
+    },
+    "photos.3.author": {
+      "zh": "携程 / 平台用户图",
+      "en": "Ctrip / user photo"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：携程景点页（古德寺-观音殿）。平台图，商用需授权。拍摄于 2026 年 7 月闭殿修缮之前。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Ctrip attraction page (Gude Temple – Guanyin Hall). Platform image; commercial use requires permission. Taken before the hall closed for repairs in July 2026. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "香炉与祈福带",
+      "en": "Incense burner and prayer ribbons"
+    },
+    "photos.4.author": {
+      "zh": "汇图网 / 供稿摄影师",
+      "en": "Huitu / contributing photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：汇图网（图库）。图库预览图，商用需购买授权。拍摄于 2026 年 7 月闭殿修缮之前。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Huitu (stock library). Preview image from a stock library; commercial use requires a licence. Taken before the hall closed for repairs in July 2026. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

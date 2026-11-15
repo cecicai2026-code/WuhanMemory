@@ -1,0 +1,79 @@
+/**
+ * 中英双语（2026-11-15，Cecilia 定：同一个网址，语言记在 cookie 里；第一次来按浏览器语言猜）。
+ *
+ * 写法：中英两句话写在一起，t("中文", "English")。不用"键名 → 字典"的方式，
+ * 是为了改文案时两种语言就在眼前，不会只改一边。
+ *
+ * 服务器组件用 lib/i18n-server.ts 的 getT()；浏览器组件用 components/i18n/LangProvider.tsx 的 useT()。
+ * 这个文件两边都能用，不引用任何只在一边才有的东西。
+ */
+export type Lang = "zh" | "en";
+
+export const LANGS: Lang[] = ["zh", "en"];
+export const LANG_COOKIE = "wm-lang";
+/** cookie 保存一年 */
+export const LANG_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+export function isLang(v: unknown): v is Lang {
+  return v === "zh" || v === "en";
+}
+
+/**
+ * 决定用哪种语言：用户点过切换（cookie）就听用户的；
+ * 没点过就看浏览器的首选语言，首选是中文显示中文，其他显示英文；什么都没有时用中文。
+ */
+export function pickLang(cookie: string | undefined | null, acceptLanguage: string | undefined | null): Lang {
+  if (isLang(cookie)) return cookie;
+  const first = acceptLanguage?.split(",")[0]?.trim().toLowerCase();
+  if (!first) return "zh";
+  return first.startsWith("zh") ? "zh" : "en";
+}
+
+export type T = <A>(zh: A, en: A) => A;
+
+export function makeT(lang: Lang): T {
+  return (zh, en) => (lang === "en" ? en : zh);
+}
+
+/** <html lang> 的值 */
+export function htmlLang(lang: Lang): string {
+  return lang === "en" ? "en" : "zh-CN";
+}
+
+/**
+ * 模型的名字。后端给的是中文名（"通义千问""豆包"），存进行程和对比记录里的也是中文名，
+ * 所以在显示时按名字换成英文，旧记录也能换。不认识的名字原样显示。
+ */
+const MODEL_EN: Record<string, string> = { 通义千问: "Qwen", 千问: "Qwen", 豆包: "Doubao" };
+export function modelName(label: string, lang: Lang): string {
+  return lang === "en" ? (MODEL_EN[label] ?? label) : label;
+}
+
+/**
+ * 浏览器里不在 React 组件中的代码（例如 lib/planning-client.ts）取当前语言：看 <html lang>，
+ * LangProvider 切换语言时会改它。在服务器上调用时返回中文。
+ */
+export function browserLang(): Lang {
+  if (typeof document === "undefined") return "zh";
+  return document.documentElement.lang === "en" ? "en" : "zh";
+}
+
+/** 偏好里的兴趣是固定的中文代号（后端 interests.py 的 INTERESTS），显示时换成英文 */
+const INTEREST_EN: Record<string, string> = {
+  历史文化: "history & culture",
+  美食: "food",
+  自然风光: "nature",
+  城市漫步: "city walks",
+  老建筑: "old architecture",
+  博物馆: "museums",
+  夜景: "night views",
+  拍照: "photography",
+  寺庙: "temples",
+  大学校园: "university campuses",
+};
+export function interestName(code: string, lang: Lang): string {
+  return lang === "en" ? (INTEREST_EN[code] ?? code) : code;
+}
+
+/** 请求后端时带的语言头。后端按它写提示语、校验说明，规划时让模型用这种语言写理由 */
+export const LANG_HEADER = "X-Lang";

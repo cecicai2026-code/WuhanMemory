@@ -24,6 +24,8 @@ from app.services.planning import prompts
 from app.services.planning.emphasis import EMPHASES
 from app.services.planning.model_compare import call_stats, comparison_table, plan_diff, side_result
 from app.services.planning.pipeline import PlanningPipeline
+from app.core.lang import L
+from app.services.poi_i18n import display_name
 
 # 左边、右边。顺序固定，页面和汇总都按这个顺序
 DEFAULT_PROVIDERS: tuple[str, str] = ("qwen", "doubao")
@@ -59,7 +61,7 @@ class ModelComparer:
                 on_progress(provider, stage)
 
         if emphasis not in EMPHASES:
-            raise ValueError(f"没有这种侧重：{emphasis}")
+            raise ValueError(L(f"没有这种侧重：{emphasis}", f"No such emphasis: {emphasis}"))
         gateway = self.pipeline.gateway
         labels = {p.id: p.label for p in gateway.providers()}
 
@@ -82,13 +84,18 @@ class ModelComparer:
             extractor_calls = call_stats(calls)
         assert prefs is not None
         if prefs.days is None:
-            raise NeedsMoreInfo("请在请求里写明玩几天，例如「武汉两天」。对比页不反问，偏好要一次说清楚。")
+            raise NeedsMoreInfo(
+                L(
+                    "请在请求里写明玩几天，例如「武汉两天」。对比页不反问，偏好要一次说清楚。",
+                    "Please say how many days in the request, e.g. \"two days in Wuhan\". The comparison page doesn't ask follow-up questions, so give your preferences in one go.",
+                )
+            )
         if prefs.startDate is None and not prefs.dateUndecided:
             prefs = prefs.model_copy(update={"dateUndecided": True})
 
         library = self.pipeline.pois.list_pois()
         library_ids = {p.id for p in library}
-        names = {p.id: p.name for p in library}
+        names = {p.id: display_name(p) for p in library}
 
         # 给模型看的真实交通表先算一份，两边共用（板块 6B）：两边同时跑，各算各的话，
         # 后开始的一边可能读到先开始的一边刚查进缓存的路线，提示词就不一样了

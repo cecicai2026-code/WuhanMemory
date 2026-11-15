@@ -1,0 +1,223 @@
+{
+  "id": "jianghan-road",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "江汉路步行街",
+      "en": "Jianghan Road Pedestrian Street"
+    },
+    "district": {
+      "zh": "江汉区",
+      "en": "Jianghan District"
+    },
+    "tags.0": {
+      "zh": "商业街",
+      "en": "Shopping street"
+    },
+    "tags.1": {
+      "zh": "近代建筑",
+      "en": "Modern-era architecture"
+    },
+    "tags.2": {
+      "zh": "夜景",
+      "en": "Night views"
+    },
+    "tags.3": {
+      "zh": "购物",
+      "en": "Shopping"
+    },
+    "tags.4": {
+      "zh": "美食",
+      "en": "Food"
+    },
+    "tags.5": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "address.value": {
+      "zh": "武汉市江汉区江汉路（南起沿江大道江汉关，北至解放大道，全长约 1600 米）",
+      "en": "Jianghan Road, Jianghan District, Wuhan (from the Jianghan Customs House on Yanjiang Avenue in the south to Jiefang Avenue in the north, about 1,600 m long)"
+    },
+    "intro.value": {
+      "zh": "中国最长的步行街之一，也是「武汉二十世纪建筑博物馆」。沿街 13 栋近代优秀历史建筑，从江汉关钟楼一路走到解放大道，白天看建筑、晚上看霓虹。南端直连汉口江滩，逛完就能去看灯光秀。",
+      "en": "One of the longest pedestrian streets in China, and a \"museum of Wuhan's 20th-century architecture\". Thirteen outstanding modern-era historic buildings line the street, from the Jianghan Customs House clock tower all the way to Jiefang Avenue: architecture by day, neon by night. The south end connects directly to Hankou Riverside, so you can go on to the light show afterwards."
+    },
+    "history.value": {
+      "zh": "江汉路前身是明代形成的广利巷/广利街；1861 年英租界设立后拓宽改名太平路；1907 年花楼街口至循礼门的新路以富商刘歆生之名命名歆生路；1927 年国民政府收回英租界，合并太平路与歆生路，取江汉关「江汉」二字定名江汉路。2000 年 9 月 22 日改建为步行街开街，一度以 1210 米称「中国最长步行街」。现存 13 栋近代优秀历史建筑，涵盖欧陆、罗马、拜占庭、文艺复兴等风格。2021 年 7 月被商务部评为第二批「全国示范步行街」，是中部地区唯一一条。",
+      "en": "Jianghan Road began as Guangli Lane/Guangli Street, formed in the Ming dynasty. After the British Concession was set up in 1861 it was widened and renamed Taiping Road; in 1907 the new road from the Hualou Street junction to Xunlimen was named Xinsheng Road after the wealthy merchant Liu Xinsheng. In 1927 the Nationalist government took back the British Concession, merged Taiping Road and Xinsheng Road, and named it Jianghan Road after the \"Jianghan\" of the Jianghan Customs House. It reopened as a pedestrian street on 22 September 2000, and at 1,210 m was for a time called \"China's longest pedestrian street\". Thirteen outstanding modern-era historic buildings survive, in Continental European, Roman, Byzantine, Renaissance and other styles. In July 2021 the Ministry of Commerce named it one of the second batch of \"National Model Pedestrian Streets\", the only one in central China."
+    },
+    "openingHours.value.note": {
+      "zh": "街区全天开放、24 小时可通行；沿街商铺普遍 10:00—22:00；建筑亮灯约 19:30—22:30。",
+      "en": "The street is open all day and passable 24 hours; most shops open 10:00–22:00; the buildings are lit about 19:30–22:30."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用（开放式步行街）。 免票：全部游客免费进入。 江汉关博物馆免费但需线上预约、周一闭馆。",
+      "en": "Concessions: not applicable (open pedestrian street). Free: all visitors enter free. The Jianghan Customs House Museum is free but needs online booking and is closed on Mondays."
+    },
+    "reservation.value.note": {
+      "zh": "无需预约，街区自由通行。江汉关博物馆单独预约。",
+      "en": "No booking needed; the street is open to walk through. The Jianghan Customs House Museum is booked separately."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "江汉路",
+      "en": "Jianghan Road"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "2/6 号线",
+      "en": "Lines 2/6"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "C/H",
+      "en": "C/H"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "循礼门",
+      "en": "Xunlimen"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "1/2 号线",
+      "en": "Lines 1/2"
+    },
+    "transport.value.note": {
+      "zh": "地铁 2/6 号线「江汉路」站 C/H 口出站即达主街核心段；北端可乘 1/2 号线至「循礼门」站。公交 1、24、408 至「中山大道地铁江汉路」站。节假日单日客流可达 40—50 万人次，停车位极紧张，不建议自驾。",
+      "en": "Metro Lines 2/6, Jianghan Road station, exits C/H open right onto the core of the main street; for the north end take Lines 1/2 to Xunlimen station. Buses 1, 24, 408 to the Zhongshan Avenue Metro Jianghan Road stop. On holidays the street can see 400,000–500,000 people a day and parking is extremely tight, so driving isn't advised."
+    },
+    "bestTime.value": {
+      "zh": "16:00 之后到，先拍建筑街景，入夜看亮灯再觅食；周末与节假日人流大。",
+      "en": "Arrive after 16:00, photograph the buildings and street first, then watch the lights come on at nightfall before looking for food; weekends and holidays are crowded."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "江汉关钟楼",
+      "en": "Jianghan Customs House clock tower"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "步行街南端、沿江大道口。仰拍钟楼与背后高楼；整点报时前后拍，蓝调时刻灯光最匀",
+      "en": "At the south end of the pedestrian street, where it meets Yanjiang Avenue. Shoot up at the clock tower with the high-rises behind it; around the hourly chime, and in the blue hour when the lighting is most even."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "中心百货一带欧式立面",
+      "en": "European-style façades around Central Department Store"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "主街中段。贴墙仰拍檐口与柱式，或用橱窗做前景",
+      "en": "Midway along the main street. Shoot up close to the wall at the cornices and columns, or use the shop windows as a foreground."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "汉口水塔",
+      "en": "Hankou Water Tower"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "主街北段。红砖塔身与街景同框，适合竖构图",
+      "en": "At the north end of the main street. The red-brick tower and the street in one frame; suits a vertical shot."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "江汉村 / 上海邨里分",
+      "en": "Jianghan Village / Shanghai Village lanes (lifen)"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "步行街两侧巷内。石库门门头与弄堂纵深，人少",
+      "en": "In the lanes on either side of the pedestrian street. Shikumen gateways and the depth of the lanes; few people."
+    },
+    "food.0.value.name": {
+      "zh": "水塔美食街",
+      "en": "Water Tower food street"
+    },
+    "food.0.value.note": {
+      "zh": "步行街中段，本地小吃与网红店混合",
+      "en": "Midway along the pedestrian street; a mix of local snacks and trendy shops."
+    },
+    "food.1.value.name": {
+      "zh": "Happy 站台",
+      "en": "Happy Platform"
+    },
+    "food.1.value.note": {
+      "zh": "室内美食街，夏天避暑、排队店集中",
+      "en": "An indoor food street; cool in summer, with many places that draw queues."
+    },
+    "food.2.value.name": {
+      "zh": "老居巷汤包 / 芳芳牛杂",
+      "en": "Laojuxiang Soup Dumplings / Fangfang Beef Offal"
+    },
+    "food.2.value.note": {
+      "zh": "本地人常去的老店，蟹粉汤包、虎皮凤爪",
+      "en": "Old shops locals go to: crab soup dumplings, braised chicken feet."
+    },
+    "food.3.value.name": {
+      "zh": "吉庆街",
+      "en": "Jiqing Street"
+    },
+    "food.3.value.note": {
+      "zh": "夜市与汉味表演，从步行街步行约 15 分钟",
+      "en": "Night market and Wuhan-style performances; about 15 minutes on foot from the pedestrian street."
+    },
+    "photos.0.caption": {
+      "zh": "江汉关夜景",
+      "en": "The Jianghan Customs House at night"
+    },
+    "photos.0.author": {
+      "zh": "高德地图 / 原作者",
+      "en": "AMap / original author"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：高德地图「2025 状元榜·武汉景点」江汉关大楼页。平台图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: the Jianghan Customs House page in AMap's \"2025 Top List · Wuhan Attractions\". Platform image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "步行街夜景航拍（竖）",
+      "en": "Aerial view of the pedestrian street at night (vertical)"
+    },
+    "photos.1.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "步行街夜色（横）",
+      "en": "The pedestrian street at night (horizontal)"
+    },
+    "photos.2.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "夜游人潮",
+      "en": "Night crowds"
+    },
+    "photos.3.author": {
+      "zh": "网络图片站 / 原作者",
+      "en": "Web image site / original author"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：网络图片站（转载摄影作品）。来源为聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: a web image site (reposted photograph). The source is an aggregator; use with caution for commercial purposes. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "白天老建筑",
+      "en": "Old buildings by day"
+    },
+    "photos.4.author": {
+      "zh": "Dreamstime / 供稿摄影师",
+      "en": "Dreamstime / contributing photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：Dreamstime 图库。图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Dreamstime stock library. Preview image from a stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.5.caption": {
+      "zh": "江汉路步行街：街两边是带钟楼的老建筑，街上人很多。",
+      "en": "Jianghan Road Pedestrian Street: old buildings with clock towers on both sides and crowds on the street."
+    },
+    "photos.5.licenseNote": {
+      "zh": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.jianghan.gov.cn/mljh/jhfm/201802/W020200708646136225420.jpg（江汉区政府\"逛吃逛吃\"页面，介绍江汉路步行街那一段下的配图，没有图注）",
+      "en": "Official-site photo, used only as a placeholder; must be replaced before the site goes public. Image address: https://www.jianghan.gov.cn/mljh/jhfm/201802/W020200708646136225420.jpg (from the Jianghan District government \"Stroll and Eat\" page, under the section on Jianghan Road Pedestrian Street; no caption)"
+    }
+  }
+}

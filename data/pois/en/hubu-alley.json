@@ -1,0 +1,207 @@
+{
+  "id": "hubu-alley",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "户部巷",
+      "en": "Hubu Alley"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "小吃",
+      "en": "Snacks"
+    },
+    "tags.1": {
+      "zh": "过早",
+      "en": "Breakfast"
+    },
+    "tags.2": {
+      "zh": "烟火气",
+      "en": "Street life"
+    },
+    "tags.3": {
+      "zh": "夜景",
+      "en": "Night views"
+    },
+    "tags.4": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.5": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区司门口中华路街道解放路459号（巷口牌坊位于解放路一侧）",
+      "en": "No. 459 Jiefang Road, Zhonghualu Subdistrict, Simenkou, Wuchang District, Wuhan (the archway at the alley entrance is on the Jiefang Road side)"
+    },
+    "intro.value": {
+      "zh": "被称为「汉味小吃第一巷」，主巷约 150 米，从明代延续至今。热干面、糊汤粉、三鲜豆皮、面窝在这一条巷子里都能吃到。紧邻黄鹤楼与长江大桥，适合和黄鹤楼、汉阳门码头串成半天。",
+      "en": "Known as \"the first lane of Wuhan snacks\". The main alley is about 150 m long and dates back to the Ming dynasty. Hot dry noodles, hutang fen (rice noodles in fish soup), three-delicacy doupi and mianwo can all be had in this one alley. It's right next to Yellow Crane Tower and the Yangtze River Bridge, so it fits into half a day with the tower and Hanyangmen Pier."
+    },
+    "history.value": {
+      "zh": "户部巷形成于明代，清代因毗邻户部下属的藩台衙门而得名；明嘉靖年间《湖广图经志》地图上已标注此巷，至少有 400 多年历史。因紧靠码头，自古舟车络绎，以鲜、香、快、热的汉味小吃闻名，民间有「早尝户部巷，宵夜吉庆街」之说。2003 年起武昌区进行整体打造，经六次改造，由 147 米长、3 米宽、12 家经营户发展为 300 余户、特色美食过千种的街区，年均游客约 1800 万人次。",
+      "en": "Hubu Alley took shape in the Ming dynasty and got its name in the Qing dynasty from the provincial treasury office (under the Ministry of Revenue, the \"Hubu\") next door; the alley already appears on a map in the Jiajing-era Huguang Tujing Zhi, so it is at least 400 years old. Being close to the wharves, it has always been busy with boats and carts, and became famous for fresh, fragrant, fast and hot Wuhan snacks—locals say \"breakfast at Hubu Alley, late-night food on Jiqing Street\". From 2003 Wuchang District redeveloped it as a whole; after six rounds of renovation it grew from a lane 147 m long and 3 m wide with 12 businesses into a quarter of more than 300 businesses offering over a thousand local dishes, with about 18 million visitors a year."
+    },
+    "openingHours.value.note": {
+      "zh": "街区全天开放；商铺普遍 7:00—22:00 营业。高德 POI 标注为 08:00—18:00，与街区实际经营不符，采用「全天开放、商铺 7:00—22:00」口径。",
+      "en": "The quarter is open all day; most shops open 7:00–22:00. The AMap listing says 08:00–18:00, which doesn't match how the quarter actually operates, so \"open all day, shops 7:00–22:00\" is used."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用（开放式街区）。 免票：全部游客免费进入。 巷内消费为商铺自费项目。",
+      "en": "Concessions: not applicable (open street quarter). Free: all visitors enter free. Spending in the alley is at the shops."
+    },
+    "reservation.value.note": {
+      "zh": "无需预约，也不用买门票，开放式步行街区。",
+      "en": "No booking and no ticket needed; it's an open pedestrian quarter."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "司门口黄鹤楼",
+      "en": "Simenkou Yellow Crane Tower"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "5 号线",
+      "en": "Line 5"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "C",
+      "en": "C"
+    },
+    "transport.value.note": {
+      "zh": "地铁 5 号线「司门口黄鹤楼」站 C 口出，步行约 300 米到巷口北侧牌坊。公交 14、521、573 等至「民主路司门口」站。不建议自驾，老城区车位紧张、违停抓拍严格。",
+      "en": "Metro Line 5, Simenkou Yellow Crane Tower station, exit C, then about 300 m on foot to the archway on the north side of the alley entrance. Buses 14, 521, 573 and others to the Minzhu Road Simenkou stop. Driving isn't advised: parking in the old town is tight and illegal parking is strictly caught on camera."
+    },
+    "bestTime.value": {
+      "zh": "早上 7 点来「过早」，旅行团未到、不用排队；傍晚灯光亮起烟火气最足，可顺路去汉阳门码头看日落。",
+      "en": "Come at 7 a.m. for breakfast, before the tour groups arrive and without queues; in the late afternoon, when the lights come on, the street is at its liveliest, and you can walk on to Hanyangmen Pier for the sunset."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "户部巷大牌坊",
+      "en": "Main archway of Hubu Alley"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "解放路巷口。牌坊正面中轴对称，早晚人少时拍空镜；红灯笼与匾额同框",
+      "en": "At the alley entrance on Jiefang Road. Shoot the front of the archway symmetrically on the centre line; take empty shots early or late when it's quiet; get the red lanterns and the name board in one frame."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "巷内文化墙",
+      "en": "Culture wall in the alley"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "主巷中段。墙面画满武汉美食故事，侧光拍墙面纹理与人物剪影",
+      "en": "Midway along the main alley. The wall is covered in paintings of Wuhan food stories; use side light for the wall's texture and people's silhouettes."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "汉阳门码头日落",
+      "en": "Sunset at Hanyangmen Pier"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "巷口往西到江边，长江大桥武昌桥头下方。傍晚拍江面落日与大桥，蓝调时刻灯光刚亮最好",
+      "en": "West from the alley entrance to the river, below the Wuchang end of the Yangtze River Bridge. Shoot the sunset over the river and the bridge in the late afternoon; best in the blue hour, just as the lights come on."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "复古戏台",
+      "en": "Old-style opera stage"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "巷中段。偶有汉剧小段演出，拍台下看客与红灯笼",
+      "en": "Midway along the alley. There are occasional short Han opera performances; shoot the audience below and the red lanterns."
+    },
+    "food.0.value.name": {
+      "zh": "蔡林记热干面",
+      "en": "Cailinji Hot Dry Noodles"
+    },
+    "food.0.value.note": {
+      "zh": "巷内，芝麻酱用油泄开，全料热干面",
+      "en": "In the alley; the sesame paste is loosened with oil; hot dry noodles with all the toppings."
+    },
+    "food.1.value.name": {
+      "zh": "徐嫂糊汤粉",
+      "en": "Xu Sao Hutang Fen"
+    },
+    "food.1.value.note": {
+      "zh": "巷内，小鲫鱼熬汤配老油条",
+      "en": "In the alley; soup simmered from small crucian carp, served with old-style youtiao (fried dough sticks)."
+    },
+    "food.2.value.name": {
+      "zh": "三鲜豆皮 / 面窝 / 欢喜坨",
+      "en": "Three-delicacy doupi / mianwo / huanxi tuo"
+    },
+    "food.2.value.note": {
+      "zh": "巷内摊点，过早经典组合",
+      "en": "Stalls in the alley; the classic breakfast combination."
+    },
+    "food.3.value.name": {
+      "zh": "大成路、水陆街老店",
+      "en": "Old shops on Dacheng Road and Shuilu Street"
+    },
+    "food.3.value.note": {
+      "zh": "本地人更认的过早片区，多家老店只做上午，11 点前后打烊",
+      "en": "The breakfast area locals prefer; many old shops serve mornings only and close around 11."
+    },
+    "photos.0.caption": {
+      "zh": "户部巷牌坊",
+      "en": "The Hubu Alley archway"
+    },
+    "photos.0.author": {
+      "zh": "极目新闻",
+      "en": "Jimu News"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：极目新闻（户部巷牌坊与巷内人流）。新闻媒体图，商用需授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Jimu News (the Hubu Alley archway and crowds in the alley). News media image; commercial use requires permission. The image carries a watermark or stock-library badge. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "牌坊夜色与弯月",
+      "en": "The archway at night with a crescent moon"
+    },
+    "photos.1.author": {
+      "zh": "今日头条 / 摄影师",
+      "en": "Toutiao / photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：今日头条（摄影作品集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao (photography portfolio). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "巷内夜市",
+      "en": "Night market in the alley"
+    },
+    "photos.2.author": {
+      "zh": "网络图片站 / 原作者",
+      "en": "Web image site / original author"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：ecywang 图片站（转载）。来源为图片聚合站，商用需谨慎。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: the ecywang image site (reposted). The source is an image aggregator; use with caution for commercial purposes. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "蔡林记热干面（巷内）",
+      "en": "Cailinji hot dry noodles (in the alley)"
+    },
+    "photos.3.author": {
+      "zh": "携程用户 / UGC",
+      "en": "Ctrip user / UGC"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：携程用户点评图。UGC 图片，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: a Ctrip user review photo. User-generated image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "牌坊长曝光",
+      "en": "Long exposure of the archway"
+    },
+    "photos.4.author": {
+      "zh": "转载图虫创意 / 原作者",
+      "en": "Reposted from Tuchong Creative / original author"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：ichaxun 风景图片站（转载图虫创意）。付费图库预览图，商用需购买授权。图上带水印或图库角标。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: the ichaxun scenery image site (reposted from Tuchong Creative). Preview image from a paid stock library; commercial use requires a licence. The image carries a watermark or stock-library badge. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

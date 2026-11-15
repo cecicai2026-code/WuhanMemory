@@ -1,0 +1,243 @@
+{
+  "id": "wuhan-university",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "武汉大学",
+      "en": "Wuhan University"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "校园",
+      "en": "Campus"
+    },
+    "tags.1": {
+      "zh": "民国建筑",
+      "en": "Republican-era architecture"
+    },
+    "tags.2": {
+      "zh": "樱花",
+      "en": "Cherry blossoms"
+    },
+    "tags.3": {
+      "zh": "拍照",
+      "en": "Photography"
+    },
+    "tags.4": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.5": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区八一路299号（珞珈门）。社会公众步行入校走珞珈门或弘毅门。",
+      "en": "No. 299 Bayi Road, Wuchang District, Wuhan (Luojia Gate). Members of the public enter on foot through Luojia Gate or Hongyi Gate."
+    },
+    "intro.value": {
+      "zh": "被称为「中国最美大学」之一，环抱珞珈山、面向东湖。核心看点是老斋舍（樱花城堡）、樱顶老图书馆、行政楼与凌波门栈桥。2026 年 5 月 13 日起全面取消社会公众预约，带身份证就能进。",
+      "en": "Called one of \"China's most beautiful universities\", wrapped around Luojia Hill and facing East Lake. The highlights are the Old Dormitories (the \"Cherry Blossom Castle\"), the old library on Cherry Hill, the administration building and the Lingbo Gate pier. Since 13 May 2026, booking for the public has been dropped completely; just bring your ID card."
+    },
+    "history.value": {
+      "zh": "武大入校政策三年三步：2023 年 7 月启动预约制，仅周末及节假日开放；2024 年 9 月放宽为周末及节假日刷身份证入校；2026 年 5 月 13 日全面取消预约，工作日也开放。校园建筑以民国时期中西合璧风格为主，老斋舍 108 级青石台阶与拱窗、樱顶老图书馆的孔雀蓝琉璃瓦是标志。",
+      "en": "Wuhan University's entry policy changed in three steps over three years: in July 2023 it introduced booking, open only at weekends and on holidays; in September 2024 it relaxed this to entry with an ID card at weekends and on holidays; on 13 May 2026 it dropped booking altogether and opened on weekdays too. The campus buildings are mainly in the Republican-era blend of Chinese and Western styles; the 108 bluestone steps and arched windows of the Old Dormitories and the peacock-blue glazed tiles of the old library on Cherry Hill are its symbols."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用（无门票）。 免票：全部公众免费。 校内万林艺术博物馆免费（9:00—17:00，周一闭馆）。",
+      "en": "Concessions: not applicable (no ticket). Free: free for all members of the public. The Wanlin Art Museum on campus is free (9:00–17:00, closed Mondays)."
+    },
+    "reservation.value.note": {
+      "zh": "无需预约。凭本人身份证从珞珈门、弘毅门步行入校。注意两点：① 研学团队仍实行审批，工作日禁止入校，节假日及双休日审批入校，每日限额 2000 人，需提前 3—7 天向保卫部提交材料，从弘毅门核验进校；② 樱花季（3 月中旬—4 月上旬）可能临时恢复限流预约，以当年公告为准。",
+      "en": "No booking needed. Walk in through Luojia Gate or Hongyi Gate with your own ID card. Two things to note: (1) study-tour groups still need approval—they may not enter on weekdays, may enter with approval on holidays and weekends, are limited to 2,000 people a day, must submit documents to the Security Department 3–7 days ahead, and are checked in at Hongyi Gate; (2) in cherry-blossom season (mid-March to early April) visitor limits and booking may temporarily return; follow that year's announcement."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "街道口",
+      "en": "Jiedaokou"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "2 号线",
+      "en": "Line 2"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "小洪山",
+      "en": "Xiaohongshan"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "8 号线",
+      "en": "Line 8"
+    },
+    "transport.value.note": {
+      "zh": "地铁 2 号线「街道口」站、8 号线「小洪山」站，出站步行至珞珈门或弘毅门；公交 724、K2、586 至「珞珈山路劝业场」站。校内坡多，建议穿舒适的鞋。",
+      "en": "Metro Line 2, Jiedaokou station, or Line 8, Xiaohongshan station, then walk to Luojia Gate or Hongyi Gate; buses 724, K2, 586 to the Luojiashan Road Quanyechang stop. The campus is hilly, so wear comfortable shoes."
+    },
+    "bestTime.value": {
+      "zh": "早上或傍晚光线柔和、人也少；樱花季要早到。",
+      "en": "Early morning or late afternoon, when the light is soft and there are fewer people; arrive early in cherry-blossom season."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "国立武汉大学牌坊",
+      "en": "National Wuhan University archway"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "珞珈门（正门）。低角度仰拍避开人群，拍背面篆体字更民国",
+      "en": "Luojia Gate (main gate). Shoot upward from a low angle to avoid the crowds; the seal-script characters on the back look more Republican-era."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "樱花大道 + 老斋舍",
+      "en": "Cherry Blossom Avenue + the Old Dormitories"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "樱花大道，老斋舍拱窗前。拱窗作天然相框，蹲低仰拍；樱花季清晨 7—9 点人少光柔",
+      "en": "On Cherry Blossom Avenue, in front of the Old Dormitories' arched windows. Use the arches as a natural frame and crouch to shoot upward; in cherry-blossom season, 7–9 a.m. is quiet with soft light."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "樱顶老图书馆",
+      "en": "Old library on Cherry Hill"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "珞珈山至高点。平台拍全景，傍晚拍金顶配蓝调天空",
+      "en": "The highest point of Luojia Hill. Shoot the whole building from the terrace; in the late afternoon, the golden roof against a blue-hour sky."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "九一二操场 + 行政楼",
+      "en": "Sports field + administration building"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "操场草坪。低角度仰拍民国主楼，逆光拍剪影",
+      "en": "On the field's lawn. Shoot the Republican-era main building from a low angle, or a backlit silhouette."
+    },
+    "photoSpots.4.value.title": {
+      "zh": "凌波门东湖栈桥",
+      "en": "Lingbo Gate pier on East Lake"
+    },
+    "photoSpots.4.value.description": {
+      "zh": "武大东侧东湖边。栈桥尽头低角度拍湖天一色，日出/日落最好",
+      "en": "On the East Lake shore on the east side of the university. Shoot low from the end of the pier for lake and sky in one colour; best at sunrise or sunset."
+    },
+    "photoSpots.5.value.title": {
+      "zh": "万林艺术博物馆",
+      "en": "Wanlin Art Museum"
+    },
+    "photoSpots.5.value.description": {
+      "zh": "校园中部。纯白流线建筑，顶楼露台俯瞰校园；9:00—17:00 开放、周一闭馆",
+      "en": "In the middle of the campus. A pure-white streamlined building; from the rooftop terrace you can look down over the campus. Open 9:00–17:00, closed Mondays."
+    },
+    "food.0.value.name": {
+      "zh": "广八路小吃街",
+      "en": "Guangba Road snack street"
+    },
+    "food.0.value.note": {
+      "zh": "从珞南门出校、过八一路天桥即到，过早集中（面窝、豆皮、牛肉粉）",
+      "en": "Leave campus by Luonan Gate and cross the Bayi Road footbridge; lots of breakfast (mianwo, doupi, beef rice noodles)."
+    },
+    "food.1.value.name": {
+      "zh": "江南小观园",
+      "en": "Jiangnan Xiaoguanyuan"
+    },
+    "food.1.value.note": {
+      "zh": "武大正门对面，被称「武大校外食堂」，人均约 71 元",
+      "en": "Opposite the university's main gate, known as \"Wuhan University's off-campus canteen\"; about ¥71 per person."
+    },
+    "food.2.value.name": {
+      "zh": "群光广场 / 银泰创意城",
+      "en": "Qunguang Plaza / Intime Creative City"
+    },
+    "food.2.value.note": {
+      "zh": "街道口商圈，负一楼与七八楼餐饮集中，距珞珈门步行约 700 米",
+      "en": "In the Jiedaokou shopping area, with restaurants concentrated on the basement level and the 7th–8th floors; about 700 m on foot from Luojia Gate."
+    },
+    "photos.0.caption": {
+      "zh": "樱花季的老斋舍拱门",
+      "en": "The Old Dormitories' archway in cherry-blossom season"
+    },
+    "photos.0.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：图虫创意（EXIF 显示 2019-03-14 摄，樱花季老斋舍）。付费图库，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (EXIF shows it was taken 2019-03-14; the Old Dormitories in cherry-blossom season). Paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "老斋舍拱门仰拍",
+      "en": "Looking up at the Old Dormitories' archway"
+    },
+    "photos.1.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：视觉中国 VCG（武大图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Wuhan University gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "樱花大道",
+      "en": "Cherry Blossom Avenue"
+    },
+    "photos.2.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：图虫创意 / 网络图片站（樱花季实拍）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative / web image site (taken in cherry-blossom season). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "雪后樱园俯瞰",
+      "en": "The cherry garden from above after snow"
+    },
+    "photos.3.author": {
+      "zh": "今日头条 / 摄影师",
+      "en": "Toutiao / photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：今日头条（武大雪景图集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao (Wuhan University snow gallery). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "凌波门日出",
+      "en": "Sunrise at Lingbo Gate"
+    },
+    "photos.4.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.5.caption": {
+      "zh": "武汉大学早期建筑群的黑白老照片：山坡上一组中式大屋顶建筑。",
+      "en": "Old black-and-white photo of Wuhan University's early buildings: a group of Chinese-style big-roofed buildings on a hillside."
+    },
+    "photos.5.licenseNote": {
+      "zh": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/54/73/A6315EF383FED4CC8FEEB518F79_E7C8A6F9_EE5E.jpg（页面\"早期建筑群\"一段下的配图，没有图注）",
+      "en": "Official-site photo, used only as a placeholder; must be replaced before the site goes public. Image address: https://www.whu.edu.cn/__local/C/54/73/A6315EF383FED4CC8FEEB518F79_E7C8A6F9_EE5E.jpg (image under the \"Early buildings\" section of the page; no caption)"
+    },
+    "photos.6.caption": {
+      "zh": "雪后的武汉大学校园鸟瞰，屋顶积雪，远处是湖面。",
+      "en": "Aerial view of Wuhan University campus after snow, snow on the roofs and the lake in the distance."
+    },
+    "photos.6.author": {
+      "zh": "曹海钢",
+      "en": "Cao Haigang"
+    },
+    "photos.6.licenseNote": {
+      "zh": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/AB/30/325957A7184D3C3506FD8A918A7_21E74B5B_214F1D.jpg（官网\"珞珈映像\"2026 年 1 月，标题\"岁末大寒至，静候春归来\"）",
+      "en": "Official-site photo, used only as a placeholder; must be replaced before the site goes public. Image address: https://www.whu.edu.cn/__local/C/AB/30/325957A7184D3C3506FD8A918A7_21E74B5B_214F1D.jpg (official site \"Luojia Images\", January 2026, titled \"The Great Cold arrives at year's end; waiting for spring\")"
+    },
+    "photos.7.caption": {
+      "zh": "秋天的武汉大学校园鸟瞰，树林中间是绿色屋顶的老建筑。",
+      "en": "Aerial view of Wuhan University campus in autumn, old green-roofed buildings among the trees."
+    },
+    "photos.7.licenseNote": {
+      "zh": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/new2024/images/ar1.jpg（学校简介页的配图，没有图注）",
+      "en": "Official-site photo, used only as a placeholder; must be replaced before the site goes public. Image address: https://www.whu.edu.cn/new2024/images/ar1.jpg (image on the university's introduction page; no caption)"
+    }
+  }
+}

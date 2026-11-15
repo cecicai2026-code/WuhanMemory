@@ -30,6 +30,7 @@ from app.schemas.comparison import (
 from app.schemas.itinerary import ComparisonRow, ItineraryVersionData
 from app.schemas.planning import PlanDraft, ValidationReport
 from app.services.llm.base import LLMCallRecord
+from app.core.lang import L
 from app.services.planning.metrics import compare_plans, near_duplicate, plan_metrics
 
 # 错误 code 的中文名，对比表和汇总里用。新加了校验规则要在这里补上，没补的显示 code 本身。
@@ -58,10 +59,36 @@ ERROR_LABELS: dict[str, str] = {
     "emphasis-walk-too-far": "步行太远（轻松少走路）",
     "emphasis-stay-short": "停留短于建议时长（深度文化）",
 }
+# 英文名（中英双语）。批量评测的报告由命令行生成，仍用中文
+ERROR_LABELS_EN: dict[str, str] = {
+    "unknown-poi": "place not among candidates",
+    "poi-closed": "temporarily closed place",
+    "duplicate-poi": "same place twice",
+    "day-count": "wrong number of days",
+    "day-number": "wrong day numbering",
+    "empty-day": "a day with no places",
+    "bad-time": "bad time format",
+    "time-order": "leaves before arriving",
+    "closed-day": "closing day",
+    "before-open": "arrives before opening",
+    "after-last-entry": "after last entry",
+    "after-close": "leaves after closing",
+    "overlap": "times overlap",
+    "transport-too-short": "not enough travel time",
+    "day-window": "outside 08:00–22:00",
+    "day-too-long": "day too long",
+    "transport-unknown": "route not found, can't be timed",
+    "day-overflow": "runs past midnight",
+    "emphasis-must-5a": "missed a 5A site (The classics)",
+    "emphasis-too-many-stops": "too many stops a day (Easy, less walking)",
+    "emphasis-ends-late": "ends too late (Easy, less walking)",
+    "emphasis-walk-too-far": "too much walking (Easy, less walking)",
+    "emphasis-stay-short": "stay shorter than suggested (Deep culture)",
+}
 
 
 def error_label(code: str) -> str:
-    return ERROR_LABELS.get(code, code)
+    return L(ERROR_LABELS.get(code, code), ERROR_LABELS_EN.get(code, code))
 
 
 # ---------- 调用记录 ----------
@@ -157,7 +184,7 @@ def side_result(
             # 只取对方真的回答了的调用里的模型名。失败的调用里记的是配置里的模型设置，
             # 豆包那是推理接入点 ID（ep- 开头），不能给前端，也不能写进评测结果
             model=next((c.model for c in calls if c.ok and c.model), None),
-            error=error or "没有排出行程",
+            error=error or L("没有排出行程", "No trip was planned"),
             calls=call_stats(calls),
             wallMs=wall_ms,
         )
@@ -232,52 +259,52 @@ def plan_diff(left: ItineraryVersionData, right: ItineraryVersionData) -> PlanDi
 
 
 def _seconds(ms: int) -> str:
-    return f"{ms / 1000:.1f} 秒"
+    return L(f"{ms / 1000:.1f} 秒", f"{ms / 1000:.1f} s")
 
 
 def _codes_text(codes: dict[str, int]) -> str:
     if not codes:
         return "—"
-    return "、".join(f"{error_label(c)} ×{n}" for c, n in sorted(codes.items(), key=lambda kv: (-kv[1], kv[0])))
+    return L("、", ", ").join(f"{error_label(c)} ×{n}" for c, n in sorted(codes.items(), key=lambda kv: (-kv[1], kv[0])))
 
 
 def _check_text(passed: bool, errors: int, warnings: int) -> str:
-    return f"{'通过' if passed else '未通过'}：{errors} 条错误、{warnings} 条警告"
+    return L(f"{'通过' if passed else '未通过'}：{errors} 条错误、{warnings} 条警告", f"{'passed' if passed else 'failed'}: {errors} errors, {warnings} warnings")
 
 
 def _repair_text(q: QualityMetrics) -> str:
     if not q.repaired:
-        return "没修正（第一版没有错误）" if q.firstPassed else "没修正"
+        return L("没修正（第一版没有错误）", "not fixed (first draft had no errors)") if q.firstPassed else L("没修正", "not fixed")
     if q.finalPassed:
-        return "修正一次后通过"
-    return f"修正一次后仍未通过：还有 {q.finalErrorCount} 条错误"
+        return L("修正一次后通过", "passed after one fix")
+    return L(f"修正一次后仍未通过：还有 {q.finalErrorCount} 条错误", f"still failing after one fix: {q.finalErrorCount} errors left")
 
 
 def _ids_text(ids: list[str], names: dict[str, str]) -> str:
     if not ids:
-        return "没有"
-    return f"{len(ids)} 个：" + "、".join(names.get(i, f"「{i}」") for i in ids)
+        return L("没有", "none")
+    return L(f"{len(ids)} 个：", f"{len(ids)}: ") + L("、", ", ").join(names.get(i, f"「{i}」") for i in ids)
 
 
 def _tokens_text(c: CallStats) -> str:
     if c.inputTokens is None and c.outputTokens is None:
-        return "不详"
-    text = f"输入 {c.inputTokens or 0}、输出 {c.outputTokens or 0}"
+        return L("不详", "unknown")
+    text = L(f"输入 {c.inputTokens or 0}、输出 {c.outputTokens or 0}", f"input {c.inputTokens or 0}, output {c.outputTokens or 0}")
     if c.tokensUnknownCalls:
-        text += f"（{c.tokensUnknownCalls} 次调用没返回）"
+        text += L(f"（{c.tokensUnknownCalls} 次调用没返回）", f" ({c.tokensUnknownCalls} calls didn't report)")
     return text
 
 
 def _calls_text(c: CallStats) -> str:
-    text = f"{c.callCount} 次调用，发了 {c.requestCount} 次请求"
+    text = L(f"{c.callCount} 次调用，发了 {c.requestCount} 次请求", f"{c.callCount} calls, {c.requestCount} requests sent")
     extra = []
     if c.retriedCalls:
-        extra.append(f"{c.retriedCalls} 次调用重试过")
+        extra.append(L(f"{c.retriedCalls} 次调用重试过", f"{c.retriedCalls} calls retried"))
     if c.reaskedCalls:
-        extra.append(f"{c.reaskedCalls} 次输出不合格让模型重答")
+        extra.append(L(f"{c.reaskedCalls} 次输出不合格让模型重答", f"{c.reaskedCalls} invalid outputs re-asked"))
     if c.failedCalls:
-        extra.append(f"{c.failedCalls} 次失败")
-    return text + (f"（{'，'.join(extra)}）" if extra else "")
+        extra.append(L(f"{c.failedCalls} 次失败", f"{c.failedCalls} failed"))
+    return text + (L(f"（{'，'.join(extra)}）", f" ({', '.join(extra)})") if extra else "")
 
 
 def comparison_table(
@@ -293,7 +320,7 @@ def comparison_table(
         texts, values = [], []
         for s in sides:
             if s.quality is None and key not in ("modelTime", "wallTime", "calls", "tokens"):
-                texts.append(f"模型没排出来：{s.error}" if key == "firstCheck" else "—")
+                texts.append(L(f"模型没排出来：{s.error}", f"The model produced no plan: {s.error}") if key == "firstCheck" else "—")
                 values.append(None)
                 continue
             texts.append(fn(s))
@@ -301,14 +328,16 @@ def comparison_table(
         return ComparisonRow(key=key, label=label, texts=texts, values=values, note=note)
 
     rows = [
-        row("firstCheck", "第一版校验", lambda s: _check_text(s.quality.firstPassed, s.quality.firstErrorCount, s.quality.firstWarningCount),
-            lambda s: float(s.quality.firstErrorCount), note="通过指没有错误；资料还没核实，警告几乎免不了"),
-        row("firstCodes", "第一版错误类型", lambda s: _codes_text(s.quality.firstErrorCodes)),
-        row("repair", "修正", lambda s: _repair_text(s.quality)),
-        row("fabricated", "编造的景点（第一版）", lambda s: _ids_text(s.quality.firstFabricatedPoiIds, poi_names),
-            lambda s: float(len(s.quality.firstFabricatedPoiIds)), note="景点 id 在整个景点库里都找不到"),
-        row("offList", "候选以外的景点（第一版）", lambda s: _ids_text(s.quality.firstOffListPoiIds, poi_names),
-            lambda s: float(len(s.quality.firstOffListPoiIds)), note="在景点库里，但这次不能用：用户说不去、暂停开放或这种侧重没给"),
+        row("firstCheck", L("第一版校验", "First-draft checks"), lambda s: _check_text(s.quality.firstPassed, s.quality.firstErrorCount, s.quality.firstWarningCount),
+            lambda s: float(s.quality.firstErrorCount),
+            note=L("通过指没有错误；资料还没核实，警告几乎免不了", "Passed means no errors; the place data isn't verified yet, so warnings are almost unavoidable")),
+        row("firstCodes", L("第一版错误类型", "First-draft error types"), lambda s: _codes_text(s.quality.firstErrorCodes)),
+        row("repair", L("修正", "Fix"), lambda s: _repair_text(s.quality)),
+        row("fabricated", L("编造的景点（第一版）", "Made-up places (first draft)"), lambda s: _ids_text(s.quality.firstFabricatedPoiIds, poi_names),
+            lambda s: float(len(s.quality.firstFabricatedPoiIds)), note=L("景点 id 在整个景点库里都找不到", "The place id isn't anywhere in the place database")),
+        row("offList", L("候选以外的景点（第一版）", "Places outside the candidates (first draft)"), lambda s: _ids_text(s.quality.firstOffListPoiIds, poi_names),
+            lambda s: float(len(s.quality.firstOffListPoiIds)),
+            note=L("在景点库里，但这次不能用：用户说不去、暂停开放或这种侧重没给", "In the database but not allowed this time: the user ruled it out, it's temporarily closed, or this emphasis didn't offer it")),
     ]
 
     shown = [(i, v) for i, v in enumerate(versions) if v is not None and sides[i].quality is not None]
@@ -316,7 +345,7 @@ def comparison_table(
         plan_table = compare_plans([labels[i] for i, _ in shown], [v for _, v in shown])
         for pr in plan_table.rows:
             if pr.key == "validation":
-                pr = pr.model_copy(update={"label": "最终校验"})
+                pr = pr.model_copy(update={"label": L("最终校验", "Final checks")})
             texts: list[str] = ["—"] * n
             values: list[float | None] = [None] * n
             for j, (i, _) in enumerate(shown):
@@ -324,10 +353,10 @@ def comparison_table(
             rows.append(pr.model_copy(update={"texts": texts, "values": values}))
 
     rows += [
-        row("modelTime", "模型耗时", lambda s: _seconds(s.calls.modelMs), lambda s: float(s.calls.modelMs),
-            note="这一边每次模型调用的耗时相加；抽偏好两边共用，不算在内"),
-        row("wallTime", "整体耗时", lambda s: _seconds(s.wallMs), lambda s: float(s.wallMs), note="含查交通和校验"),
-        row("calls", "调用次数", lambda s: _calls_text(s.calls), lambda s: float(s.calls.callCount)),
+        row("modelTime", L("模型耗时", "Model time"), lambda s: _seconds(s.calls.modelMs), lambda s: float(s.calls.modelMs),
+            note=L("这一边每次模型调用的耗时相加；抽偏好两边共用，不算在内", "Sum of this side's model call times; the shared preference extraction isn't counted")),
+        row("wallTime", L("整体耗时", "Total time"), lambda s: _seconds(s.wallMs), lambda s: float(s.wallMs), note=L("含查交通和校验", "Includes route lookups and checks")),
+        row("calls", L("调用次数", "Calls"), lambda s: _calls_text(s.calls), lambda s: float(s.calls.callCount)),
         row("tokens", "token", lambda s: _tokens_text(s.calls)),
     ]
     return ComparisonTable(labels=labels, rows=rows)

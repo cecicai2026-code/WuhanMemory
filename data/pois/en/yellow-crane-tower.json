@@ -1,0 +1,227 @@
+{
+  "id": "yellow-crane-tower",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "黄鹤楼",
+      "en": "Yellow Crane Tower"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "历史",
+      "en": "History"
+    },
+    "tags.1": {
+      "zh": "登高",
+      "en": "Views from above"
+    },
+    "tags.2": {
+      "zh": "夜景",
+      "en": "Night views"
+    },
+    "tags.3": {
+      "zh": "拍照",
+      "en": "Photography"
+    },
+    "tags.4": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "tags.5": {
+      "zh": "5A",
+      "en": "5A"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区蛇山西山坡特1号",
+      "en": "Te No. 1, West Slope of Snake Hill (Sheshan Xishanpo Te 1), Wuchang District, Wuhan"
+    },
+    "intro.value": {
+      "zh": "武汉的城市名片，江南三大名楼之一。主楼五层，登顶可俯瞰长江与武汉长江大桥，是武昌老城视线的中心。白天看江景与古建，晚上有「夜上黄鹤楼」光影演艺。",
+      "en": "Wuhan's calling card and one of the Three Great Towers south of the Yangtze. The main tower has five storeys; from the top you look out over the Yangtze and the Wuhan Yangtze River Bridge, and it is the visual centre of old Wuchang. By day, river views and classical architecture; at night, the \"Night at Yellow Crane Tower\" light show."
+    },
+    "history.value": {
+      "zh": "黄鹤楼有 1800 余年历史，被称为「天下江山第一楼」，是承载中华传统文化的诗楼，也是武汉的城市地标。现楼于 1985 年重新开放，2020 年起首次开放夜间沉浸式体验。2023 年全年接待游客约 483 万人次。",
+      "en": "Yellow Crane Tower has a history of more than 1,800 years and is called \"the finest tower under heaven\". It is a tower of poetry that carries traditional Chinese culture, and a landmark of Wuhan. The present tower reopened in 1985, and in 2020 it opened an immersive night experience for the first time. In 2023 it received about 4.83 million visitors."
+    },
+    "openingHours.value.note": {
+      "zh": "时段是日场：17:00 停止售票，17:20 停止入园，18:00 清园。 日场：售票 8:30—17:00，入园 8:30—17:20，清园（楼）18:00。夜场：19:30 入园；平日 22:00 结束（21:30 停止入园）；周五、周六、周日及法定节假日 22:30 结束（21:50 停止入园）。全年执行，未见淡旺季差异。",
+      "en": "The hours are for the day session: ticket sales stop at 17:00, entry stops at 17:20, and the grounds are cleared at 18:00. Day session: tickets 8:30–17:00, entry 8:30–17:20, tower cleared at 18:00. Night session: entry from 19:30; ends 22:00 on weekdays (last entry 21:30); ends 22:30 on Fridays, Saturdays, Sundays and public holidays (last entry 21:50). Same all year; no peak/off-peak difference found."
+    },
+    "ticket.value.items.0.name": {
+      "zh": "日场全票",
+      "en": "Day ticket, full price"
+    },
+    "ticket.value.items.1.name": {
+      "zh": "日场半票",
+      "en": "Day ticket, half price"
+    },
+    "ticket.value.items.2.name": {
+      "zh": "夜场成人票（周五至周日及法定节假日）",
+      "en": "Night ticket, adult (Fri–Sun and public holidays)"
+    },
+    "ticket.value.items.3.name": {
+      "zh": "夜场成人票（周一至周四）",
+      "en": "Night ticket, adult (Mon–Thu)"
+    },
+    "ticket.value.note": {
+      "zh": "优惠：日场半票 35 元/人：6—18 周岁未成年人、全日制本科及以下学历在读学生、60—65 周岁（不含 65）老人、退役军人。 免票：6 周岁（含）以下或身高 1.2 米（含）以下儿童；65 周岁（含）以上老人；现役军人、消防救援人员、伤残军人、军队离退休干部、三属；持记者证者；残疾人；灵秀湖北感恩卡（援鄂医护及 1—3 名陪同）；楚才卡 A/B；武汉血液中心电子景区卡；带团导游。 夜场：夜场成人 150 元（平日周一至周四 120 元）；儿童 75/60 元；学生 90/70 元；优待 110/90 元；1.2 米以下儿童免费。 日场票价执行武发改收费[2018]228 号文件；研究生及以上不享受半价。",
+      "en": "Concessions: day half-price ticket ¥35 per person for minors aged 6–18, full-time students up to undergraduate level, people aged 60–65 (not including 65), and military veterans. Free: children aged 6 or under or 1.2 m tall or under; people aged 65 and over; active military, fire and rescue personnel, disabled veterans, retired military cadres, and families of military personnel; holders of a press card; people with disabilities; holders of the Lingxiu Hubei Gratitude Card (medical staff who helped Hubei plus 1–3 companions); Chucai Card A/B; Wuhan Blood Center e-scenic card; tour guides leading groups. Night session: adults ¥150 (¥120 Mon–Thu); children ¥75/¥60; students ¥90/¥70; concessions ¥110/¥90; children under 1.2 m free. Day prices follow Wuhan Development and Reform pricing document [2018] No. 228; postgraduates and above do not get half price."
+    },
+    "reservation.value.note": {
+      "zh": "免实名、免预约。2024 年 7 月 11 日起取消购票实名登记，可现场窗口或线上平台随时购票；节假日高峰建议提前购票，达到最大承载量时暂停入园。夜场另需购买夜场票。",
+      "en": "No real-name registration and no booking needed. Real-name ticket registration was dropped on 11 July 2024; you can buy tickets at the window or online at any time. On holiday peaks, buying ahead is advised; entry is paused when capacity is reached. The night session needs a separate night ticket."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "彭刘杨",
+      "en": "Pengliuyang"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "5 号线",
+      "en": "Line 5"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "A",
+      "en": "A"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "复兴路",
+      "en": "Fuxing Road"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "4 号线",
+      "en": "Line 4"
+    },
+    "transport.value.metro.1.exit": {
+      "zh": "C2",
+      "en": "C2"
+    },
+    "transport.value.note": {
+      "zh": "地铁 5 号线「彭刘杨」站 A 口出，步行约 828 米到南门；或地铁 4 号线「复兴路」站 C2 口出，步行约 1.4 公里。公交 108、222、401、413、537、556、561、596、710、728 至「武珞路阅马场」站。地铁 5 号线「司门口黄鹤楼」站 C 口是红墙合影机位，距景区尚有距离。",
+      "en": "Metro Line 5, Pengliuyang station, exit A, then about 828 m on foot to the south gate; or Metro Line 4, Fuxing Road station, exit C2, then about 1.4 km on foot. Buses 108, 222, 401, 413, 537, 556, 561, 596, 710, 728 to the Wuluo Road Yuemachang stop. Exit C of Simenkou Yellow Crane Tower station on Line 5 is the red-wall photo spot, still some way from the scenic area."
+    },
+    "bestTime.value": {
+      "zh": "傍晚入园可衔接夜场灯光；拍建筑想避开人群选早上 8 点前或工作日下午 3 点后。",
+      "en": "Enter in the late afternoon to carry on into the night lighting; to photograph the building without crowds, go before 8 a.m. or after 3 p.m. on a weekday."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "司门口黄鹤楼地铁站 C 口红墙",
+      "en": "Red wall at exit C of Simenkou Yellow Crane Tower metro station"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "5 号线司门口黄鹤楼站 C 口出站即到。长焦压缩，让红墙与黄鹤楼同框；下午 4—5 点光线斜射，红墙色彩最饱和",
+      "en": "Right outside exit C of Simenkou Yellow Crane Tower station on Line 5. Use a telephoto lens to compress the red wall and the tower into one frame; between 4 and 5 p.m. the light comes in at an angle and the red is at its richest."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "得胜桥老巷",
+      "en": "Old Deshengqiao Lane"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "C 口往西，得胜桥巷内数十米。窄巷透视，拍黄鹤楼与老居民楼同框，古今对比；下午 3 点后光线穿巷",
+      "en": "West from exit C, a few dozen metres into Deshengqiao Lane. The narrow lane gives perspective, framing the tower with old residential blocks for an old-and-new contrast; after 3 p.m. light runs through the lane."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "长江大桥武昌桥头岗亭",
+      "en": "Guard post at the Wuchang end of the Yangtze River Bridge"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "司门口天桥上天桥，往汉阳方向前行。桥头岗亭附近用 3 倍以上长焦，等列车经过拍火车与黄鹤楼同框",
+      "en": "Climb the Simenkou footbridge and walk towards Hanyang. Near the guard post at the bridgehead, use a 3x or longer telephoto and wait for a train to pass to get the train and the tower in one frame."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "彭刘杨站 B2 口",
+      "en": "Exit B2 of Pengliuyang station"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "5 号线彭刘杨站 B2 出口。「武汉」立体字、粉色笑脸墙同框，人少",
+      "en": "Exit B2 of Pengliuyang station on Line 5. The 3D \"Wuhan\" lettering and the pink smiley-face wall in one frame; few people."
+    },
+    "photoSpots.4.value.title": {
+      "zh": "白云阁",
+      "en": "Baiyun Pavilion"
+    },
+    "photoSpots.4.value.description": {
+      "zh": "黄鹤楼公园内（含在门票内）。平视或微仰角度与主楼同框，可避开主楼正面人流",
+      "en": "Inside Yellow Crane Tower Park (included in the ticket). Shoot level or slightly upward to frame it with the main tower, avoiding the crowds in front of the main tower."
+    },
+    "food.0.value.name": {
+      "zh": "户部巷（汉味小吃街）",
+      "en": "Hubu Alley (Wuhan snack street)"
+    },
+    "food.0.value.note": {
+      "zh": "从公园南门往司门口方向步行可达，具体分钟数按地图实测为准",
+      "en": "Reachable on foot from the park's south gate towards Simenkou; check the actual walking time on a map."
+    },
+    "food.1.value.name": {
+      "zh": "粮道街",
+      "en": "Liangdao Street"
+    },
+    "food.1.value.note": {
+      "zh": "本地人过早聚集地，距景区需步行或短途打车",
+      "en": "Where locals gather for breakfast; walk or take a short taxi ride from the scenic area."
+    },
+    "photos.0.caption": {
+      "zh": "航拍黄鹤楼正面",
+      "en": "Aerial view of the front of Yellow Crane Tower"
+    },
+    "photos.0.author": {
+      "zh": "武汉市人民政府门户网站",
+      "en": "Wuhan Municipal Government portal"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：武汉市人民政府门户网站（黄鹤楼相关报道配图）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Wuhan Municipal Government portal (image from a report on Yellow Crane Tower). Officially published; reposting requires credit. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "长江大桥与黄鹤楼夜景",
+      "en": "Night view of the Yangtze River Bridge and Yellow Crane Tower"
+    },
+    "photos.1.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "雪后黄鹤楼",
+      "en": "Yellow Crane Tower after snow"
+    },
+    "photos.2.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "樱花簇拥的楼阁",
+      "en": "The tower surrounded by cherry blossoms"
+    },
+    "photos.3.author": {
+      "zh": "视觉中国 VCG / 签约摄影师",
+      "en": "Visual China Group (VCG) / contract photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：视觉中国 VCG（黄鹤楼图集）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Visual China Group VCG (Yellow Crane Tower gallery). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "夜樱与楼影",
+      "en": "Night cherry blossoms and the tower's silhouette"
+    },
+    "photos.4.author": {
+      "zh": "图虫创意 / 摄影师",
+      "en": "Tuchong Creative / photographer"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：图虫创意（stock.tuchong.com）。付费图库预览图，商用需购买授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Tuchong Creative (stock.tuchong.com). Preview image from a paid stock library; commercial use requires a licence. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

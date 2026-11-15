@@ -23,6 +23,7 @@ from fastapi import Depends, HTTPException, Request
 from app.core.config import settings
 from app.data_quality.rules import CITY_TZ
 from app.repositories.rate_event_repository import RateEventRepository, SqliteRateEventRepository
+from app.core.lang import L
 
 PASSCODE_HEADER = "X-Owner-Passcode"
 
@@ -66,9 +67,9 @@ def require_owner(request: Request, policy: Policy) -> None:
     if not policy.public_mode:
         return
     if not policy.owner_passcode:
-        raise HTTPException(status_code=403, detail="公开模式下这个功能关着：后端 .env 里没有设 OWNER_PASSCODE")
+        raise HTTPException(status_code=403, detail=L("公开模式下这个功能关着：后端 .env 里没有设 OWNER_PASSCODE", "This feature is off in public mode: OWNER_PASSCODE isn't set in the backend .env"))
     if not is_owner(request, policy):
-        raise HTTPException(status_code=401, detail="这个功能需要网站主人的口令")
+        raise HTTPException(status_code=401, detail=L("这个功能需要网站主人的口令", "This feature needs the site owner's passcode"))
 
 
 def _client_key(request: Request, policy: SitePolicy) -> str:
@@ -92,11 +93,11 @@ def rate_limited(weight: int) -> Callable[..., None]:
         if hour_used + weight > policy.per_client_per_hour:
             raise HTTPException(
                 status_code=429,
-                detail=f"试用次数到了：每小时最多 {policy.per_client_per_hour} 次（对比一次算 2 次），过一会儿再试。",
+                detail=L(f"试用次数到了：每小时最多 {policy.per_client_per_hour} 次（对比一次算 2 次），过一会儿再试。", f"Trial limit reached: at most {policy.per_client_per_hour} per hour (a comparison counts as 2). Please try again later."),
             )
         midnight = datetime.now(CITY_TZ).replace(hour=0, minute=0, second=0, microsecond=0)
         if store.used_total(since=midnight) + weight > policy.per_day:
-            raise HTTPException(status_code=429, detail=f"今天全站的试用次数（{policy.per_day} 次）用完了，明天再来。")
+            raise HTTPException(status_code=429, detail=L(f"今天全站的试用次数（{policy.per_day} 次）用完了，明天再来。", f"Today's trial limit for the whole site ({policy.per_day}) has been used up. Please come back tomorrow."))
         store.add(client, weight, now)
 
     return check

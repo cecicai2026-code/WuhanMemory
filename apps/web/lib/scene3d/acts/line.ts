@@ -22,7 +22,10 @@ const WALL_Z = -1.5,
   SP = 2.05;
 const PH_W = 1.3,
   PH_H = 1.5;
-const STATUS_TEXT = { verified: "已核实", pending: "待确认", expired: "已过期" } as const;
+const STATUS_TEXT = {
+  zh: { verified: "已核实", pending: "待确认", expired: "已过期" },
+  en: { verified: "Verified", pending: "To confirm", expired: "Expired" }
+} as const;
 const STATUS_COLOR = { verified: COLORS.green, pending: COLORS.pencil, expired: COLORS.oxblood } as const;
 
 function coverCrop(t: THREE.Texture, aspect: number) {
@@ -39,7 +42,7 @@ function coverCrop(t: THREE.Texture, aspect: number) {
 }
 
 /** 没有照片时的空白相纸（设计规范第 15 节第 3 条） */
-function blankPrint(p: LinePrint) {
+function blankPrint(p: LinePrint, en: boolean) {
   const w = 520,
     h = Math.round((520 * PH_H) / PH_W);
   return tex(w, h, (g) => {
@@ -61,12 +64,12 @@ function blankPrint(p: LinePrint) {
     g.rotate(-0.03);
     g.fillStyle = COLORS.pencil;
     g.font = `58px ${NOTE}`;
-    g.fillText("照片待补", 0, 0);
+    g.fillText(en ? "photo to come" : "照片待补", 0, 0);
     g.restore();
   });
 }
 
-function cardTexture(k: number, topic: LineTopic) {
+function cardTexture(k: number, topic: LineTopic, en: boolean) {
   return tex(640, 448, (g, w, h) => {
     g.fillStyle = COLORS.paper;
     g.fillRect(0, 0, w, h);
@@ -83,7 +86,10 @@ function cardTexture(k: number, topic: LineTopic) {
     g.fillStyle = "rgba(42,36,32,.35)";
     g.fillRect(48, 112, w - 96, 2);
     g.fillStyle = COLORS.ink;
-    g.font = `600 104px ${SERIF}`;
+    let size = 104;
+    g.font = `600 ${size}px ${SERIF}`;
+    // 英文的主题名比两三个汉字长，放不下就缩小
+    while (g.measureText(topic.name).width > w - 160 && size > 40) g.font = `600 ${(size -= 4)}px ${SERIF}`;
     g.textAlign = "center";
     g.fillText(topic.name, w / 2, 262);
     // 这张纸的状态，和普通版信纸右下角的章一致
@@ -97,13 +103,18 @@ function cardTexture(k: number, topic: LineTopic) {
     g.strokeRect(-78, -30, 156, 60);
     g.font = `600 34px ${SERIF}`;
     g.textBaseline = "middle";
-    g.fillText(STATUS_TEXT[topic.status], 0, 2);
+    const label = STATUS_TEXT[en ? "en" : "zh"][topic.status];
+    if (en) g.font = `600 ${label.length > 8 ? 24 : 30}px ${SERIF}`;
+    g.fillText(label, 0, 2);
     g.restore();
   });
 }
 
 export function createLine(env: ActEnv, req0: StageRequest): Act {
   let data = (req0 as StageRequest<LineData>).data;
+  // 场景里画的字按搭场景时的语言；换了语言 update 返回 false，引擎重搭
+  const lang = data.lang;
+  const en = lang === "en";
   const prints0 = data.prints;
   const N = prints0.length;
   const M = materials();
@@ -160,7 +171,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   const prints: Print[] = prints0.map((p, i) => {
     const g = new THREE.Group();
     const paper = add(g, new THREE.BoxGeometry(1.5, 1.86, 0.014), M.paper, 0, -1.0, 0);
-    const t0 = blankPrint(p);
+    const t0 = blankPrint(p, en);
     owned.push(t0);
     const pm = new THREE.MeshStandardMaterial({ map: t0, emissiveMap: t0, emissive: 0xffffff, emissiveIntensity: 0.12, roughness: 0.55 });
     const ph = new THREE.Mesh(new THREE.PlaneGeometry(PH_W, PH_H), pm);
@@ -226,7 +237,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   }
   const RZ = [-0.07, 0.05, -0.03, 0.08];
   const cards: Card[] = data.topics.map((topic, k) => {
-    const t = cardTexture(k, topic);
+    const t = cardTexture(k, topic, en);
     owned.push(t);
     const g = new THREE.Group();
     const mat = new THREE.MeshStandardMaterial({ map: t, roughness: 0.8, color: 0x9a8a80 });
@@ -244,7 +255,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
       const topic = data.topics[k];
       if (!topic || topic.status === c.topic.status) return;
       c.topic = topic;
-      const t = cardTexture(k, topic);
+      const t = cardTexture(k, topic, en);
       owned.push(t);
       c.mat.map = t;
       env.renderer.initTexture(t); // 先传到显卡，不在下一帧里现传
@@ -454,7 +465,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     } else if (act?.type === "can" && !entered) {
       v.set(0, 0, 1.4);
       can.localToWorld(v).project(camera);
-      env.tag({ text: "回到胶卷", x: (v.x * 0.5 + 0.5) * env.width(), y: (-v.y * 0.5 + 0.5) * env.height() + 10 });
+      env.tag({ text: en ? "Back to the film roll" : "回到胶卷", x: (v.x * 0.5 + 0.5) * env.width(), y: (-v.y * 0.5 + 0.5) * env.height() + 10 });
     } else env.tag(null);
 
     // 键盘聚焦时的黄铜框
@@ -486,18 +497,18 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   }
 
   const ready = (async () => {
-    await ensureFonts(prints0.map((p) => p.name).join("") + data.topics.map((tp) => tp.name).join("") + "照片待补已核实待确认已过期0123456789WUHANMEMORYEXP·");
+    await ensureFonts(prints0.map((p) => p.name).join("") + data.topics.map((tp) => tp.name).join("") + (en ? "phototocomeVerifiedTconfirmExpd" : "照片待补已核实待确认已过期") + "0123456789WUHANMEMORYEXP·");
     // 字体到了以后重画用到字的贴图
     for (const p of prints) {
       if (p.photo === "done" && p.p.photoUrl) continue;
-      const t2 = blankPrint(p.p);
+      const t2 = blankPrint(p.p, en);
       owned.push(t2);
       p.blank = t2;
       p.pm.map = t2;
       p.pm.emissiveMap = t2;
     }
     cards.forEach((c, k) => {
-      const t2 = cardTexture(k, c.topic);
+      const t2 = cardTexture(k, c.topic, en);
       owned.push(t2);
       c.mat.map = t2;
     });
@@ -516,6 +527,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     ready,
     update(next) {
       const d = (next as StageRequest<LineData>).data;
+      if (d.lang !== lang) return false;
       // 景点清单变了（例如资料改过）：重建
       if (d.prints.length !== N || d.prints.some((p, i) => p.id !== prints[i].p.id)) return false;
       const fromOtherAct = !env.active();

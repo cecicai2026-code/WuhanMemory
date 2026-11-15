@@ -21,6 +21,7 @@ from app.schemas.itinerary import ItineraryLeg
 from app.schemas.planning import TransportPreference
 from app.schemas.poi import PoiFile
 from app.schemas.route import RouteMode, RouteOut
+from app.core.lang import L
 from app.services.planning.candidates import distance_km
 from app.services.routing.service import RouteService
 
@@ -29,6 +30,8 @@ WALK_MAX_MINUTES_WALKER = 30
 
 PREFERRED_MODE: dict[TransportPreference, RouteMode] = {"metro": "transit", "walk": "transit", "taxi": "drive"}
 MODE_LABELS: dict[RouteMode, str] = {"walk": "步行", "transit": "公交地铁", "drive": "打车"}
+# leg.choice 写给人看，按当前语言写（MODE_LABELS 还用在给模型的交通表里，保持中文）
+MODE_EN: dict[RouteMode, str] = {"walk": "walk", "transit": "bus/metro", "drive": "taxi"}
 
 
 def _ok(route: RouteOut) -> bool:
@@ -53,19 +56,27 @@ def decide_leg(
     """按规则选方式。步行够近就走；否则要看 other（偏好的那种方式）。other 还没查时返回 None。"""
     if _ok(walk) and walk.durationMinutes is not None and walk.durationMinutes <= limit:
         return ItineraryLeg(
-            fromPoiId=from_id, toPoiId=to_id, route=walk, choice=f"步行 {walk.durationMinutes} 分钟，走过去"
+            fromPoiId=from_id, toPoiId=to_id, route=walk,
+            choice=L(f"步行 {walk.durationMinutes} 分钟，走过去", f"{walk.durationMinutes} min on foot, so walk"),
         )
     if other is None:
         return None
     mode = PREFERRED_MODE[preference]
     if _ok(other):
-        return ItineraryLeg(fromPoiId=from_id, toPoiId=to_id, route=other, choice=f"步行超过 {limit} 分钟，{MODE_LABELS[mode]}")
+        return ItineraryLeg(
+            fromPoiId=from_id, toPoiId=to_id, route=other,
+            choice=L(f"步行超过 {limit} 分钟，{MODE_LABELS[mode]}", f"over {limit} min on foot, so {MODE_EN[mode]}"),
+        )
     if other.status == "none" and _ok(walk):
         return ItineraryLeg(
-            fromPoiId=from_id, toPoiId=to_id, route=walk, choice=f"高德没有{MODE_LABELS[mode]}方案，改步行"
+            fromPoiId=from_id, toPoiId=to_id, route=walk,
+            choice=L(f"高德没有{MODE_LABELS[mode]}方案，改步行", f"AMap has no {MODE_EN[mode]} option, so walk"),
         )
-    reason = other.error.message if other.error else (other.reason or "没有方案")
-    return ItineraryLeg(fromPoiId=from_id, toPoiId=to_id, route=other, choice=f"{MODE_LABELS[mode]}没查到：{reason}")
+    reason = other.error.message if other.error else (other.reason or L("没有方案", "no option"))
+    return ItineraryLeg(
+        fromPoiId=from_id, toPoiId=to_id, route=other,
+        choice=L(f"{MODE_LABELS[mode]}没查到：{reason}", f"no {MODE_EN[mode]} route found: {reason}"),
+    )
 
 
 async def choose_leg(

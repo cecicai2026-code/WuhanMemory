@@ -194,6 +194,27 @@
 
 后端在 `/media/photos/` 和 `/media/photos-placeholder/` 提供照片文件。
 
+## 6.5 英文译文（中英双语，ADR 0009）
+
+景点资料只有中文。英文是译文，单独放在 `data/pois/en/<id>.json`（`app/services/poi_i18n.py`）：
+
+```json
+{
+  "id": "yellow-crane-tower",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {"zh": "黄鹤楼", "en": "Yellow Crane Tower"},
+    "ticket.value.items.0.name": {"zh": "日场全票", "en": "Day ticket, full price"}
+  }
+}
+```
+
+- 键是字段在景点文件里的位置，点号连接，列表用序号。只翻界面上会显示的字段（`TRANSLATABLE`）：名字、区、标签、地址、简介、历史、开放时间和票价的 note、票名、预约和支付说明、地铁站和线路、交通说明、适合去的时段、拍照机位、周边美食、评价、照片说明和作者、开放状态说明。
+- 每条存着翻译时的中文原文。中文改了、对不上时这条作废，英文版显示中文。
+- 不进 SQLite：接口按 `lang=en` 读出景点后再套上译文（文件改了按修改时间重新读，不用重启后端）。规划链路的逻辑仍用中文资料，只在存进行程版本时换成译文。
+- 2026-11-15 的 10 个景点 528 条译文由 Claude 翻译，未经人工核对。
+
 ## 7. 检查脚本
 
 ```bash
@@ -227,6 +248,16 @@ cd ~/WuhanMemory-project2 && corepack pnpm check:data
 最后一行统计实地核实、核对过来源、官网占位、TODO、已过期的条数，以及官网占位照片的张数。
 
 测试：`apps/api/tests/test_poi_checker.py`。`apps/api/tests/fixtures/data/pois/` 里有一份合格的虚构样例和 12 份各错一处的数据（文件名就是错在哪），每一份都必须被查出来。
+
+英文译文（都是警告，不挡导入）：
+
+| code | 什么情况 |
+|---|---|
+| `translation-stale` | 中文资料改过，这几条译文作废了，要重新翻译 |
+| `translation-missing` | 有中文、还没有译文的条目 |
+| `translation-orphan` | 译文文件对应的景点不存在或没通过检查 |
+| `translation-unknown-field` | 译文里有不需要翻译的位置 |
+| `translation-bad-file` | 译文文件读不出来 |
 
 ## 8. SQLite 表
 

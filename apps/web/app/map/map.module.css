@@ -257,8 +257,8 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  /* 留出卡片歪斜和投影的位置 */
-  padding: 6px 10px 24px 4px;
+  /* 留出卡片歪斜和投影的位置。这个框会滚动，伸出框的部分会被裁掉，所以左右都要留 */
+  padding: 8px 10px 24px;
 }
 .what {
   margin: 0;
@@ -497,6 +497,11 @@
 }
 
 /* ---------- 行程卡（板块 5） ---------- */
+/* 行程卡左右至少留 20px：索引卡默认是 --paper-pad 的一半，手机上只有 12px，字贴着纸边。
+   类名写两遍是为了压过 ui.module.css 里同样只有一个类的 .card（两份样式表的先后不固定） */
+.sheet.sheet {
+  padding-inline: max(20px, calc(var(--paper-pad) / 2));
+}
 .cardHead {
   display: flex;
   align-items: flex-start;
@@ -505,6 +510,9 @@
 }
 .cardHead > :last-child {
   flex: none;
+  /* 印章的边框加内边距比一行高，压到一行以内，下面的字才落在横线上 */
+  padding-block: 0;
+  line-height: calc(var(--line) - 6px);
 }
 .defaults {
   margin: 8px 0 0;
@@ -520,7 +528,7 @@
   color: var(--expired-paper);
 }
 .issues {
-  margin: 6px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
   font-size: var(--size-ui);
@@ -528,7 +536,7 @@
 .issues li {
   display: flex;
   gap: 6px;
-  margin-top: 4px;
+  margin: 0;
 }
 .issues li > span:first-child {
   flex: none;
@@ -602,13 +610,18 @@
 .swatch[data-color="film"] {
   --line: var(--film);
 }
+/*
+ * 每天一张的卡片是横线纸（--line 是一行的高度）。卡片里的间距只用 0 或整行，
+ * 每一行字才都落在横线上；零碎的 2、6、8px 会让字越往下越对不上线。
+ */
 .timeline {
-  margin: 10px 0 0;
+  /* 标题下空一行再写时间线 */
+  margin: var(--line) 0 0;
   padding: 0;
   list-style: none;
 }
 .stop {
-  padding: 8px 0;
+  padding: 0;
 }
 .stop p {
   margin: 0;
@@ -623,15 +636,37 @@
   font-family: var(--font-paper);
   font-size: var(--size-paper-body);
 }
+/* 景点名用纸上正文的字，加粗；后面的区名小一号。
+   链接本来至少 44px 高（方便手指点），比一行横线高；用上下内边距加等量的负外边距，
+   点的范围不变，占的高度还是一行 */
+.stopName > a {
+  min-height: 0;
+  padding-block: 7px;
+  margin-block: -7px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+.stopName > a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.stopName > a + * {
+  margin-left: 6px;
+  font-size: var(--size-label);
+}
 .stopReason {
-  margin-top: 2px;
+  margin: 0;
   font-size: var(--size-ui);
 }
 .facts {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 2px 10px;
-  margin: 6px 0 0;
+  gap: 0 12px;
+  margin: 0;
   font-size: var(--size-label);
 }
 .facts dt {
@@ -662,7 +697,7 @@
 }
 .leg {
   margin-left: 6px;
-  padding: 4px 0 4px 12px;
+  padding: 0 0 0 12px;
   border-left: 2px dotted var(--ink-soft);
   font-size: var(--size-ui);
 }

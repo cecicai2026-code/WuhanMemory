@@ -14,7 +14,8 @@ import type {
   TripConversation,
 } from "@wuhanmemory/shared";
 
-import { backendDownMessage } from "./backend";
+import { backendDownMessage, backendStatusMessage } from "./backend";
+import { browserLang, LANG_HEADER } from "./i18n";
 import { getOwnerPasscode } from "./owner-passcode";
 
 /** 浏览器里用相对路径，由网站转给后端（lib/backend.ts） */
@@ -33,7 +34,8 @@ export class ApiError extends Error {
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
-    const headers: Record<string, string> = {};
+    // 后端按这个语言写提示和校验说明，规划时让模型用这种语言写（中英双语）
+    const headers: Record<string, string> = { [LANG_HEADER]: browserLang() };
     if (init?.body) headers["content-type"] = "application/json";
     // 公开模式下，我的行程和分享管理要口令；规划带口令时不限次数（板块 7）
     const passcode = typeof window !== "undefined" ? getOwnerPasscode() : null;
@@ -52,7 +54,7 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
         ? detail
         : detail && typeof (detail as { message?: unknown }).message === "string"
           ? (detail as { message: string }).message
-          : `后端返回 ${res.status}`;
+          : backendStatusMessage(res.status);
     throw new ApiError(message, res.status);
   }
   return (await res.json()) as T;

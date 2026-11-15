@@ -11,6 +11,7 @@
  */
 import { boundsOf, type MapBounds, type MapInitOptions, type MapMode, type MapPin, type MapProvider, type MapRoute, type RouteColor } from "@wuhanmemory/map-core";
 import type { AMapInfoWindow, AMapMap, AMapMarker, AMapNamespace, AMapPolyline, LngLatTuple } from "./amap-types";
+import { makeT, type Lang } from "@/lib/i18n";
 
 export const MAP_STYLE = "amap://styles/dark";
 const PITCH_3D = 50;
@@ -41,6 +42,9 @@ export interface AmapProviderOptions {
   serviceHost: string;
   /** 图钉的样式类名，由页面的 CSS 模块提供 */
   classes: { pin: string; pinHead: string; pinLabel: string };
+  /** 网站的语言（中英双语）：图钉的读屏说明、出错提示跟着它。
+   * 底图上的地名一直是中文：2026-11-15 在浏览器里试过，高德 JS API 2.0 的 lang: "en" 不起作用（默认样式和深色样式都一样） */
+  lang: Lang;
 }
 
 export class AmapLoadError extends Error {}
@@ -64,8 +68,12 @@ export class AmapProvider implements MapProvider {
 
   constructor(private readonly opts: AmapProviderOptions) {}
 
+  private get t() {
+    return makeT(this.opts.lang);
+  }
+
   async mount(container: HTMLElement, options: MapInitOptions): Promise<void> {
-    if (!this.opts.jsKey) throw new AmapLoadError("没有配置高德 JS key（apps/web/.env.local 里的 NEXT_PUBLIC_AMAP_JS_KEY）。");
+    if (!this.opts.jsKey) throw new AmapLoadError(this.t("没有配置高德 JS key（apps/web/.env.local 里的 NEXT_PUBLIC_AMAP_JS_KEY）。", "No AMap JS key is set (NEXT_PUBLIC_AMAP_JS_KEY in apps/web/.env.local)."));
     // 必须在加载高德脚本之前设置
     window._AMapSecurityConfig = { serviceHost: this.opts.serviceHost };
     let AMap: AMapNamespace;
@@ -73,9 +81,10 @@ export class AmapProvider implements MapProvider {
       const { default: AMapLoader } = await import("@amap/amap-jsapi-loader");
       AMap = (await AMapLoader.load({ key: this.opts.jsKey, version: "2.0" })) as AMapNamespace;
     } catch (err) {
-      throw new AmapLoadError(`高德地图脚本加载失败：${err instanceof Error ? err.message : String(err)}。请检查网络和 JS key。`);
+      const why = err instanceof Error ? err.message : String(err);
+      throw new AmapLoadError(this.t(`高德地图脚本加载失败：${why}。请检查网络和 JS key。`, `The AMap script failed to load: ${why}. Check the network and the JS key.`));
     }
-    if (this.destroyed) throw new AmapLoadError("地图已经关掉了");
+    if (this.destroyed) throw new AmapLoadError(this.t("地图已经关掉了", "The map was closed"));
     this.AMap = AMap;
     this.container = container;
     const map = new AMap.Map(container, {
@@ -118,7 +127,7 @@ export class AmapProvider implements MapProvider {
       const el = document.createElement("button");
       el.type = "button";
       el.className = classes.pin;
-      el.setAttribute("aria-label", `${pin.name}：打开景点卡片`);
+      el.setAttribute("aria-label", this.t(`${pin.name}：打开景点卡片`, `${pin.name}: open the place card`));
       const head = document.createElement("span");
       head.className = classes.pinHead;
       head.setAttribute("aria-hidden", "true");

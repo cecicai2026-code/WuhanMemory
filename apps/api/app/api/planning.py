@@ -45,9 +45,11 @@ from app.services.llm.errors import LLMError
 from app.services.llm.factory import get_llm_gateway
 from app.services.planning.jobs import JobStore, PlanningJob
 from app.services.planning.metrics import compare_plans
-from app.services.planning.pipeline import STAGE_LABELS, PlanningPipeline
+from app.services.planning.pipeline import PlanningPipeline, stage_label
+from app.core.lang import L, current_lang, run_in_lang
 from app.services.routing.amap import AmapRouteProvider
 from app.services.routing.service import RouteService
+from app.services.planning.emphasis import EMPHASES
 
 logger = logging.getLogger("wuhanmemory.planning")
 
@@ -115,7 +117,7 @@ async def create_conversation(request: CreateConversationRequest, conversations:
 async def get_conversation(conversation_id: str, conversations: Conversations, jobs: Jobs) -> ConversationOut:
     conv = conversations.get(conversation_id)
     if conv is None:
-        raise HTTPException(status_code=404, detail=f"没有这段对话：{conversation_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这段对话：{conversation_id}", f"No such conversation: {conversation_id}"))
     running = jobs.running_for(conv.id)
     return ConversationOut(
         conversationId=conv.id,
@@ -139,12 +141,12 @@ async def _run(job: PlanningJob, content: str, factory: PipelineFactory, convers
         job.error = LLMErrorOut(code=exc.code, message=exc.message, retryable=exc.retryable, provider=exc.provider)
         job.status = "failed"
         conversations.add_message(
-            job.conversation_id, "assistant", f"模型调用出错：{exc.message}", kind="error", provider=exc.provider
+            job.conversation_id, "assistant", L(f"模型调用出错：{exc.message}", f"The model call failed: {exc.message}"), kind="error", provider=exc.provider
         )
         return
     except Exception as exc:  # 没预料到的错误：只记类型名，不把内容（可能带 key）返回给前端
         logger.exception("规划任务出错")
-        job.error = LLMErrorOut(code="internal_error", message=f"程序出错（{type(exc).__name__}），请看后端日志。", retryable=False)
+        job.error = LLMErrorOut(code="internal_error", message=L(f"程序出错（{type(exc).__name__}），请看后端日志。", f"Program error ({type(exc).__name__}); see the backend log."), retryable=False)
         job.status = "failed"
         conversations.add_message(job.conversation_id, "assistant", job.error.message, kind="error")
         return
@@ -172,16 +174,17 @@ async def send_message(
     factory: Factory,
 ) -> SendMessageResponse:
     if conversations.get(conversation_id) is None:
-        raise HTTPException(status_code=404, detail=f"没有这段对话：{conversation_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这段对话：{conversation_id}", f"No such conversation: {conversation_id}"))
     content = request.content.strip()
     if not content:
-        raise HTTPException(status_code=400, detail="消息是空的")
+        raise HTTPException(status_code=400, detail=L("消息是空的", "The message is empty"))
     running = jobs.running_for(conversation_id)
     if running is not None:
-        raise HTTPException(status_code=409, detail=f"上一条消息还在规划中（{running.id}），等它完成再发")
+        raise HTTPException(status_code=409, detail=L(f"上一条消息还在规划中（{running.id}），等它完成再发", f"The previous message is still being planned ({running.id}); wait for it to finish"))
     message = conversations.add_message(conversation_id, "user", content)
     job = jobs.create(conversation_id, request.provider)
-    background.add_task(_run, job, content, factory, conversations)
+    # 任务按发消息时的语言跑：反问、校验说明、模型写的理由都用这种语言（中英双语）
+    background.add_task(run_in_lang, current_lang(), _run, job, content, factory, conversations)
     return SendMessageResponse(messageId=message.id, planningJobId=job.id, status=job.status)
 
 
@@ -189,13 +192,13 @@ async def send_message(
 async def get_planning_job(job_id: str, jobs: Jobs) -> PlanningJobOut:
     job = jobs.get(job_id)
     if job is None:
-        raise HTTPException(status_code=404, detail=f"没有这个规划任务：{job_id}（后端重启过的话，任务会丢，结果在对话里）")
+        raise HTTPException(status_code=404, detail=L(f"没有这个规划任务：{job_id}（后端重启过的话，任务会丢，结果在对话里）", f"No such planning job: {job_id} (jobs are lost if the backend restarted; results are in the conversation)"))
     return PlanningJobOut(
         jobId=job.id,
         conversationId=job.conversation_id,
         status=job.status,
         stage=job.stages[-1] if job.stages else None,
-        stages=[PlanningStageOut(id=s, label=STAGE_LABELS.get(s, s)) for s in job.stages],
+        stages=[PlanningStageOut(id=s, label=stage_label(s)) for s in job.stages],
         kind=job.kind,  # type: ignore[arg-type]
         reply=job.reply,
         provider=job.used_provider or job.provider,
@@ -209,7 +212,7 @@ async def get_planning_job(job_id: str, jobs: Jobs) -> PlanningJobOut:
 async def get_itinerary_version(version_id: str, itineraries: Itineraries) -> ItineraryVersion:
     version = itineraries.get_version(version_id)
     if version is None:
-        raise HTTPException(status_code=404, detail=f"没有这份行程：{version_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这份行程：{version_id}", f"No such trip: {version_id}"))
     return version
 
 
@@ -217,7 +220,11 @@ async def get_itinerary_version(version_id: str, itineraries: Itineraries) -> It
 async def get_planning_round(round_id: str, rounds: Rounds, itineraries: Itineraries) -> PlanningRoundOut:
     found = rounds.get_round(round_id)
     if found is None:
-        raise HTTPException(status_code=404, detail=f"没有这一轮方案：{round_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这一轮方案：{round_id}", f"No such planning round: {round_id}"))
+    # 侧重名按当前请求的语言（中英双语），旧记录存的是当时的语言
+    found = found.model_copy(
+        update={"plans": [p.model_copy(update={"label": EMPHASES[p.emphasis].label}) if p.emphasis in EMPHASES else p for p in found.plans]}
+    )
     shown = [p for p in found.plans if p.shown and p.versionId]
     versions = [v for v in (itineraries.get_version(p.versionId) for p in shown if p.versionId) if v is not None]
     comparison = compare_plans([p.label for p in shown], versions) if versions else None

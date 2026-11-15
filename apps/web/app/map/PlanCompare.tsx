@@ -2,6 +2,8 @@
 
 import type { PlanningRound } from "@wuhanmemory/shared";
 import { NoteButton, Paper, PaperMark, PaperTitle, Rule, Soft } from "@/components/ui";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT, modelName } from "@/lib/i18n";
 import s from "./map.module.css";
 
 interface Props {
@@ -20,16 +22,27 @@ export function PlanCompare({ round, picked, onPick }: Props) {
   const hidden = round.plans.filter((p) => !p.shown);
   const cmp = round.comparison;
   const notes = cmp ? cmp.rows.filter((r) => r.note) : [];
+  const lang = useLang();
+  const t = makeT(lang);
 
   return (
-    <Paper kind="card" tilt={1} as="section" aria-label="方案对比">
+    <Paper kind="card" tilt={1} as="section" aria-label={t("方案对比", "Plan comparison")}>
       <PaperMark>
-        第 {round.roundNumber} 轮 · {round.providerLabel} · 排了 {round.plans.length} 份，展示 {shown.length} 份
+        {t(
+          `第 ${round.roundNumber} 轮 · ${round.providerLabel} · 排了 ${round.plans.length} 份，展示 ${shown.length} 份`,
+          `Round ${round.roundNumber} · ${modelName(round.providerLabel, lang)} · ${round.plans.length} planned, ${shown.length} shown`
+        )}
       </PaperMark>
-      <PaperTitle level={3}>{shown.length > 1 ? "几份方案对比" : shown.length === 1 ? "这一轮的方案" : "这一轮没有能展示的方案"}</PaperTitle>
+      <PaperTitle level={3}>
+        {shown.length > 1
+          ? t("几份方案对比", "Comparing the plans")
+          : shown.length === 1
+            ? t("这一轮的方案", "This round's plan")
+            : t("这一轮没有能展示的方案", "No plan from this round can be shown")}
+      </PaperTitle>
 
       {shown.length > 1 && (
-        <div className={s.planPick} role="group" aria-label="看哪一份方案">
+        <div className={s.planPick} role="group" aria-label={t("看哪一份方案", "Which plan to view")}>
           {shown.map((p, i) => (
             <NoteButton key={p.emphasis} pressed={picked === i} onClick={() => onPick(i)}>
               {p.label}
@@ -41,11 +54,11 @@ export function PlanCompare({ round, picked, onPick }: Props) {
       {cmp && cmp.labels.length > 1 && (
         <div className={s.compareWrap}>
           <table className={s.compare}>
-            <caption className="sr-only">几份方案的对比，数字由程序算</caption>
+            <caption className="sr-only">{t("几份方案的对比，数字由程序算", "Comparison of the plans; numbers computed by the program")}</caption>
             <thead>
               <tr>
                 <th scope="col">
-                  <span className="sr-only">项目</span>
+                  <span className="sr-only">{t("项目", "Item")}</span>
                 </th>
                 {cmp.labels.map((label, i) => (
                   <th key={label} scope="col" data-picked={picked === i}>
@@ -61,9 +74,9 @@ export function PlanCompare({ round, picked, onPick }: Props) {
                     {row.label}
                     {row.note && <sup aria-hidden="true">*</sup>}
                   </th>
-                  {row.texts.map((t, i) => (
+                  {row.texts.map((text, i) => (
                     <td key={i} data-picked={picked === i}>
-                      {t}
+                      {text}
                     </td>
                   ))}
                 </tr>
@@ -76,7 +89,9 @@ export function PlanCompare({ round, picked, onPick }: Props) {
         <ul className={s.compareNotes}>
           {notes.map((r) => (
             <li key={r.key}>
-              * {r.label}：{r.note}
+              * {r.label}
+              {t("：", ": ")}
+              {r.note}
             </li>
           ))}
         </ul>
@@ -85,18 +100,23 @@ export function PlanCompare({ round, picked, onPick }: Props) {
       {hidden.length > 0 && (
         <>
           <Rule dashed />
-          <p className={s.issuesHead}>没展示的 {hidden.length} 份</p>
+          <p className={s.issuesHead}>{t(`没展示的 ${hidden.length} 份`, `${hidden.length} not shown`)}</p>
           <ul className={s.hiddenPlans}>
             {hidden.map((p) => (
               <li key={p.emphasis}>
-                <strong>「{p.label}」</strong> {p.removedReason}
+                <strong>{t(`「${p.label}」`, `“${p.label}”`)}</strong> {p.removedReason}
               </li>
             ))}
           </ul>
         </>
       )}
       <p className={s.legend}>
-        <Soft>三种侧重由程序定规则，模型分别排；表里的数字由程序从高德和景点库算出来。</Soft>
+        <Soft>
+          {t(
+            "三种侧重由程序定规则，模型分别排；表里的数字由程序从高德和景点库算出来。",
+            "The program sets the rules for the three emphases and the model plans each one; the numbers in the table are computed by the program from AMap and the place database."
+          )}
+        </Soft>
       </p>
     </Paper>
   );

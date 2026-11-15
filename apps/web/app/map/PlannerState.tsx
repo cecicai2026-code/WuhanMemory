@@ -3,6 +3,8 @@
 import { createContext, Fragment, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import type { LlmProviderId, ValidationStatus } from "@wuhanmemory/shared";
 import { Label } from "@/components/ui";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT, modelName } from "@/lib/i18n";
 
 /**
  * 地图工作台里几处共用的状态：选中的模型（板块 4 的模型选择）和当前行程的校验结果。
@@ -48,10 +50,10 @@ export function usePlannerState(): PlannerState {
   return state;
 }
 
-export const VALIDATION_TEXT: Record<ValidationStatus, string> = {
-  passed: "通过",
-  warning: "有警告",
-  failed: "未通过",
+export const VALIDATION_TEXT: Record<ValidationStatus, { zh: string; en: string }> = {
+  passed: { zh: "通过", en: "passed" },
+  warning: { zh: "有警告", en: "warnings" },
+  failed: { zh: "未通过", en: "failed" },
 };
 
 /**
@@ -60,12 +62,15 @@ export const VALIDATION_TEXT: Record<ValidationStatus, string> = {
  */
 export function PlannerCorner() {
   const { providerLabel, validation, validationBy } = usePlannerState();
+  const lang = useLang();
+  const t = makeT(lang);
   if (!providerLabel && !validation) return null;
   const parts: string[] = [];
-  if (providerLabel) parts.push(`模型 ${providerLabel}`);
+  if (providerLabel) parts.push(t(`模型 ${providerLabel}`, `Model ${modelName(providerLabel, lang)}`));
   if (validation) {
-    const other = validationBy && validationBy !== providerLabel ? `${validationBy}排的行程 ` : "";
-    parts.push(`${other}校验 ${VALIDATION_TEXT[validation]}`);
+    const by = validationBy && validationBy !== providerLabel ? validationBy : null;
+    const v = VALIDATION_TEXT[validation];
+    parts.push(t(`${by ? `${by}排的行程 ` : ""}校验 ${v.zh}`, `${by ? `${modelName(by, lang)}'s trip, ` : ""}check: ${v.en}`));
   }
   // 每一段不在中间断开；手机上放不下一行时在段与段之间换行
   return (

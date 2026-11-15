@@ -34,18 +34,23 @@ from app.services.llm.factory import get_llm_gateway
 from app.services.llm.gateway import LLMGateway
 from app.services.planning.compare_runner import DEFAULT_PROVIDERS, ModelComparer, NeedsMoreInfo
 from app.services.planning.emphasis import EMPHASES
-from app.services.planning.pipeline import STAGE_LABELS
+from app.services.planning.pipeline import stage_label
+from app.core.lang import L, current_lang, run_in_lang
 
 logger = logging.getLogger("wuhanmemory.compare")
 
 router = APIRouter(prefix="/api", tags=["comparisons"])
 
-COMPARE_STAGE_LABELS = {
-    **STAGE_LABELS,
-    "understanding": "理解需求（抽一次偏好，两边共用）",
-    "done": "排完了",
-    "saving": "算数字、保存",
+COMPARE_STAGE_LABELS: dict[str, tuple[str, str]] = {
+    "understanding": ("理解需求（抽一次偏好，两边共用）", "Understanding the request (preferences extracted once, shared by both)"),
+    "done": ("排完了", "Done"),
+    "saving": ("算数字、保存", "Computing numbers and saving"),
 }
+
+
+def _stage_label(s: str) -> str:
+    pair = COMPARE_STAGE_LABELS.get(s)
+    return L(*pair) if pair else stage_label(s)
 
 JobStatus = Literal["queued", "running", "completed", "failed"]
 
@@ -140,7 +145,7 @@ class ModelComparisonOut(ModelComparison):
 
 
 def _stages(names: list[str]) -> list[PlanningStageOut]:
-    return [PlanningStageOut(id=s, label=COMPARE_STAGE_LABELS.get(s, s)) for s in names]
+    return [PlanningStageOut(id=s, label=_stage_label(s)) for s in names]
 
 
 # ---------- 任务 ----------
@@ -165,13 +170,13 @@ async def _run(job: CompareJob, factory: PipelineFactory, comparisons: ModelComp
         job.status = "failed"
         return
     except LLMError as exc:
-        job.error = LLMErrorOut(code=exc.code, message=f"抽偏好时模型出错：{exc.message}", retryable=exc.retryable,
+        job.error = LLMErrorOut(code=exc.code, message=L(f"抽偏好时模型出错：{exc.message}", f"The model failed while extracting preferences: {exc.message}"), retryable=exc.retryable,
                                 provider=exc.provider)
         job.status = "failed"
         return
     except Exception as exc:  # 没预料到的错误：只记类型名，不把内容返回给前端
         logger.exception("对比任务出错")
-        job.error = LLMErrorOut(code="internal_error", message=f"程序出错（{type(exc).__name__}），请看后端日志。", retryable=False)
+        job.error = LLMErrorOut(code="internal_error", message=L(f"程序出错（{type(exc).__name__}），请看后端日志。", f"Program error ({type(exc).__name__}); see the backend log."), retryable=False)
         job.status = "failed"
         return
     job.comparison_id = result.id
@@ -195,18 +200,18 @@ async def start_comparison(
 ) -> CompareStartOut:
     text = body.request.strip()
     if not text:
-        raise HTTPException(status_code=400, detail="请求是空的")
+        raise HTTPException(status_code=400, detail=L("请求是空的", "The request is empty"))
     if body.emphasis not in EMPHASES:
-        raise HTTPException(status_code=400, detail=f"没有这种侧重：{body.emphasis}")
+        raise HTTPException(status_code=400, detail=L(f"没有这种侧重：{body.emphasis}", f"No such emphasis: {body.emphasis}"))
     configured = {p.id: p.configured for p in gateway.providers()}
     missing = [p for p in DEFAULT_PROVIDERS if not configured.get(p)]
     if missing:
-        raise HTTPException(status_code=400, detail=f"这些模型还没配置，没法对比：{'、'.join(missing)}")
+        raise HTTPException(status_code=400, detail=L(f"这些模型还没配置，没法对比：{'、'.join(missing)}", f"These models aren't set up yet, so they can't be compared: {', '.join(missing)}"))
     running = jobs.running()
     if running is not None:
-        raise HTTPException(status_code=409, detail=f"上一次对比还在跑（{running.id}），等它完成再发")
+        raise HTTPException(status_code=409, detail=L(f"上一次对比还在跑（{running.id}），等它完成再发", f"The previous comparison is still running ({running.id}); wait for it to finish"))
     job = jobs.create(text, body.emphasis)
-    background.add_task(_run, job, factory, comparisons)
+    background.add_task(run_in_lang, current_lang(), _run, job, factory, comparisons)
     return CompareStartOut(jobId=job.id, status=job.status)
 
 
@@ -214,7 +219,7 @@ async def start_comparison(
 async def get_comparison_job(job_id: str, jobs: CompareJobs, gateway: Gateway) -> CompareJobOut:
     job = jobs.get(job_id)
     if job is None:
-        raise HTTPException(status_code=404, detail=f"没有这个对比任务：{job_id}（后端重启过的话，任务会丢，跑完的结果在历史对比里）")
+        raise HTTPException(status_code=404, detail=L(f"没有这个对比任务：{job_id}（后端重启过的话，任务会丢，跑完的结果在历史对比里）", f"No such comparison job: {job_id} (jobs are lost if the backend restarted; finished results are in past comparisons)"))
     labels = {p.id: p.label for p in gateway.providers()}
     return CompareJobOut(
         jobId=job.id,
@@ -237,7 +242,7 @@ async def list_comparisons(comparisons: Comparisons, limit: int = 50) -> list[Mo
 async def get_comparison(comparison_id: str, comparisons: Comparisons, itineraries: Itineraries) -> ModelComparisonOut:
     found = comparisons.get(comparison_id)
     if found is None:
-        raise HTTPException(status_code=404, detail=f"没有这次对比：{comparison_id}")
+        raise HTTPException(status_code=404, detail=L(f"没有这次对比：{comparison_id}", f"No such comparison: {comparison_id}"))
     repo: ItineraryRepository = itineraries
     versions = [repo.get_version(s.versionId) if s.versionId else None for s in found.sides]
     return ModelComparisonOut(**found.model_dump(), versions=versions)

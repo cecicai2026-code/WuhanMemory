@@ -1,0 +1,223 @@
+{
+  "id": "tanhualin",
+  "translatedBy": "Claude（AI）从中文资料翻译，未经人工核对",
+  "translatedAt": "2026-11-15",
+  "texts": {
+    "name": {
+      "zh": "昙华林",
+      "en": "Tanhualin"
+    },
+    "district": {
+      "zh": "武昌区",
+      "en": "Wuchang District"
+    },
+    "tags.0": {
+      "zh": "老街",
+      "en": "Old street"
+    },
+    "tags.1": {
+      "zh": "近代建筑",
+      "en": "Modern-era architecture"
+    },
+    "tags.2": {
+      "zh": "文艺",
+      "en": "Arts"
+    },
+    "tags.3": {
+      "zh": "拍照",
+      "en": "Photography"
+    },
+    "tags.4": {
+      "zh": "夜景",
+      "en": "Night views"
+    },
+    "tags.5": {
+      "zh": "免费",
+      "en": "Free"
+    },
+    "tags.6": {
+      "zh": "亲子",
+      "en": "Family-friendly"
+    },
+    "address.value": {
+      "zh": "武汉市武昌区昙华林（东起中山路，西至得胜桥，全长约 1200 米）",
+      "en": "Tanhualin, Wuchang District, Wuhan (from Zhongshan Road in the east to Deshengqiao in the west, about 1,200 m long)"
+    },
+    "intro.value": {
+      "zh": "武昌老城的「活着的近代史书」，1200 米长的街上叠着 50 多栋百年建筑：教堂、医院、教会学校、名人公馆和江夏民居混在一起。现在是咖啡馆、手作店和展馆的聚集地，白天文艺、晚上亮灯更好看。",
+      "en": "Old Wuchang's \"living book of modern history\": more than 50 century-old buildings stacked along a 1,200 m street—churches, hospitals, mission schools, residences of famous figures and Jiangxia-style houses all mixed together. Today it's a cluster of cafés, craft shops and exhibition spaces; arty by day, even better when the lights come on at night."
+    },
+    "history.value": {
+      "zh": "昙华林是明洪武四年（1371 年）武昌城扩建定型后逐渐形成的老街，距今六百多年。明清时期是郡王府邸、军队营地、官府衙门、贡院书塾聚集地；近代是英美意等国传教、办学、行医之地，1895 年英国传道士杨格非在此开设仁济医院。街区内有 52 处历史建筑（一说 59 处），被称为「街头历史博物馆」。2005 年起分三期修缮，2024 年春三期开放，52 处百年建筑全部完成升级；2025 年接待游客 1218 万人次，为国家级旅游休闲街区。",
+      "en": "Tanhualin is an old street that gradually took shape after the Wuchang city walls were extended and fixed in the fourth year of the Hongwu reign of the Ming dynasty (1371), more than six hundred years ago. In the Ming and Qing dynasties it was a cluster of princes' mansions, army camps, government offices, examination halls and schools; in the modern era it was where British, American, Italian and other missionaries preached, ran schools and practised medicine—in 1895 the British missionary Griffith John opened Renji Hospital here. The quarter has 52 historic buildings (some say 59) and is called a \"street museum of history\". Restoration began in 2005 in three phases; phase three opened in spring 2024, completing the upgrade of all 52 century-old buildings. In 2025 it received 12.18 million visitors, and it is a national-level tourism and leisure quarter."
+    },
+    "openingHours.value.note": {
+      "zh": "街区全天开放；店铺多为 10:00—21:00；展馆多为 9:00—17:00。",
+      "en": "The quarter is open all day; most shops open 10:00–21:00; most exhibition spaces 9:00–17:00."
+    },
+    "ticket.value.note": {
+      "zh": "优惠：不适用（开放式街区）；部分展馆特展 20—50 元。 免票：街区免费；翟雅阁博物馆免费，部分特展收费。 手作体验、咖啡馆、文创为自费项目。",
+      "en": "Concessions: not applicable (open street quarter); some special exhibitions cost ¥20–50. Free: the quarter is free; the Zhaiyage Museum is free, with charges for some special exhibitions. Craft workshops, cafés and creative goods are paid."
+    },
+    "reservation.value.note": {
+      "zh": "街区无需预约，直接进入；部分展馆（如翟雅阁）可能需预约，个别纪念馆需在官方公众号预约。",
+      "en": "No booking needed for the quarter; walk straight in. Some exhibition spaces (such as Zhaiyage) may need booking, and a few memorial halls need booking on their official WeChat accounts."
+    },
+    "transport.value.metro.0.station": {
+      "zh": "昙华林武胜门",
+      "en": "Tanhualin Wushengmen"
+    },
+    "transport.value.metro.0.line": {
+      "zh": "5 号线",
+      "en": "Line 5"
+    },
+    "transport.value.metro.0.exit": {
+      "zh": "A",
+      "en": "A"
+    },
+    "transport.value.metro.1.station": {
+      "zh": "螃蟹岬",
+      "en": "Pangxiejia"
+    },
+    "transport.value.metro.1.line": {
+      "zh": "2/7 号线",
+      "en": "Lines 2/7"
+    },
+    "transport.value.metro.1.exit": {
+      "zh": "E",
+      "en": "E"
+    },
+    "transport.value.note": {
+      "zh": "地铁 5 号线「昙华林武胜门」站 A 口出，步行约 300 米进西段（市集、网红店集中）；或地铁 2/7 号线「螃蟹岬」站 E 口出，步行约 800 米进东段（安静、老建筑多）。公交 573、717 至「中山路解放路」站。",
+      "en": "Metro Line 5, Tanhualin Wushengmen station, exit A, about 300 m on foot into the west section (markets and trendy shops); or Metro Lines 2/7, Pangxiejia station, exit E, about 800 m on foot into the east section (quiet, more old buildings). Buses 573, 717 to the Zhongshan Road Jiefang Road stop."
+    },
+    "bestTime.value": {
+      "zh": "工作日上午 9:00—16:00 人少光好；傍晚 18:30—21:00 灯笼亮起，夜景最好看。",
+      "en": "Weekdays 9:00–16:00 have fewer people and good light; 18:30–21:00 in the evening, when the lanterns light up, is the best time for night views."
+    },
+    "photoSpots.0.value.title": {
+      "zh": "武胜门涂鸦墙",
+      "en": "Wushengmen graffiti wall"
+    },
+    "photoSpots.0.value.description": {
+      "zh": "5 号线昙华林武胜门站 A 口。地铁口巨型彩色涂鸦，正面平拍或稍微仰拍，色彩最满",
+      "en": "Exit A of Tanhualin Wushengmen station on Line 5. A giant colourful mural at the metro exit; shoot it head-on or slightly upward for the fullest colour."
+    },
+    "photoSpots.1.value.title": {
+      "zh": "彩虹阶梯",
+      "en": "Rainbow steps"
+    },
+    "photoSpots.1.value.description": {
+      "zh": "主街中段。马卡龙七色台阶，从下往上俯拍，把青石板和鲜花一起收进画面",
+      "en": "Midway along the main street. Seven macaron-coloured steps; shoot from below looking up the steps, getting the bluestone paving and flowers into the frame."
+    },
+    "photoSpots.2.value.title": {
+      "zh": "凤凰山城墙 / 山顶观景台",
+      "en": "Fenghuang Hill city wall / hilltop viewpoint"
+    },
+    "photoSpots.2.value.description": {
+      "zh": "街区西侧山上，可乘山地小火车。俯瞰整片红瓦屋顶与武昌天际线，蓝调时刻最好",
+      "en": "On the hill on the west side of the quarter; there's a small mountain train. Look down over all the red-tiled roofs and the Wuchang skyline; best in the blue hour."
+    },
+    "photoSpots.3.value.title": {
+      "zh": "小昙昙邮局",
+      "en": "Xiao Tantan Post Office"
+    },
+    "photoSpots.3.value.description": {
+      "zh": "西段主街。寄明信片盖专属戳，门口拍复古信箱",
+      "en": "On the main street in the west section. Send a postcard with a special postmark; photograph the vintage postbox at the door."
+    },
+    "photoSpots.4.value.title": {
+      "zh": "翟雅阁",
+      "en": "Zhaiyage"
+    },
+    "photoSpots.4.value.description": {
+      "zh": "东段。百年建筑里的艺术展览，外立面拱窗与红砖",
+      "en": "In the east section. Art exhibitions in a century-old building; arched windows and red brick on the façade."
+    },
+    "food.0.value.name": {
+      "zh": "赵师傅油饼包烧麦",
+      "en": "Master Zhao's Youbing Bao Shaomai"
+    },
+    "food.0.value.note": {
+      "zh": "隔壁粮道街总店，武汉招牌早点，步行约 5—8 分钟（按「隔壁/步行 5 分钟」口径取上限）",
+      "en": "The main shop is on neighbouring Liangdao Street; a signature Wuhan breakfast (fried flatbread wrapped around shaomai). About 5–8 minutes on foot (the upper end of \"next door / 5 minutes' walk\")."
+    },
+    "food.1.value.name": {
+      "zh": "徐刀刀铜锣烧 / 老武汉冰粉",
+      "en": "Xu Daodao Dorayaki / Old Wuhan bingfen"
+    },
+    "food.1.value.note": {
+      "zh": "街区内小店，边走边吃",
+      "en": "Small shops in the quarter; eat as you walk."
+    },
+    "food.2.value.name": {
+      "zh": "粮道街小吃",
+      "en": "Liangdao Street snacks"
+    },
+    "food.2.value.note": {
+      "zh": "热干面、油饼包烧麦、三鲜豆皮扎堆，价格比主街实惠",
+      "en": "Hot dry noodles, youbing bao shaomai and three-delicacy doupi all in one place, cheaper than the main street."
+    },
+    "photos.0.caption": {
+      "zh": "昙华林夜景俯瞰",
+      "en": "Tanhualin at night from above"
+    },
+    "photos.0.author": {
+      "zh": "今日头条 / 原作者",
+      "en": "Toutiao / original author"
+    },
+    "photos.0.licenseNote": {
+      "zh": "出处：今日头条《武汉200多项文旅大餐陪您过大年》（2026-02）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao, \"200-plus culture and tourism treats in Wuhan for the New Year\" (2026-02). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.1.caption": {
+      "zh": "武胜门涂鸦楼",
+      "en": "The Wushengmen graffiti building"
+    },
+    "photos.1.author": {
+      "zh": "@Cheano奇诺 / 湖北日报",
+      "en": "@Cheano奇诺 / Hubei Daily"
+    },
+    "photos.1.licenseNote": {
+      "zh": "出处：湖北日报（转载小红书 @Cheano奇诺）。媒体转载图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Hubei Daily (reposted from Xiaohongshu user @Cheano奇诺). Media repost; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.2.caption": {
+      "zh": "一朵春天彩虹阶梯",
+      "en": "\"A Touch of Spring\" rainbow steps"
+    },
+    "photos.2.author": {
+      "zh": "长江日报",
+      "en": "Changjiang Daily"
+    },
+    "photos.2.licenseNote": {
+      "zh": "出处：长江日报（昙华林打卡点报道）。新闻媒体图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Changjiang Daily (report on Tanhualin photo spots). News media image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.3.caption": {
+      "zh": "山顶阶梯夜景",
+      "en": "Hilltop steps at night"
+    },
+    "photos.3.author": {
+      "zh": "今日头条 / 摄影师",
+      "en": "Toutiao / photographer"
+    },
+    "photos.3.licenseNote": {
+      "zh": "出处：今日头条（昙华林图集）。平台作者图，商用需授权。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Toutiao (Tanhualin gallery). Platform author's image; commercial use requires permission. The source link is an image address saved by Doubao, not the original page."
+    },
+    "photos.4.caption": {
+      "zh": "复古电话亭与邮筒墙",
+      "en": "Vintage phone box and postbox wall"
+    },
+    "photos.4.author": {
+      "zh": "武汉市文化和旅游局",
+      "en": "Wuhan Municipal Bureau of Culture and Tourism"
+    },
+    "photos.4.licenseNote": {
+      "zh": "出处：武汉市文化和旅游局（头条号）。官方发布，转载需注明来源。来源链接是豆包保存的图片地址，不是原始页面。",
+      "en": "Source: Wuhan Municipal Bureau of Culture and Tourism (Toutiao account). Officially published; reposting requires credit. The source link is an image address saved by Doubao, not the original page."
+    }
+  }
+}

@@ -34,6 +34,8 @@ from app.services.llm.base import (
     ProviderReply,
 )
 from app.services.llm.collect import note_call
+from app.core.lang import L
+from app.services.llm.providers import label_en
 from app.services.llm.errors import (
     LLMError,
     LLMNotConfiguredError,
@@ -224,7 +226,7 @@ class LLMGateway:
         try:
             if not provider.is_configured():
                 raise LLMNotConfiguredError(
-                    f"{provider.label}还没有配置：apps/api/.env 里缺 key 或模型名", provider=provider.name
+                    L(f"{provider.label}还没有配置：apps/api/.env 里缺 key 或模型名", f"{label_en(provider.name)} isn't set up: apps/api/.env is missing the key or model name"), provider=provider.name
                 )
 
             messages = [
@@ -251,7 +253,7 @@ class LLMGateway:
                     payload, parsed = _parse_output(reply, schema)
                 except _OutputProblem as second:
                     raise LLMOutputFormatError(
-                        f"{provider.label}重答一次后输出仍然不合格：{second.description}",
+                        L(f"{provider.label}重答一次后输出仍然不合格：{second.description}", f"{label_en(provider.name)}'s output was still invalid after one retry: {second.description}"),
                         provider=provider.name,
                         raw_output=reply.text,
                     ) from None
@@ -320,12 +322,12 @@ class LLMGateway:
             raise
         except TimeoutError:
             raise LLMTimeoutError(
-                f"{provider.label}在 {self.timeout_seconds:g} 秒内没有回答", provider=provider.name
+                L(f"{provider.label}在 {self.timeout_seconds:g} 秒内没有回答", f"{label_en(provider.name)} didn't answer within {self.timeout_seconds:g} s"), provider=provider.name
             ) from None
         except Exception as exc:
             # 只记异常的类型，不记它的内容，免得把请求里的东西带进日志
             raise LLMProviderError(
-                f"{provider.label}调用出错（{type(exc).__name__}）", provider=provider.name
+                L(f"{provider.label}调用出错（{type(exc).__name__}）", f"{label_en(provider.name)} call failed ({type(exc).__name__})"), provider=provider.name
             ) from None
 
     def _wait_seconds(self, exc: LLMError, attempt: int) -> float:
