@@ -57,7 +57,11 @@
 - [ ] Cecilia 在 GitHub Desktop 推送 main；决定仓库公开还是邀请学校查看。
 - [x] 上线办法：Cecilia 选了 D，香港轻量服务器（2026-11-15）。在分支 `deploy-hk` 上准备（从 main 的 `6a94f9b` 分出来）：
   - [x] 浏览器只连网站一个地址：`/api`、`/_AMapService`、`/media` 由网站转给后端（本机靠 `next.config.ts` 的 rewrites，服务器上靠 Caddy）。前端类型检查通过；Claude 在浏览器面板看过地图工作台、照片、分享页、我的行程，浏览器的请求都只到 localhost:3000。
-  - [ ] 部署步骤和脚本：Claude 列了要定的几件事，等 Cecilia 选。
+  - [x] 部署的五个选择 Cecilia 都按推荐（2026-11-15）：内存 2G 以上的 Ubuntu 24.04、买域名、只读部署密钥从 GitHub 拉代码、Caddy、两个 systemd 服务。
+  - [x] 部署说明 `docs/operations/deploy-hk.md` 和 `infra/deploy/`（Caddyfile、两个服务文件、`update.sh`）。脚本做过语法检查；Caddy 和 systemd 的配置本机没法跑，要在服务器上才验证得了。
+  - [x] 自查时发现：服务器 `.env` 打开公开模式后，17 个测试会被口令和次数限制拦住，更新脚本会停在测试那一步。加了 `tests/conftest.py`，测试默认用本机模式；用 `PUBLIC_MODE=true` 和平常各跑一遍，都是 419 个通过。
+  - [ ] `deploy-hk` 合进 main 并推送（服务器拉的是 GitHub 上的 main）。
+  - [ ] Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
 - [ ] 还要 Cecilia 定的：截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
