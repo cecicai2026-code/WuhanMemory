@@ -25,10 +25,13 @@
   flex: 1;
   min-height: 0;
   padding: 28px;
+  /* 窗口很矮时纸装不下对话记录加输入区：整张纸可以滚动，不让"发送"掉到纸外面 */
+  overflow-y: auto;
 }
 .log {
   flex: 1;
-  min-height: 0;
+  /* 至少留出小标题和标题的高度 */
+  min-height: 4.5em;
   overflow-y: auto;
 }
 .ask {
@@ -449,6 +452,8 @@
 }
 .modelsNote {
   margin: 6px 0 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
   color: var(--ink-soft);
 }
 .pingResult {
@@ -540,5 +545,13 @@
   }
   .col .chat {
     padding: 20px;
+  }
+  /* 手机上纸只有不到半屏高：对话记录少留一点，"试一句是临时的"这行说明不显示，
+     这样模型选择、输入横线和"发送"不用滚动就都在纸上 */
+  .log {
+    min-height: 3.6em;
+  }
+  .tryNote {
+    display: none;
   }
 }

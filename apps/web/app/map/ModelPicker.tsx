@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import type { LlmError, LlmPing, LlmProviderId, LlmProviders } from "@wuhanmemory/shared";
-import { PencilNote } from "@/components/ui";
 import s from "./map.module.css";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -197,7 +196,7 @@ export function ModelPicker({ value, onChange }: Props) {
             </p>
           </>
         )}
-        {ping.kind === "idle" && !noneConfigured && <PencilNote>试一句是临时的，板块 5 接上对话后去掉</PencilNote>}
+        {ping.kind === "idle" && !noneConfigured && <p className={`${s.modelsNote} ${s.tryNote}`}>试一句是临时的，板块 5 接上对话后去掉</p>}
       </div>
     </fieldset>
   );
