@@ -19,7 +19,10 @@ export default async function Page() {
     if (pois.length === 0) poisError = "后端没有返回景点。运行 corepack pnpm check:data 看看景点资料有没有错误。";
   } catch (err) {
     if (!(err instanceof ApiUnavailableError)) throw err;
-    poisError = `${err.message}，所以地图上没有景点。先启动后端：corepack pnpm dev:api`;
+    poisError =
+      process.env.NODE_ENV === "development"
+        ? `${err.message}，所以地图上没有景点。先启动后端：corepack pnpm dev:api`
+        : "网站的后台暂时连不上，所以地图上没有景点。请稍后刷新。";
   }
   return (
     <PlannerStateProvider>

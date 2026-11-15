@@ -9,7 +9,6 @@ import { AmapProvider } from "@/lib/map/amap-provider";
 import type { PinOverride } from "@/lib/itinerary-map";
 import s from "./map.module.css";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 const JS_KEY = process.env.NEXT_PUBLIC_AMAP_JS_KEY ?? "";
 /** 武汉市中心附近，地图在框住景点之前先放在这里 */
 const WUHAN_CENTER = { lng: 114.3055, lat: 30.5928 };
@@ -54,7 +53,8 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
 
     const provider = new AmapProvider({
       jsKey: JS_KEY,
-      serviceHost: `${API_BASE}/_AMapService`,
+      // 安全密钥代理：浏览器连网站自己的 /_AMapService，网站转给后端加上安全密钥
+      serviceHost: `${window.location.origin}/_AMapService`,
       classes: { pin: s.pin, pinHead: s.pinHead, pinLabel: s.pinLabel },
     });
     let cancelled = false;

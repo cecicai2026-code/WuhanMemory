@@ -28,8 +28,14 @@ export default async function Page({ params }: Props) {
         <Paper as="section">
           <PaperMark>笔记本</PaperMark>
           <PaperTitle>行程暂时取不到</PaperTitle>
-          <p>{err.message}。行程由后端提供，请先启动后端再刷新：</p>
-          <pre>cd ~/WuhanMemory-project2 && corepack pnpm dev:api</pre>
+          {process.env.NODE_ENV === "development" ? (
+            <>
+              <p>{err.message}。行程由后端提供，请先启动后端再刷新：</p>
+              <pre>cd ~/WuhanMemory-project2 && corepack pnpm dev:api</pre>
+            </>
+          ) : (
+            <p>网站的后台暂时连不上，请稍后刷新。</p>
+          )}
         </Paper>
       </Scene>
     );
