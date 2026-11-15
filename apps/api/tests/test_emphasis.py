@@ -86,9 +86,16 @@ def test_classic_keeps_everything_and_makes_5a_must_visit() -> None:
 
 
 def test_classic_respects_avoid_and_user_must_visit_first() -> None:
+    """用户点名了必去时，以用户点名的为准：5A 不再标成必去，只排在前面（2026-11-15 Cecilia 定，评测 r07）。"""
     c = cands("classic", avoid=["测试景点lake"], mustVisit=["测试景点snack"])
     assert "lake" not in c.pois
-    assert c.must_visit == ["snack", "tower", "museum"]
+    assert c.must_visit == ["snack"]
+    assert list(c.pois)[:3] == ["snack", "tower", "museum"]
+
+
+def test_classic_user_named_5a_stays_must_visit() -> None:
+    c = cands("classic", mustVisit=["测试景点museum"])
+    assert c.must_visit == ["museum"]
 
 
 def test_relaxed_uses_the_same_candidates() -> None:
@@ -141,6 +148,24 @@ def test_classic_missing_5a_is_an_error() -> None:
 def test_classic_with_all_5a_passes() -> None:
     d = draft([("tower", "09:00", "10:30"), ("museum", "11:00", "13:00"), ("lake", "14:00", "16:00")])
     assert check("classic", d) == []
+
+
+def test_classic_with_user_must_visit_skipped_5a_is_a_warning() -> None:
+    """用户点名了必去：没排的 5A 是警告，不是错误（r07：一天、必去武大，加上 5A 一天可能排不下）。"""
+    d = draft([("snack", "09:00", "11:00"), ("tower", "12:00", "15:00")])
+    issues = check("classic", d, mustVisit=["测试景点snack"])
+    assert codes(issues) == ["emphasis-5a-skipped", "emphasis-5a-skipped"]
+    assert all(i.level == "warning" for i in issues)
+    assert {i.poiId for i in issues} == {"museum", "lake"}
+    assert "你点名了必去的景点" in issues[0].message
+
+
+def test_classic_user_named_5a_missing_is_still_an_error() -> None:
+    d = draft([("snack", "09:00", "11:00")])
+    issues = check("classic", d, mustVisit=["测试景点museum"])
+    errors = [i for i in issues if i.level == "error"]
+    assert codes(errors) == ["emphasis-must-5a"] and errors[0].poiId == "museum"
+    assert sorted(i.poiId for i in issues if i.level == "warning") == ["lake", "tower"]
 
 
 def test_classic_does_not_require_avoided_5a() -> None:

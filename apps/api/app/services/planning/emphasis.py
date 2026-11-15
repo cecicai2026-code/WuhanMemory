@@ -5,6 +5,8 @@
 
 规则（2026-11-15 Cecilia 定，数值是初值）：
 - 经典必去：开放的景点全部做候选，带"5A"标签的排前面；5A 景点都必须排进去（用户说不去的除外）。
+  2026-11-15 补充（评测 r07）：用户点名了必去的景点时，以用户点名的为准，5A 不再是必去；
+  没排进去的 5A 只给警告。用户点名的 5A 照样必须排进去。
 - 轻松少走路：节奏按"轻松"（每天最长 8 小时）；每天最多 3 站；每天 17:30 前离开最后一站；
   每天站与站之间步行加起来不超过 2 公里（含公交地铁换乘、进出站的步行）；步行超过 10 分钟就改公交地铁或打车。
 - 深度文化：候选只给有文化类标签的景点；每站停留不少于建议游玩时长。
@@ -46,8 +48,8 @@ EMPHASES: dict[str, Emphasis] = {
         id="classic",
         label="经典必去",
         prompt=(
-            "这份方案的侧重是「经典必去」：第一次来武汉最该看的地方。标了 mustVisit 的景点（包括 5A 景点）一个都不能少，"
-            "其余按顺路程度补充。"
+            "这份方案的侧重是「经典必去」：第一次来武汉最该看的地方。标了 mustVisit 的景点一个都不能少；"
+            "没标 mustVisit 的 5A 景点（tags 里有 5A）排得下就排，排不下可以不去；其余按顺路程度补充。"
         ),
     ),
     "relaxed": Emphasis(
@@ -79,7 +81,8 @@ def candidates_for(emphasis: Emphasis, base: Candidates, library: Sequence[PoiFi
     del library  # 预留：以后侧重可能要从全库里补候选
     if emphasis.id == "classic":
         five_a = [pid for pid, poi in base.pois.items() if FIVE_A_TAG in poi.tags]
-        must = list(base.must_visit) + [pid for pid in five_a if pid not in base.must_visit]
+        # 用户点名了必去：以用户的为准，5A 只排在前面；没点名：5A 都是必去
+        must = list(base.must_visit) if base.must_visit else five_a
         order = sorted(base.pois, key=lambda pid: (pid not in base.must_visit, pid not in five_a))
         return replace(base, pois={pid: base.pois[pid] for pid in order}, must_visit=must)
     if emphasis.id == "culture":
@@ -131,10 +134,14 @@ def check_emphasis(
 
     if emphasis.id == "classic":
         used = {s.poiId for d in draft.days for s in d.stops}
-        for pid in candidates.must_visit:
-            poi = pois.get(pid)
-            if poi is not None and FIVE_A_TAG in poi.tags and pid not in used:
+        for pid, poi in pois.items():
+            if FIVE_A_TAG not in poi.tags or pid in used:
+                continue
+            if pid in candidates.must_visit:
                 err("emphasis-must-5a", f"5A 景点{poi.name}没有排进去，这份方案要求 5A 景点都去。", poiId=pid)
+            else:
+                # 用户点名了必去的景点，5A 就不强求（2026-11-15 Cecilia 定，评测 r07）
+                warn("emphasis-5a-skipped", f"5A 景点{poi.name}没有排进去。你点名了必去的景点，所以 5A 排不下时可以不去。", poiId=pid)
 
     elif emphasis.id == "relaxed":
         for day in draft.days:

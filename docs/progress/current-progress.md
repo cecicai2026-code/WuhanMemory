@@ -40,7 +40,8 @@
 - [x] 第 4 步：`/trips` 和 `/trips/[versionId]`，后端加 `GET /api/itinerary-versions/{id}/share`（1 个测试，后端测试 403 个通过）。Claude 在浏览器面板里试了：给"轻松少走路"第 2 版生成链接、撤回，撤回后打开显示"这个链接已经撤回"；没通过的版本写"不能分享"，打开只显示问题清单；手机宽度正常；改过的 `/map` 照常画路线和图钉。前端类型检查通过。
 - [x] 第 5 步：文档：`api-contracts.md`（分享、我的行程）、`data-model.md` 第 13 节、`frontend-ux.md`、设计规范 9.3 和 9.3.1。
 - [ ] 第 6 步：全站检查清单，Cecilia 定改哪些。
-- [ ] 第 7 步：r07（做法 A：点名必去优先）。
+- [x] 第 7 步：r07 选做法 A（点名必去优先）：用户点名了必去时，经典必去只要求用户点名的；没排进去的 5A 是警告 `emphasis-5a-skipped`。提示词同步改了。4 个测试先写，后端测试 406 个通过。ADR 0005 追加更新，`ai-planning-pipeline.md` 的侧重表已改。之前的评测结果文件保留原样；要不要重跑评测由 Cecilia 定。
+  - 改的时候发现：除了经典必去里的 5A，"用户点名必去"本身没有校验规则（轻松、深度文化两份漏了用户点名的景点不会报错）。这次没改，等 Cecilia 定要不要加。
 - [ ] 第 8 到 11 步：README、项目说明（先给提纲）、上线办法比较、演示步骤清单。
 - [ ] Cecilia 运行 `pnpm build`。
 
@@ -378,7 +379,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 板块 6、6B、6C 已合进 main（`dc9f5be`）。Cecilia 在 GitHub Desktop 推送 main。现在做板块 7 的主体（分支 `block-7-share`），做完再做板块 1B（立体场景）。
 
-还没定的：经典必去要求 5A 都去，和点名必去放在一起时一天可能排不下（评测 r07），要不要放宽；5B 没做的几项（见上面）以后再排。
+r07 的冲突已定（板块 7，点名必去优先）。5B 没做的几项（见上面）以后再排。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
