@@ -67,7 +67,7 @@ function Sheet({ side, version, only }: { side: SideResult; version: ItineraryVe
         <SideStamp side={side} />
         {q && (
           <p className={s.firstLine}>
-            第一版{q.firstPassed ? "没有错误" : `${q.firstErrorCount} 条错误`}
+            第一版{q.firstPassed ? "没有错误" : ` ${q.firstErrorCount} 条错误`}
             {q.repaired ? (q.finalPassed ? "，修正一次后通过" : `，修正一次后还有 ${q.finalErrorCount} 条`) : ""}
           </p>
         )}
