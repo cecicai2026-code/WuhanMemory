@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.schemas.planning import TravelerPreferences, TripFrame, ValidationReport
+from app.schemas.planning import PlanDraft, TravelerPreferences, TripFrame, ValidationReport
 from app.schemas.poi import Coordinates, OpeningHours, Payment, Reservation, Ticket
 from app.schemas.poi_api import FactOut
 from app.schemas.route import RouteOut
@@ -86,6 +86,8 @@ class ItineraryVersionData(BaseModel):
     days: list[ItineraryDay]
     validation: ValidationReport
     planner: PlannerInfo
+    # 模型最后一轮的原始输出。没通过校验时 days 里可能缺了不存在的景点，原样留着给板块 6 对比
+    draft: PlanDraft
     # 资料状态（过期、待确认）按哪一天算的
     dataAsOf: date
 

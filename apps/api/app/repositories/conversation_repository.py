@@ -14,6 +14,8 @@ from app.db.sqlite import connect, init_schema
 from app.schemas.planning import TravelerPreferences
 
 Role = Literal["user", "assistant"]
+# 回复的种类：question 反问；itinerary 带出行程（通过或有警告）；failed 修正后仍未通过；error 模型或程序出错
+ReplyKind = Literal["question", "itinerary", "failed", "error"]
 
 
 class StoredMessage(BaseModel):
@@ -21,6 +23,9 @@ class StoredMessage(BaseModel):
     role: Role
     content: str
     createdAt: datetime
+    kind: ReplyKind | None = None
+    # 反问时问了什么，例如 ["days", "date"]
+    asked: list[str] = []
     provider: str | None = None
     itineraryVersionId: str | None = None
 
@@ -47,6 +52,8 @@ class ConversationRepository(Protocol):
         role: Role,
         content: str,
         *,
+        kind: ReplyKind | None = None,
+        asked: list[str] | None = None,
         provider: str | None = None,
         itinerary_version_id: str | None = None,
     ) -> StoredMessage: ...
@@ -120,17 +127,29 @@ class SqliteConversationRepository:
         role: Role,
         content: str,
         *,
+        kind: ReplyKind | None = None,
+        asked: list[str] | None = None,
         provider: str | None = None,
         itinerary_version_id: str | None = None,
     ) -> StoredMessage:
         created = _now()
+        asked = asked or []
         conn = self._conn()
         try:
             with conn:
                 cur = conn.execute(
-                    "INSERT INTO conversation_messages (conversation_id, role, content, created_at, provider,"
-                    " itinerary_version_id) VALUES (?, ?, ?, ?, ?, ?)",
-                    (conversation_id, role, content, created.isoformat(), provider, itinerary_version_id),
+                    "INSERT INTO conversation_messages (conversation_id, role, content, created_at, kind, asked, provider,"
+                    " itinerary_version_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        conversation_id,
+                        role,
+                        content,
+                        created.isoformat(),
+                        kind,
+                        ",".join(asked) or None,
+                        provider,
+                        itinerary_version_id,
+                    ),
                 )
                 message_id = int(cur.lastrowid or 0)
         finally:
@@ -140,6 +159,8 @@ class SqliteConversationRepository:
             role=role,
             content=content,
             createdAt=created,
+            kind=kind,
+            asked=asked,
             provider=provider,
             itineraryVersionId=itinerary_version_id,
         )
@@ -158,6 +179,8 @@ class SqliteConversationRepository:
                 role=r["role"],
                 content=r["content"],
                 createdAt=datetime.fromisoformat(r["created_at"]),
+                kind=r["kind"],
+                asked=r["asked"].split(",") if r["asked"] else [],
                 provider=r["provider"],
                 itineraryVersionId=r["itinerary_version_id"],
             )

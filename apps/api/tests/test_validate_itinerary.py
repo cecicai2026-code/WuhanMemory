@@ -13,36 +13,11 @@ from app.schemas.planning import PlanDraft, TripFrame, ValidationReport
 from app.schemas.poi import PoiFile
 from app.schemas.route import RouteOut
 from app.services.planning.validate import validate_itinerary
-from tests.poi_factory import good_poi
+from tests.poi_factory import clean_poi, good_poi, hours
 
 TODAY = date(2026, 11, 15)
 MONDAY = date(2026, 11, 16)
 TUESDAY = date(2026, 11, 17)
-
-
-def clean_poi(poi_id: str, **changes: Any) -> dict[str, Any]:
-    """一份校验时不会产生任何警告的测试景点：用到的资料都核实过、没过期。
-    开放时间：周二到周日 09:00–17:00，最晚 16:00 入场，周一闭馆；建议游玩 120 分钟。"""
-    poi = good_poi(poi_id)
-    poi["name"] = f"测试景点{poi_id}"
-    for field in ("openingHours", "reservation"):
-        poi[field]["verification"] = "confirmed"
-    poi["payment"] = {
-        "value": {"methods": ["wechat"]},
-        "verification": "confirmed",
-        "sourceId": "official",
-        "lastCheckedAt": "2026-11-10",
-        "expiresAt": "2027-05-01",
-    }
-    for key, value in changes.items():
-        poi[key] = value
-    return poi
-
-
-def hours(value: dict[str, Any] | None, verification: str = "confirmed", expires: str = "2027-02-08") -> dict[str, Any]:
-    if value is None:
-        return {"value": None, "verification": "todo", "todo": "TODO(Cecilia): 测试"}
-    return {"value": value, "verification": verification, "sourceId": "official", "lastCheckedAt": "2026-11-10", "expiresAt": expires}
 
 
 def library(*pois: dict[str, Any]) -> dict[str, PoiFile]:

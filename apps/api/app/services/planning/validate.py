@@ -156,7 +156,7 @@ def _check_stop(
     """检查一站，返回 (到达, 离开) 的分钟数；时间格式不对返回 None。"""
     poi = pois.get(stop.poiId)
     if poi is None:
-        c.error("unknown-poi", f"第 {d} 天的景点 id「{stop.poiId}」不在景点库里。", dayNumber=d, poiId=stop.poiId)
+        c.error("unknown-poi", f"第 {d} 天的景点 id「{stop.poiId}」不在候选景点里（只能从景点库给出的候选里选）。", dayNumber=d, poiId=stop.poiId)
 
     name = poi.name if poi else stop.poiId
     arrive, leave = parse_hhmm(stop.arrive), parse_hhmm(stop.leave)

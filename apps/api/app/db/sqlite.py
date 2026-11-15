@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS conversation_messages (
     role                 TEXT NOT NULL,  -- user / assistant
     content              TEXT NOT NULL,
     created_at           TEXT NOT NULL,
+    kind                 TEXT,           -- 回复的种类：question / itinerary / failed / error（用户消息为空）
+    asked                TEXT,           -- 反问时问了什么：days、date，逗号分隔
     provider             TEXT,           -- 这条回复用的模型（用户消息为空）
     itinerary_version_id TEXT            -- 这条回复带出的行程版本
 );
@@ -130,5 +132,16 @@ def connect(path: Path) -> sqlite3.Connection:
     return conn
 
 
+# 表建好以后又加的列。CREATE TABLE IF NOT EXISTS 不会给已有的表加列，所以在这里补。
+_ADDED_COLUMNS = (
+    ("conversation_messages", "kind", "TEXT"),
+    ("conversation_messages", "asked", "TEXT"),
+)
+
+
 def init_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA)
+    for table, column, decl in _ADDED_COLUMNS:
+        existing = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+        if column not in existing:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {decl}")

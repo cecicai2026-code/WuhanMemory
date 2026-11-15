@@ -72,6 +72,7 @@ def version_data(status: str = "warning", provider: str = "qwen", title: str = "
                 "firstRoundStatus": status,
                 "firstRoundErrors": 1 if status == "failed" else 0,
             },
+            "draft": {"days": [{"dayNumber": 1, "stops": [{"poiId": "a", "arrive": "09:30", "leave": "11:30"}]}]},
             "dataAsOf": "2026-11-15",
         }
     )
@@ -121,11 +122,29 @@ def test_conversation_preferences_and_messages(tmp_path: Path) -> None:
     repo.save_preferences(conv.id, TravelerPreferences(days=2, interests=["历史"], transport="metro"))
     repo.set_itinerary(conv.id, "itin_x")
     repo.add_message(conv.id, "user", "武汉两天")
-    repo.add_message(conv.id, "assistant", "排好了", provider="qwen", itinerary_version_id="ver_x")
+    repo.add_message(conv.id, "assistant", "想玩几天？", kind="question", asked=["days", "date"], provider="qwen")
+    repo.add_message(conv.id, "assistant", "排好了", kind="itinerary", provider="qwen", itinerary_version_id="ver_x")
 
     got = repo.get(conv.id)
     assert got is not None and got.preferences.days == 2 and got.itineraryId == "itin_x"
     msgs = repo.messages(conv.id)
-    assert [m.role for m in msgs] == ["user", "assistant"]
-    assert msgs[1].provider == "qwen" and msgs[1].itineraryVersionId == "ver_x"
+    assert [m.role for m in msgs] == ["user", "assistant", "assistant"]
+    assert msgs[1].asked == ["days", "date"] and msgs[0].asked == [] and msgs[0].kind is None
+    assert msgs[2].kind == "itinerary" and msgs[2].provider == "qwen" and msgs[2].itineraryVersionId == "ver_x"
+
+
+def test_added_columns_reach_an_old_table(tmp_path: Path) -> None:
+    """dev 数据库里已经有不带 kind、asked 两列的旧表时，启动时补上。"""
+    db = tmp_path / "old.db"
+    conn = sqlite3.connect(db)
+    conn.execute(
+        "CREATE TABLE conversation_messages (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id TEXT NOT NULL,"
+        " role TEXT NOT NULL, content TEXT NOT NULL, created_at TEXT NOT NULL, provider TEXT, itinerary_version_id TEXT)"
+    )
+    conn.commit()
+    conn.close()
+    repo = SqliteConversationRepository(db)
+    conv = repo.create()
+    repo.add_message(conv.id, "assistant", "想玩几天？", kind="question", asked=["days"])
+    assert repo.messages(conv.id)[0].asked == ["days"]
     assert repo.get("conv_nope") is None
