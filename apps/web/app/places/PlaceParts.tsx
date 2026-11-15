@@ -3,12 +3,12 @@
  */
 import type { ReactNode } from "react";
 import type { FoodItem, PhotoSpot, PoiFact, PoiPhoto, Review } from "@wuhanmemory/shared";
-import { Paper, PaperTitle, PencilNote, Soft, Stamp } from "@/components/ui";
+import { Paper, PaperTitle, PencilNote, Soft } from "@/components/ui";
 import { SOURCE_TYPE_TEXT, VERIFICATION_TEXT, formatDate } from "@/lib/format-poi";
 import { photoUrl } from "@/lib/places";
 import s from "./places.module.css";
 
-/** 一条信息下面的小字：怎么核实的、来源、核实日期、有效期，以及待确认或已过期的章 */
+/** 一条信息下面的小字：怎么核实的、来源、核实日期、有效期。条目旁不盖章，章只盖在整张纸的右下角 */
 export function FactMeta({ fact }: { fact: PoiFact<unknown> }) {
   if (fact.status === "missing") return null;
   const src = fact.source;
@@ -33,9 +33,6 @@ export function FactMeta({ fact }: { fact: PoiFact<unknown> }) {
           {fact.status === "expired" ? "已于" : "有效至"} {formatDate(fact.expiresAt)}
           {fact.status === "expired" ? " 过期" : ""}
         </span>
-      )}
-      {(fact.status === "pending" || fact.status === "expired") && (
-        <Stamp status={fact.status} className={s.metaStamp} />
       )}
     </span>
   );

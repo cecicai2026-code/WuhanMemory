@@ -81,7 +81,8 @@ function renderEntry(poi: PoiDetail, key: FieldKey, label: string): ReactNode {
  * 一个景点的详情：普通网页版，数据来自 GET /api/pois/{id}。
  * 四个主题（景点概览、游玩建议、景点图册、周边美食）是同一页上的四张信纸，上沿的索引用锚点跳转，
  * 所以 /places/yellow-crane-tower#tips 这样的地址可以直接分享。
- * 每个条目下面写着怎么核实的、来源和核实日期；官网占位的盖"待确认"，过期的盖"已过期"。
+ * 每个条目下面写着怎么核实的、来源和核实日期；过期的把过期日期加粗。
+ * 条目旁不盖章，每张纸只在右下角盖一个章：有过期的盖"已过期"，有待确认或待补充的盖"待确认"。
  * 数据里没有的条目显示手写的"待补充"，不编内容。
  */
 export default async function Page({ params }: Props) {
@@ -125,7 +126,7 @@ export default async function Page({ params }: Props) {
         </nav>
 
         <p className={s.legend}>
-          已核实：实地核实或核对过来源。待确认：先按官网填的占位。已过期：过了有效期，要重新核实。状态按 {formatDate(asOf)} 计算。
+          已核实：实地核实或核对过来源。待确认：先用官网、旅游平台或媒体资料占位，还没核实。已过期：过了有效期，要重新核实。状态按 {formatDate(asOf)} 计算。
         </p>
 
         <div className={s.sheets}>

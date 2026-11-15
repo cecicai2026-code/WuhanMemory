@@ -174,11 +174,6 @@
   color: var(--ink);
   font-weight: 700;
 }
-.metaStamp {
-  font-size: var(--size-label);
-  padding: 0 6px;
-  border-width: 1.5px;
-}
 .items {
   display: grid;
   gap: 10px;
