@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 4 做完，等 Cecilia 同意合进 main）
+最后更新: 2026-11-15（板块 4 完成）
 
 ## 当前阶段
 
@@ -19,7 +19,7 @@
 
 **板块 3（已完成，2026-11-15 合进 main）**：高德地图（2D/3D、图钉、卡片）、后端路线规划（步行、公交地铁、驾车）、SQLite 路线缓存、`/map` 上临时的"两点之间怎么走"。分支 `block-3-amap-routes` 保留。
 
-**板块 4（代码完成，还没合进 main）**：千问和豆包通过 `LLMGateway` 真实调用和切换。在分支 `block-4-llm-gateway` 上。两个模型的冒烟测试已通过（2026-11-15）；界面 Claude 已在浏览器面板里看过，`pnpm build` 通过；还差 Cecilia 同意合并。
+**板块 4（已完成，2026-11-15 合进 main）**：千问和豆包通过 `LLMGateway` 真实调用和切换（超时、重试、限流等待、输出修复、调用记录），接口 `GET /api/llm/providers`，冒烟测试脚本，`/map` 上的模型选择和临时的"试一句"。分支 `block-4-llm-gateway` 保留。
 
 ## 板块 4 完成情况
 
@@ -35,7 +35,7 @@
 - [x] 文档：`llm-provider-gateway.md` 按代码重写，ADR 0002 追加 2026-11-15 更新，`api-contracts.md`"模型"一节，`data-model.md` 第 11 节，`frontend-ux.md`、`system-architecture.md`。
 - [x] Cecilia 重启了后端（改完 `.env` 要重启才生效），Claude 在浏览器面板看了 `/map`（电脑、平板、手机三种宽度，Cecilia 同意，两个模型各点了一次"试一句"，共 2 次真实调用）：千问 `qwen-plus` 987 毫秒，切到豆包后是 `doubao-seed-2-1-pro-260915` 4.5 秒，两边都回了一句问候；上次选的模型刷新后还在。修了一处：模型这一栏把输入区撑高，窗口矮的时候"发送"被挤到纸外面。现在纸装不下时整张纸可以滚动，手机上不显示"试一句是临时的"那行说明，"发送"不用滚动就在纸上。
 - [x] Cecilia 运行 `pnpm build`，通过（2026-11-15）。
-- [ ] Cecilia 同意后合进 main。
+- [x] Cecilia 同意，合进 main（2026-11-15）。合并后在 main 上后端测试 199 个通过，前端类型检查通过。
 
 板块 4 留给后面的事：
 
@@ -207,7 +207,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 4 收尾：Cecilia 同意后合进 main。然后是板块 5：AI 规划链路和行程校验。
+板块 5：AI 规划链路和行程校验（核心）。开工前新建分支。规划链路调用模型时只通过 `get_llm_gateway()` 拿到的 `LLMGateway`；板块 4 留下的几件事见上面"板块 4 留给后面的事"。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
