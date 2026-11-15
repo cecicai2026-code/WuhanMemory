@@ -156,6 +156,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
             error={versionError}
             shownDay={shownDay}
             onShowDay={setShownDay}
+            shareable
           />
           <RouteFinder pois={pois} shown={shownRoute?.mode ?? null} onShow={setShownRoute} />
         </div>

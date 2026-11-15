@@ -103,6 +103,16 @@ export function publishShare(versionId: string): Promise<ShareLink> {
   return call(`/api/itinerary-versions/${encodeURIComponent(versionId)}/share`, { method: "POST" });
 }
 
+/** 这个版本现在没撤回的分享链接；没有时返回 null */
+export async function getVersionShare(versionId: string): Promise<ShareLink | null> {
+  try {
+    return await call<ShareLink>(`/api/itinerary-versions/${encodeURIComponent(versionId)}/share`);
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 404) return null;
+    throw err;
+  }
+}
+
 export function revokeShare(slug: string): Promise<ShareLink> {
   return call(`/api/share/${encodeURIComponent(slug)}`, { method: "DELETE" });
 }
