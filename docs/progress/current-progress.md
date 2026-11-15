@@ -17,7 +17,7 @@
 
 **板块 2（已完成，2026-11-15 合进 main）**：景点数据格式、数据检查脚本、SQLite 导入和接口、地点档案接真实接口。10 个景点的资料全部是占位（官网、旅游平台、媒体），实地核实等 Cecilia 以后去了再补。分支 `block-2-poi-data` 保留。
 
-**板块 3（进行中，分支 `block-3-amap-routes`）**：高德地图和路线。代码写完了，等 Cecilia 装依赖、启动网站看页面。
+**板块 3（进行中，分支 `block-3-amap-routes`）**：高德地图和路线。页面看过了，等 Cecilia 定汉口江滩的点、跑 `pnpm build`。
 
 ## 板块 3 完成情况
 
@@ -29,9 +29,9 @@
 - [x] 后端路线：高德路径规划 2.0 三种方式，SQLite 缓存 `route_cache`，接口 `GET /api/routes/compare`、`GET /api/routes`。后端测试 77 个通过。
 - [x] `/map` 上临时的"两点之间怎么走"。
 - [x] 文档：`api-contracts.md`、`data-model.md` 第 10 节、`system-architecture.md`、`frontend-ux.md`。
-- [ ] Cecilia 安装 `@amap/amap-jsapi-loader`（装好之前前端类型检查会报找不到这个包）。
-- [ ] 启动网站看 `/map`：地图、图钉、卡片、拨杆、两点之间的路线。
-- [ ] 用真实返回核对公交路线的折线和线路名（官方文档没写清公交折线的结构，解析写得比较宽，高德原始返回存在 `route_cache.raw_json`）。
+- [x] Cecilia 安装了 `@amap/amap-jsapi-loader`，前端类型检查通过。
+- [x] Claude 在浏览器面板看了 `/map`（电脑、平板、手机三种宽度，Cecilia 同意）：地图、10 个图钉、卡片、拨杆、手机默认 2D 都正常。修了三处：框住景点偏松、开发模式下重复建地图、加载慢被当成出错。
+- [x] 用真实返回核对了路线（Cecilia 同意 Claude 点「查路线」，黄鹤楼到湖北省博物馆调用高德 3 次）：公交折线是 `{"polyline": "..."}` 对象，解析正确，线路名是"轨道交通5号线 → 轨道交通8号线"；驾车 `taxi_cost` 是字符串，解析正确。
 - [ ] Cecilia 在地图上看汉口江滩的点对不对（板块 2 留下的）。
 - [ ] `pnpm build`、合进 main。
 
