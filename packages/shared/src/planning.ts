@@ -116,6 +116,94 @@ export interface ItineraryVersion {
   planner: PlannerInfo;
   /** 资料状态按哪一天算的 */
   dataAsOf: string;
+  /** 板块 5B：这份方案的侧重；之前存的版本为 null */
+  emphasis?: Emphasis | null;
+  /** 程序算的数字，比较方案用；之前存的版本为 null */
+  metrics?: PlanMetrics | null;
+}
+
+/** 三种侧重：经典必去、轻松少走路、深度文化 */
+export type Emphasis = "classic" | "relaxed" | "culture";
+
+export interface StopTicket {
+  dayNumber: number;
+  poiId: string;
+  name: string;
+  /** 都为 null 表示资料里没有票价 */
+  minCny: number | null;
+  maxCny: number | null;
+  label: string;
+}
+
+export interface DayMetrics {
+  dayNumber: number;
+  stopCount: number;
+  end: string | null;
+  transportMinutes: number;
+  walkingMeters: number;
+  walkingUnknownLegs: number;
+}
+
+/** 一份方案的数字，程序从行程快照算的 */
+export interface PlanMetrics {
+  poiIds: string[];
+  poiNames: string[];
+  stopCount: number;
+  transportMinutes: number;
+  minutesByMode: Record<string, number>;
+  unknownLegs: number;
+  walkingMeters: number;
+  walkingUnknownLegs: number;
+  tickets: StopTicket[];
+  ticketMinCny: number;
+  ticketMaxCny: number;
+  ticketComplete: boolean;
+  validationStatus: ValidationStatus;
+  errorCount: number;
+  warningCount: number;
+  rounds: number;
+  days: DayMetrics[];
+}
+
+/** 对比表的一行：每份方案一格，texts 是程序写好的显示文字 */
+export interface ComparisonRow {
+  key: string;
+  label: string;
+  texts: string[];
+  values: (number | null)[];
+  note: string | null;
+}
+
+export interface PlanComparison {
+  labels: string[];
+  rows: ComparisonRow[];
+}
+
+/** 一轮里的一份方案 */
+export interface RoundPlan {
+  emphasis: Emphasis;
+  label: string;
+  itineraryId: string | null;
+  versionId: string | null;
+  shown: boolean;
+  /** 不展示的原因 */
+  removedReason: string | null;
+}
+
+/** 一次规划产生的一轮方案（GET /api/planning-rounds/{id}） */
+export interface PlanningRound {
+  id: string;
+  createdAt: string;
+  conversationId: string;
+  roundNumber: number;
+  provider: string;
+  providerLabel: string;
+  plans: RoundPlan[];
+  defaultsUsed: string[];
+  /** 展示的几份方案的版本，顺序和 plans 里 shown 的一致 */
+  versions: ItineraryVersion[];
+  /** 展示的几份之间的比较表；一份都没展示时为 null */
+  comparison: PlanComparison | null;
 }
 
 export type ReplyKind = "question" | "itinerary" | "failed" | "error";
@@ -128,6 +216,8 @@ export interface ConversationMessage {
   kind: ReplyKind | null;
   provider: string | null;
   itineraryVersionId: string | null;
+  /** 板块 5B：这条回复带出的那一轮方案 */
+  planningRoundId?: string | null;
 }
 
 export interface Conversation {
@@ -161,5 +251,6 @@ export interface PlanningJob {
   reply: string | null;
   provider: string | null;
   itineraryVersionId: string | null;
+  planningRoundId?: string | null;
   error: LlmError | null;
 }

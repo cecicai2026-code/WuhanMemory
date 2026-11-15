@@ -1,7 +1,7 @@
 /**
  * 浏览器里调用对话和规划接口（板块 5）。字段说明见 docs/architecture/api-contracts.md 的"对话和规划"一节。
  */
-import type { Conversation, ItineraryVersion, PlanningJob, SendMessageResponse } from "@wuhanmemory/shared";
+import type { Conversation, ItineraryVersion, PlanningJob, PlanningRound, SendMessageResponse } from "@wuhanmemory/shared";
 
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
@@ -61,4 +61,8 @@ export function getJob(jobId: string): Promise<PlanningJob> {
 
 export function getVersion(versionId: string): Promise<ItineraryVersion> {
   return call(`/api/itinerary-versions/${encodeURIComponent(versionId)}`);
+}
+
+export function getRound(roundId: string): Promise<PlanningRound> {
+  return call(`/api/planning-rounds/${encodeURIComponent(roundId)}`);
 }

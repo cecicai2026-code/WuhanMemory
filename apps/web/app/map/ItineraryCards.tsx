@@ -17,6 +17,7 @@ import s from "./map.module.css";
 
 const WEEKDAY = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 const MODE_TEXT = { walk: "步行", transit: "公交地铁", drive: "打车" } as const;
+const EMPHASIS_TEXT = { classic: "经典必去", relaxed: "轻松少走路", culture: "深度文化" } as const;
 /** 这几种问题说的是两站之间的交通，标在交通那一行，不标在景点上 */
 const LEG_CODES = new Set(["overlap", "transport-too-short", "transport-tight", "route-unknown", "route-stale"]);
 /** 这两种问题在每条资料旁边已经用"待确认""待补充"标出来了，景点下面不再重复 */
@@ -218,7 +219,9 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay }:
     <>
       <Paper kind="card" tilt={-1} as="section" aria-label="行程总卡">
         <div className={s.cardHead}>
-          <PaperMark>行程 · 第 {v.versionNumber} 版</PaperMark>
+          <PaperMark>
+            {v.emphasis ? `${EMPHASIS_TEXT[v.emphasis]} · ` : "行程 · "}第 {v.versionNumber} 版
+          </PaperMark>
           {stamp}
         </div>
         <PaperTitle level={3}>{failed ? "这份行程没通过校验" : v.title}</PaperTitle>

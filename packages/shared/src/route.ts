@@ -20,6 +20,8 @@ export interface Route {
   status: "ok" | "none" | "error";
   durationMinutes: number | null;
   distanceMeters: number | null;
+  /** 要走的路（米）：步行是全程，公交地铁是换乘和进出站的步行，打车是 0；旧缓存里没有时为 null */
+  walkingDistanceMeters?: number | null;
   cost: RouteCost | null;
   /** 公交地铁坐哪几条线 */
   summary: string | null;

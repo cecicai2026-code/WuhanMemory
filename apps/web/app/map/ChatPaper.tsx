@@ -35,8 +35,8 @@ function store(id: string | null) {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 interface Props {
-  /** 回复带出了一个行程版本（通过、有警告或未通过） */
-  onVersion: (versionId: string) => void;
+  /** 回复带出了一轮方案（板块 5B），或者一个行程版本（板块 5 存的旧回复） */
+  onResult: (result: PlanResult) => void;
   /** 开了新对话：清掉右边的行程 */
   onReset: () => void;
 }
@@ -46,7 +46,16 @@ interface Props {
  * 用户的话发给后端，带上选中的模型；后端交给规划链路，这里每秒问一次进行到哪一步，
  * 只显示后端真的走过的步骤，不预先画出没发生的步骤。
  */
-export function ChatPaper({ onVersion, onReset }: Props) {
+/** 一条回复带出的结果：新的回复是一轮方案；板块 5 存的旧回复只有一个版本 */
+export type PlanResult = { roundId: string } | { versionId: string };
+
+function resultOf(m: { planningRoundId?: string | null; itineraryVersionId: string | null }): PlanResult | null {
+  if (m.planningRoundId) return { roundId: m.planningRoundId };
+  if (m.itineraryVersionId) return { versionId: m.itineraryVersionId };
+  return null;
+}
+
+export function ChatPaper({ onResult, onReset }: Props) {
   const { provider, setProvider } = usePlannerState();
   const [labels, setLabels] = useState<Record<string, string>>({});
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -71,8 +80,8 @@ export function ChatPaper({ onVersion, onReset }: Props) {
         if (closed) return;
         setConversationId(conv.conversationId);
         setLines(conv.messages.map((m) => ({ ...m, key: `m${m.id}` })));
-        const last = [...conv.messages].reverse().find((m) => m.itineraryVersionId);
-        if (last?.itineraryVersionId) onVersion(last.itineraryVersionId);
+        const last = [...conv.messages].reverse().map(resultOf).find((r) => r !== null);
+        if (last) onResult(last);
         if (conv.runningJobId) {
           // 刷新前发的那条还在规划中：接着显示进度
           setStartedAt(Date.now());
@@ -120,7 +129,8 @@ export function ChatPaper({ onVersion, onReset }: Props) {
         add({ role: "assistant", content: `模型调用出错：${current.error?.message ?? "未知错误"}`, kind: "error", provider: current.error?.provider ?? null });
       } else {
         add({ role: "assistant", content: current.reply ?? "", kind: current.kind, provider: current.provider });
-        if (current.itineraryVersionId) onVersion(current.itineraryVersionId);
+        const result = resultOf(current);
+        if (result) onResult(result);
       }
     } catch (err) {
       setProblem(err instanceof Error ? err.message : String(err));
