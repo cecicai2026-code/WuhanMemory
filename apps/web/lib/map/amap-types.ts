@@ -25,6 +25,8 @@ export interface AMapMap extends AMapEventTarget {
   setStatus(status: { pitchEnable?: boolean; rotateEnable?: boolean }): void;
   setBounds(bounds: AMapBounds, immediately?: boolean, avoid?: [number, number, number, number]): void;
   setMapStyle(style: string): void;
+  /** 底图上地名的语言：zh_cn 中文，en 英文，zh_en 中英 */
+  setLang(lang: "zh_cn" | "en" | "zh_en"): void;
   setZoomAndCenter(zoom: number, center: LngLatTuple, immediately?: boolean, duration?: number): void;
   add(overlay: unknown | unknown[]): void;
   remove(overlay: unknown | unknown[]): void;
@@ -56,6 +58,7 @@ export interface AMapNamespace {
       pitchEnable?: boolean;
       rotateEnable?: boolean;
       showBuildingBlock?: boolean;
+  lang?: "zh_cn" | "en" | "zh_en";
     },
   ) => AMapMap;
   Marker: new (opts: {

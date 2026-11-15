@@ -7,6 +7,8 @@ import type { PoiSummary } from "@wuhanmemory/shared";
 import { Label, Paper, PaperMark, PaperTitle, Soft, Stamp, TextLink } from "@/components/ui";
 import { AmapProvider } from "@/lib/map/amap-provider";
 import type { PinOverride } from "@/lib/itinerary-map";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT } from "@/lib/i18n";
 import s from "./map.module.css";
 
 const JS_KEY = process.env.NEXT_PUBLIC_AMAP_JS_KEY ?? "";
@@ -42,6 +44,11 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
   const [mode, setMode] = useState<MapMode>("2d");
   const [selected, setSelected] = useState<string | null>(null);
   const [cardHost, setCardHost] = useState<HTMLDivElement | null>(null);
+  const lang = useLang();
+  const t = makeT(lang);
+  // 地图只建一次；建的时候用当时的语言，之后换语言由下面的 effect 调 setLang
+  const langRef = useRef(lang);
+  langRef.current = lang;
 
   // 加载地图，只做一次
   useEffect(() => {
@@ -56,6 +63,7 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
       // 安全密钥代理：浏览器连网站自己的 /_AMapService，网站转给后端加上安全密钥
       serviceHost: `${window.location.origin}/_AMapService`,
       classes: { pin: s.pin, pinHead: s.pinHead, pinLabel: s.pinLabel },
+      lang: langRef.current,
     });
     let cancelled = false;
     const slowTimer = window.setTimeout(() => {
@@ -97,6 +105,11 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
     if (load.kind === "ready") providerRef.current?.setMode(mode);
   }, [load, mode]);
 
+  // 换语言：底图地名跟着换；图钉由上面的 effect 重放（pois 换成了新语言的名字）
+  useEffect(() => {
+    if (load.kind === "ready") providerRef.current?.setLang(lang);
+  }, [load, lang]);
+
   // 路线：画上去，并把镜头移到正好框住这条路线
   useEffect(() => {
     const provider = providerRef.current;
@@ -129,27 +142,30 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
     <>
       <div className={s.lightbox}>
         <div className={s.glass}>
-          <div ref={boxRef} className={s.map} aria-label="武汉地图" role="region" />
+          <div ref={boxRef} className={s.map} aria-label={t("武汉地图", "Map of Wuhan")} role="region" />
           {load.kind === "loading" && (
             <p className={s.notice} role="status">
-              <Label>灯箱</Label> 地图加载中……
+              <Label>{t("灯箱", "Light box")}</Label> {t("地图加载中……", "Loading the map…")}
               {load.slow && (
                 <>
                   <br />
-                  加载得比较慢。可能是网络慢；如果一直不出来，看看后端有没有启动（地图请求要经过后端加安全密钥）。
+                  {t(
+                    "加载得比较慢。可能是网络慢；如果一直不出来，看看后端有没有启动（地图请求要经过后端加安全密钥）。",
+                    "This is taking a while. The network may be slow; if it never appears, check that the backend is running (map requests go through the backend to add the security key)."
+                  )}
                 </>
               )}
             </p>
           )}
           {load.kind === "error" && (
             <div className={s.notice} role="alert">
-              <Label>地图没有加载出来</Label>
+              <Label>{t("地图没有加载出来", "The map didn't load")}</Label>
               <p>{load.message}</p>
             </div>
           )}
           {load.kind === "ready" && poisError && (
             <div className={s.notice} role="alert">
-              <Label>没有景点</Label>
+              <Label>{t("没有景点", "No places")}</Label>
               <p>{poisError}</p>
             </div>
           )}
@@ -162,7 +178,7 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
           type="button"
           role="switch"
           aria-checked={mode === "3d"}
-          aria-label="3D 地图"
+          aria-label={t("3D 地图", "3D map")}
           disabled={load.kind !== "ready"}
           onClick={() => setMode(mode === "3d" ? "2d" : "3d")}
         >
@@ -173,18 +189,18 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
       {cardHost &&
         poi &&
         createPortal(
-          <Paper kind="card" className={s.pinCard} aria-label={`${poi.name}的卡片`}>
-            <button className={s.cardClose} type="button" aria-label="关上卡片" onClick={() => setSelected(null)}>
+          <Paper kind="card" className={s.pinCard} aria-label={t(`${poi.name}的卡片`, `Card for ${poi.name}`)}>
+            <button className={s.cardClose} type="button" aria-label={t("关上卡片", "Close the card")} onClick={() => setSelected(null)}>
               ×
             </button>
             <PaperMark>{poi.district}</PaperMark>
             <PaperTitle level={3}>{poi.name}</PaperTitle>
             <span className={s.cardFoot}>
-              <Soft>资料</Soft>
+              <Soft>{t("资料", "Info")}</Soft>
               <Stamp status={poi.status} />
             </span>
             <TextLink href={`/places/${poi.id}`} onPaper>
-              看地点档案 →
+              {t("看地点档案 →", "See the place file →")}
             </TextLink>
           </Paper>,
           cardHost,

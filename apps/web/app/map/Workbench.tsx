@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
 import type { ItineraryVersion, PlanningRound, PoiSummary, Route } from "@wuhanmemory/shared";
 import { NoteButton } from "@/components/ui";
+import { useT } from "@/components/i18n/LangProvider";
 import { itineraryPins, itineraryRoutes, type PinOverride } from "@/lib/itinerary-map";
 import { getRound, getVersion } from "@/lib/planning-client";
 import { ChatPaper, type PlanResult } from "./ChatPaper";
@@ -29,6 +30,7 @@ type Tab = "chat" | "plan";
  */
 export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: string | null }) {
   const { setValidation } = usePlannerState();
+  const t = useT();
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
   const [result, setResult] = useState<PlanResult | null>(null);
@@ -129,25 +131,25 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
       {/* 只在手机上显示：切换底部面板 */}
       <div className={s.tabs}>
         <NoteButton pressed={open && tab === "chat"} onClick={() => choose("chat")}>
-          对话
+          {t("对话", "Chat")}
         </NoteButton>
         <NoteButton pressed={open && tab === "plan"} onClick={() => choose("plan")}>
-          行程
+          {t("行程", "Trip")}
         </NoteButton>
         <button className={s.fold} type="button" aria-expanded={open} onClick={() => setOpen(!open)}>
-          {open ? "收起 ↓" : "展开 ↑"}
+          {open ? t("收起 ↓", "Collapse ↓") : t("展开 ↑", "Expand ↑")}
         </button>
       </div>
 
-      <section className={`${s.col} ${s.chatCol}`} aria-label="对话">
+      <section className={`${s.col} ${s.chatCol}`} aria-label={t("对话", "Chat")}>
         <ChatPaper onResult={setResult} onReset={reset} />
       </section>
 
-      <section className={`${s.col} ${s.mapCol}`} aria-label="地图">
+      <section className={`${s.col} ${s.mapCol}`} aria-label={t("地图", "Map")}>
         <MapPanel pois={pois} poisError={poisError} routes={routes} pins={pins} />
       </section>
 
-      <section className={`${s.col} ${s.planCol}`} aria-label="行程">
+      <section className={`${s.col} ${s.planCol}`} aria-label={t("行程", "Trip")}>
         <div className={s.cards}>
           {round && !versionLoading && <PlanCompare round={round} picked={picked} onPick={pick} />}
           <ItineraryCards

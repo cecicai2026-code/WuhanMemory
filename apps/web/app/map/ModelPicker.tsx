@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import type { LlmProviderId, LlmProviders } from "@wuhanmemory/shared";
-import { backendDownMessage } from "@/lib/backend";
+import { backendDownMessage, backendStatusMessage } from "@/lib/backend";
 import { API_BASE, ApiError } from "@/lib/planning-client";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT, modelName } from "@/lib/i18n";
 import s from "./map.module.css";
 
 /** 上次选的模型记在浏览器里，下次打开还是它。只是个方便，后端不依赖它 */
@@ -34,7 +36,7 @@ async function loadProviders(): Promise<LlmProviders> {
   } catch {
     throw new ApiError(backendDownMessage(), null);
   }
-  if (!res.ok) throw new ApiError(`后端返回 ${res.status}`, res.status);
+  if (!res.ok) throw new ApiError(backendStatusMessage(res.status), res.status);
   return (await res.json()) as LlmProviders;
 }
 
@@ -55,6 +57,8 @@ interface Props {
  */
 export function ModelPicker({ value, onChange, disabled, onLoaded }: Props) {
   const [load, setLoad] = useState<Load>({ kind: "loading" });
+  const lang = useLang();
+  const t = makeT(lang);
 
   useEffect(() => {
     let closed = false;
@@ -82,17 +86,18 @@ export function ModelPicker({ value, onChange, disabled, onLoaded }: Props) {
   if (load.kind === "loading") {
     return (
       <div className={s.models}>
-        <span className={s.modelsLegend}>模型</span>
-        <p className={s.modelsNote}>正在取模型清单……</p>
+        <span className={s.modelsLegend}>{t("模型", "Model")}</span>
+        <p className={s.modelsNote}>{t("正在取模型清单……", "Fetching the model list…")}</p>
       </div>
     );
   }
   if (load.kind === "error") {
     return (
       <div className={s.models}>
-        <span className={s.modelsLegend}>模型</span>
+        <span className={s.modelsLegend}>{t("模型", "Model")}</span>
         <p className={s.routeError} role="alert">
-          没取到模型清单：{load.message}
+          {t("没取到模型清单：", "Couldn't fetch the model list: ")}
+          {load.message}
         </p>
       </div>
     );
@@ -103,7 +108,7 @@ export function ModelPicker({ value, onChange, disabled, onLoaded }: Props) {
 
   return (
     <fieldset className={s.models} disabled={disabled}>
-      <legend className={s.modelsLegend}>模型</legend>
+      <legend className={s.modelsLegend}>{t("模型", "Model")}</legend>
       <div className={s.modelRow}>
         {providers.map((p) => (
           <label
@@ -126,12 +131,16 @@ export function ModelPicker({ value, onChange, disabled, onLoaded }: Props) {
             <span aria-hidden="true" className={s.modelTick}>
               {value === p.id ? "✓" : ""}
             </span>
-            {p.label}
-            {!p.configured && "（没配置）"}
+            {modelName(p.label, lang)}
+            {!p.configured && t("（没配置）", " (not set up)")}
           </label>
         ))}
       </div>
-      {noneConfigured && <p className={s.modelsNote}>两个模型都还没配置：在 apps/api/.env 里填 key，再重启后端。</p>}
+      {noneConfigured && (
+        <p className={s.modelsNote}>
+          {t("两个模型都还没配置：在 apps/api/.env 里填 key，再重启后端。", "Neither model is set up yet: put the keys in apps/api/.env and restart the backend.")}
+        </p>
+      )}
     </fieldset>
   );
 }

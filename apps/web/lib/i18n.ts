@@ -39,3 +39,24 @@ export function makeT(lang: Lang): T {
 export function htmlLang(lang: Lang): string {
   return lang === "en" ? "en" : "zh-CN";
 }
+
+/**
+ * 模型的名字。后端给的是中文名（"通义千问""豆包"），存进行程和对比记录里的也是中文名，
+ * 所以在显示时按名字换成英文，旧记录也能换。不认识的名字原样显示。
+ */
+const MODEL_EN: Record<string, string> = { 通义千问: "Qwen", 千问: "Qwen", 豆包: "Doubao" };
+export function modelName(label: string, lang: Lang): string {
+  return lang === "en" ? (MODEL_EN[label] ?? label) : label;
+}
+
+/**
+ * 浏览器里不在 React 组件中的代码（例如 lib/planning-client.ts）取当前语言：看 <html lang>，
+ * LangProvider 切换语言时会改它。在服务器上调用时返回中文。
+ */
+export function browserLang(): Lang {
+  if (typeof document === "undefined") return "zh";
+  return document.documentElement.lang === "en" ? "en" : "zh";
+}
+
+/** 请求后端时带的语言头。后端按它写提示语、校验说明，规划时让模型用这种语言写理由 */
+export const LANG_HEADER = "X-Lang";

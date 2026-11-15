@@ -6,7 +6,11 @@ import type { RouteColor } from "@wuhanmemory/map-core";
  */
 export const DAY_COLORS: readonly RouteColor[] = ["brass", "paper", "film"];
 
-export const DAY_COLOR_NAMES: Record<RouteColor, string> = { brass: "黄铜", paper: "纸色", film: "胶片橙" };
+export const DAY_COLOR_NAMES: Record<RouteColor, { zh: string; en: string }> = {
+  brass: { zh: "黄铜", en: "brass" },
+  paper: { zh: "纸色", en: "paper" },
+  film: { zh: "胶片橙", en: "film orange" },
+};
 
 export function dayColor(dayNumber: number): RouteColor {
   return DAY_COLORS[(dayNumber - 1) % DAY_COLORS.length];

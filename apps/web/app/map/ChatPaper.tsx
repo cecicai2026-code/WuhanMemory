@@ -7,6 +7,8 @@ import { ApiError, createConversation, getConversation, getJob, sendMessage } fr
 import { ModelPicker } from "./ModelPicker";
 import { usePlannerState } from "./PlannerState";
 import s from "./map.module.css";
+import { useLang } from "@/components/i18n/LangProvider";
+import { makeT, modelName } from "@/lib/i18n";
 
 /** 这段对话的 id 记在浏览器里，刷新页面后接着显示。只是个方便，对话本身存在后端 */
 const STORAGE_KEY = "wuhanmemory.conversation";
@@ -58,6 +60,8 @@ function resultOf(m: { planningRoundId?: string | null; itineraryVersionId: stri
 export function ChatPaper({ onResult, onReset }: Props) {
   const { provider, setProvider } = usePlannerState();
   const [labels, setLabels] = useState<Record<string, string>>({});
+  const lang = useLang();
+  const t = makeT(lang);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [lines, setLines] = useState<Line[]>([]);
   const [draft, setDraft] = useState("");
@@ -126,7 +130,12 @@ export function ChatPaper({ onResult, onReset }: Props) {
         setJob(current);
       }
       if (current.status === "failed") {
-        add({ role: "assistant", content: `模型调用出错：${current.error?.message ?? "未知错误"}`, kind: "error", provider: current.error?.provider ?? null });
+        add({
+          role: "assistant",
+          content: t(`模型调用出错：${current.error?.message ?? "未知错误"}`, `The model call failed: ${current.error?.message ?? "unknown error"}`),
+          kind: "error",
+          provider: current.error?.provider ?? null,
+        });
       } else {
         add({ role: "assistant", content: current.reply ?? "", kind: current.kind, provider: current.provider });
         const result = resultOf(current);
@@ -182,19 +191,24 @@ export function ChatPaper({ onResult, onReset }: Props) {
   return (
     <Paper className={s.chat}>
       <div className={s.log} ref={logRef} aria-live="polite">
-        <PaperMark>打字纸 · 对话</PaperMark>
+        <PaperMark>{t("打字纸 · 对话", "Typing paper · chat")}</PaperMark>
         {lines.length === 0 ? (
           <>
-            <PaperTitle>想怎么玩</PaperTitle>
+            <PaperTitle>{t("想怎么玩", "What kind of trip?")}</PaperTitle>
             <Rule />
-            <p>用日常的话说就行：玩几天、哪天去、喜欢什么、走路多不多。例如“武汉两天，喜欢历史和美食，坐地铁”。</p>
+            <p>
+              {t(
+                "用日常的话说就行：玩几天、哪天去、喜欢什么、走路多不多。例如“武汉两天，喜欢历史和美食，坐地铁”。",
+                "Just say it in everyday words: how many days, when, what you like, how much walking. For example: “Two days in Wuhan, I like history and food, getting around by metro.”"
+              )}
+            </p>
           </>
         ) : (
           <ol className={s.lines}>
             {lines.map((l) => (
               <li key={l.key} className={s.line} data-role={l.role} data-kind={l.kind ?? undefined}>
                 <p>{l.content}</p>
-                {l.role === "assistant" && l.provider && <span className={s.lineWho}>— {labels[l.provider] ?? l.provider}</span>}
+                {l.role === "assistant" && l.provider && <span className={s.lineWho}>— {modelName(labels[l.provider] ?? l.provider, lang)}</span>}
               </li>
             ))}
           </ol>
@@ -202,7 +216,8 @@ export function ChatPaper({ onResult, onReset }: Props) {
         {busy && (
           <div className={s.progress} role="status">
             <p className={s.progressHead}>
-              规划中 · 已等 {elapsed} 秒{provider && labels[provider] ? ` · ${labels[provider]}` : ""}
+              {t(`规划中 · 已等 ${elapsed} 秒`, `Planning · ${elapsed} s so far`)}
+              {provider && labels[provider] ? ` · ${modelName(labels[provider], lang)}` : ""}
             </p>
             <ol className={s.stages}>
               {(job?.stages ?? []).map((st, i, all) => (
@@ -210,18 +225,22 @@ export function ChatPaper({ onResult, onReset }: Props) {
                   <span aria-hidden="true">{i === all.length - 1 ? "…" : "✓"}</span> {st.label}
                 </li>
               ))}
-              {!job?.stages.length && <li data-current>…发给后端</li>}
+              {!job?.stages.length && <li data-current>{t("…发给后端", "…sending to the backend")}</li>}
             </ol>
           </div>
         )}
         {orphan && !busy && (
           <p className={s.routeError} role="status">
-            最后这条没有回复：规划中途后端重启过，这次规划丢了。可以再发一次。
+            {t(
+              "最后这条没有回复：规划中途后端重启过，这次规划丢了。可以再发一次。",
+              "The last message got no reply: the backend restarted mid-plan and this plan was lost. You can send it again."
+            )}
           </p>
         )}
         {problem && (
           <p className={s.routeError} role="alert">
-            没发出去：{problem}
+            {t("没发出去：", "Not sent: ")}
+            {problem}
           </p>
         )}
       </div>
@@ -229,8 +248,8 @@ export function ChatPaper({ onResult, onReset }: Props) {
         <ModelPicker value={provider} onChange={setProvider} disabled={busy} onLoaded={setLabels} />
         <LineInput
           id="ask"
-          label="想怎么玩"
-          placeholder="武汉两天，喜欢历史和美食，坐地铁"
+          label={t("想怎么玩", "What kind of trip?")}
+          placeholder={t("武汉两天，喜欢历史和美食，坐地铁", "Two days in Wuhan, history and food, by metro")}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           disabled={busy}
@@ -239,13 +258,13 @@ export function ChatPaper({ onResult, onReset }: Props) {
         <div className={s.askRow}>
           {lines.length > 0 && !busy ? (
             <button type="button" className={s.restart} onClick={restart}>
-              新对话
+              {t("新对话", "New chat")}
             </button>
           ) : (
-            <PencilNote>{busy ? "规划中" : ""}</PencilNote>
+            <PencilNote>{busy ? t("规划中", "Planning") : ""}</PencilNote>
           )}
           <BrassButton type="submit" disabled={busy || !draft.trim() || !provider}>
-            发送
+            {t("发送", "Send")}
           </BrassButton>
         </div>
       </form>
