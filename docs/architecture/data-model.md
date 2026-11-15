@@ -53,6 +53,7 @@
 | `value` | 内容。不同信息的内容结构不同，见 3.3 |
 | `verification` | 这条信息是怎么来的，见 3.2 |
 | `sourceId` | 来源，指向本文件 `sources` 里的一项。`todo` 不用填 |
+| `extraSourceIds` | 同一条信息还参考了哪些来源（可选，2026-11-15 加）。`sourceId` 写最主要的那个，其余写这里；每个都必须在 `sources` 里 |
 | `lastCheckedAt` | 上次核实的日期。`todo` 不用填，其他都必须有 |
 | `expiresAt` | 过期日期。会变的信息必须有，不会变的不用填 |
 | `todo` | `verification` 为 `todo` 时写明缺什么，例如 `"TODO(Cecilia): 官网没有写学生票"` |
@@ -63,7 +64,7 @@
 | 取值 | 意思 | 界面 |
 |---|---|---|
 | `onsite` | Cecilia 实地核实过。来源必须是 `field-visit` | 已核实 |
-| `confirmed` | Cecilia 核对过官网、公众号或售票页面，但没在现场核实（例如节假日开放时间、预约规则） | 已核实 |
+| `confirmed` | Cecilia 核对过官网、公众号或售票页面，但没在现场核实（例如节假日开放时间、预约规则）。2026-11-15 导入的豆包资料包，Cecilia 决定标成这个值 | 已核实 |
 | `placeholder` | Claude 按官网先填的占位，待 Cecilia 确认。设计规范第 12 节说的 `placeholder: true` 就用这个值表示 | 待确认 |
 | `todo` | 找不到可靠来源，`value` 为 `null` | 待补充 |
 
@@ -81,6 +82,7 @@
     { "id": "visit-2026-10", "type": "field-visit", "title": "Cecilia 实地走访", "accessedAt": "2026-10-03" },
     { "id": "official-site", "type": "official-site", "title": "官网页面标题", "url": "https://...", "accessedAt": "2026-11-15" }
   ],
+  "operatingStatus": { "...": "Fact<OperatingStatus>，可选，写了就必须有 expiresAt" },
   "location": { "value": { "lng": 0, "lat": 0, "coordSystem": "GCJ-02" }, "verification": "...", "sourceId": "...", "lastCheckedAt": "..." },
   "address": { "...": "Fact<string>" },
   "intro": { "...": "Fact<string>" },
@@ -105,7 +107,7 @@
 |---|---|
 | `id` | 小写英文、数字和连字符，必须和文件名一致，例如 `yellow-crane-tower` |
 | `name`、`district`、`category`、`tags` | 名称、所在区、类别、标签。列表筛选和板块 5 挑候选景点用。`category` 取 `landmark`（地标建筑）、`museum`、`campus`、`park`（公园湖泊）、`riverside`（江滩）、`temple`、`street`（历史街区、步行街）、`food-street`（美食街） |
-| `sources` | 本景点用到的全部来源。`type` 取 `field-visit`（实地走访）、`official-site`（官网）、`official-wechat`（官方公众号）、`official-ticketing`（官方售票或预约页面）、`government`（政府网站：区政府、文旅局、景区管委会，用于没有自己官网的街区）、`amap`（高德）、`media`（媒体报道）、`travel-platform`（携程、美团等旅游平台；2026-11-15 Cecilia 决定官方来源找不到时可以用这两类占位）、`other`。不是实地走访的必须有 `url`；都必须有 `accessedAt`（查阅日期或走访日期） |
+| `sources` | 本景点用到的全部来源。`type` 取 `field-visit`（实地走访）、`official-site`（官网）、`official-wechat`（官方公众号）、`official-ticketing`（官方售票或预约页面）、`government`（政府网站：区政府、文旅局、景区管委会，用于没有自己官网的街区）、`amap`（高德）、`media`（媒体报道）、`travel-platform`（携程、美团等旅游平台；2026-11-15 Cecilia 决定官方来源找不到时可以用这两类占位）、`ugc`（游客自己发的笔记和短视频，是个人经验，准确度最低；2026-11-15 加）、`other`。不是实地走访的必须有 `url`；都必须有 `accessedAt`（查阅日期或走访日期） |
 
 单条信息（11 项都必须出现在文件里，没有资料也要写出来，标 `todo`）：
 
@@ -122,6 +124,12 @@
 | `transport` | `{ metro: [{ station, line, exit, walkMinutes }], note }` | **会** |
 | `recommendedDurationMinutes` | 分钟数，来自 Cecilia 的经验。板块 5 排时间用 | 不会 |
 | `bestTime` | 适合去的时段 | 不会 |
+
+开放状态（可选，2026-11-15 加）：
+
+| 字段 | 内容 | 会变吗 |
+|---|---|---|
+| `operatingStatus` | `{ code: "open" / "closed-temporarily", note, reopenExpected, reopenNote }`。不写表示正常开放。暂停开放（修缮、闭园）时写 `closed-temporarily`，`expiresAt` 填预计恢复的日子，到期后界面显示"已过期"，提醒重新核实。暂停开放的景点不进板块 5 的候选，校验遇到报 `poi-closed`；这条资料过期了也照样算关着，要改资料才恢复 | **会** |
 
 多项信息：
 
@@ -149,6 +157,7 @@
 
 | 信息 | 上限 | 理由 |
 |---|---|---|
+| 开放状态 `operatingStatus` | 90 天 | 修缮工期常常变，一般填到预计恢复的那天 |
 | 开放时间 `openingHours` | 90 天 | 不少景点分淡旺季，换季前后要再看一次 |
 | 预约规则 `reservation` | 90 天 | 博物馆的预约方式改得比较勤 |
 | 票价 `ticket` | 180 天 | 调价不频繁 |
@@ -179,8 +188,9 @@
 | `own`（自己拍的） | `data/photos/<id>/` | `author` | 错误 |
 | `open-license`（可自由使用授权） | `data/photos/<id>/` | `sourceUrl`、`licenseNote` | 错误 |
 | `official-placeholder`（官网占位） | `data/photos-placeholder/<id>/`，不进 git | `sourceUrl`、`retrievedAt` | 警告（换台电脑就没有） |
+| `third-party-placeholder`（图库预览图、媒体和平台图片占位，2026-11-15 Cecilia 决定） | `data/photos-placeholder/<id>/`，不进 git | `sourceUrl`、`retrievedAt`、`licenseNote`（出处和授权情况） | 警告 |
 
-每张照片都要有 `caption`（给看不到图的人读）。`file` 只写文件名。网站公开前，官网占位照片必须全部换掉，检查脚本每次都会报还剩几张。
+每张照片都要有 `caption`（给看不到图的人读）。`file` 只写文件名。网站公开前，两种占位照片必须全部换掉（第三方占位里有付费图库的预览图和带水印的图，没有授权），检查脚本每次都会报还剩几张。
 
 后端在 `/media/photos/` 和 `/media/photos-placeholder/` 提供照片文件。
 

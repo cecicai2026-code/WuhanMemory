@@ -70,6 +70,7 @@ Response（`PoiDetailResponse`）：`{ "asOf": "...", "poi": PoiDetail }`。`Poi
   "verification": "placeholder",
   "status": "pending",
   "source": { "id": "official-site", "type": "official-site", "title": "...", "url": "https://...", "accessedAt": "2026-11-15" },
+  "extraSources": [],
   "lastCheckedAt": "2026-11-15",
   "expiresAt": "2027-02-13",
   "todo": null,
@@ -77,6 +78,7 @@ Response（`PoiDetailResponse`）：`{ "asOf": "...", "poi": PoiDetail }`。`Poi
 }
 ```
 
+- `operatingStatus`：也是上面这种结构，`value` 是 `{ code, note, reopenExpected, reopenNote }`；资料里没写（正常开放）时为 `null`。列表接口的每个景点也带这一项；
 - `photoSpots`、`food`：上面这种结构的数组；
 - `reviews`：署名评价；
 - `photos`：照片，多了 `placeholder` 和 `url`（相对于后端地址，例如 `/media/photos/<id>/a.jpg`；占位照片不在本机时为 `null`）。
