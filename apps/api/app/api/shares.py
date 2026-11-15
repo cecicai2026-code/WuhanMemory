@@ -2,6 +2,7 @@
 
 - POST   /api/itinerary-versions/{id}/share：给一个版本生成分享链接。已经有没撤回的链接时给回那一个（200），新建的是 201。
          没通过校验的版本不能分享（409）：没通过的行程不展示给用户，也就不给别人看。
+- GET    /api/itinerary-versions/{id}/share：这个版本现在没撤回的链接；没有是 404。
 - GET    /api/share/{slug}：分享页的内容，就是分享时绑定的那个版本。撤回了是 410，没有这个链接是 404。
 - DELETE /api/share/{slug}：撤回。撤回后链接永远是撤回状态，再分享换新链接。
 
@@ -43,6 +44,14 @@ async def publish_share(version_id: str, response: Response, itineraries: Itiner
     # 两个请求同时来时，create 会给回另一个请求刚建的链接，不会建出第二个
     response.status_code = 201
     return ShareLinkOut.of(links.create(version_id))
+
+
+@router.get("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut)
+async def get_version_share(version_id: str, links: ShareLinks) -> ShareLinkOut:
+    link = links.active_for_version(version_id)
+    if link is None:
+        raise HTTPException(status_code=404, detail="这份行程还没有分享链接")
+    return ShareLinkOut.of(link)
 
 
 @router.get("/share/{slug}", response_model=SharePageOut)

@@ -174,3 +174,12 @@ def test_create_returns_the_active_link_instead_of_a_second_one(db: Path) -> Non
     first = repo.create(ver)
     again = repo.create(ver)
     assert again == first
+
+
+def test_current_link_of_a_version(client: TestClient, db: Path) -> None:
+    _, ver = add_version(db)
+    assert client.get(f"/api/itinerary-versions/{ver}/share").status_code == 404
+    slug = client.post(f"/api/itinerary-versions/{ver}/share").json()["slug"]
+    assert client.get(f"/api/itinerary-versions/{ver}/share").json()["slug"] == slug
+    client.delete(f"/api/share/{slug}")
+    assert client.get(f"/api/itinerary-versions/{ver}/share").status_code == 404
