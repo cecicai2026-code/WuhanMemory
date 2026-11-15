@@ -120,6 +120,8 @@ export interface ItineraryVersion {
   emphasis?: Emphasis | null;
   /** 程序算的数字，比较方案用；之前存的版本为 null */
   metrics?: PlanMetrics | null;
+  /** 板块 6：第一版的完整校验报告；之前存的版本为 null */
+  firstValidation?: ValidationReport | null;
 }
 
 /** 三种侧重：经典必去、轻松少走路、深度文化 */

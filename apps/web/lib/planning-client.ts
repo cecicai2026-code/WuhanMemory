@@ -1,7 +1,16 @@
 /**
  * 浏览器里调用对话和规划接口（板块 5）。字段说明见 docs/architecture/api-contracts.md 的"对话和规划"一节。
  */
-import type { Conversation, ItineraryVersion, PlanningJob, PlanningRound, SendMessageResponse } from "@wuhanmemory/shared";
+import type {
+  CompareJob,
+  Conversation,
+  ItineraryVersion,
+  ModelComparison,
+  ModelComparisonSummary,
+  PlanningJob,
+  PlanningRound,
+  SendMessageResponse,
+} from "@wuhanmemory/shared";
 
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
@@ -65,4 +74,22 @@ export function getVersion(versionId: string): Promise<ItineraryVersion> {
 
 export function getRound(roundId: string): Promise<PlanningRound> {
   return call(`/api/planning-rounds/${encodeURIComponent(roundId)}`);
+}
+
+// ---------- 双模型对比（板块 6），字段说明见 api-contracts.md 的"双模型对比"一节 ----------
+
+export function startComparison(request: string, emphasis: string): Promise<{ jobId: string; status: CompareJob["status"] }> {
+  return call("/api/comparisons", { method: "POST", body: JSON.stringify({ request, emphasis }) });
+}
+
+export function getCompareJob(jobId: string): Promise<CompareJob> {
+  return call(`/api/comparison-jobs/${encodeURIComponent(jobId)}`);
+}
+
+export function getComparison(id: string): Promise<ModelComparison> {
+  return call(`/api/comparisons/${encodeURIComponent(id)}`);
+}
+
+export function listComparisons(): Promise<ModelComparisonSummary[]> {
+  return call("/api/comparisons");
 }

@@ -1,0 +1,417 @@
+/* 模型对比（设计规范 9.2，两台打字机）：左右两张打字纸，中间一张评分卡，历次对比是桌角的一叠纸条。
+   普通 HTML 和 CSS，不用 three.js；逐行打字的动效先不做（2026-11-15 Cecilia 确认）。 */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 32px;
+  align-items: start;
+}
+
+.work {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+
+/* ---------- 发起对比 ---------- */
+
+.ask form {
+  display: grid;
+  gap: 12px;
+}
+.askLabel {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.askInput {
+  width: 100%;
+  resize: vertical;
+  border: 0;
+  border-bottom: 1px solid var(--ink-soft);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-paper);
+  font-size: var(--size-paper-body);
+  line-height: 1.6;
+  padding: 4px 0;
+}
+.askInput:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.askRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.askHint {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.go {
+  margin-left: auto;
+}
+.cost {
+  margin: 0;
+  font-size: var(--size-label);
+  line-height: 1.5;
+}
+.error {
+  display: block;
+  margin-top: 10px;
+}
+
+/* ---------- 进度 ---------- */
+
+.progress p {
+  margin: 6px 0 0;
+  font-size: var(--size-label);
+  line-height: 1.5;
+}
+.progressSides {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ---------- 结果 ---------- */
+
+.summary {
+  color: var(--text-secondary);
+}
+.summaryReq {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: var(--size-paper-title);
+  color: var(--paper);
+}
+.summaryMeta {
+  margin: 6px 0 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  line-height: 1.6;
+}
+
+.tabs {
+  display: none;
+  gap: 8px;
+}
+
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 400px) minmax(0, 1fr);
+  grid-template-areas: "left score right";
+  gap: 20px;
+  align-items: start;
+}
+.side[data-side="0"] {
+  grid-area: left;
+}
+.side[data-side="1"] {
+  grid-area: right;
+}
+.score {
+  grid-area: score;
+}
+
+.sheet {
+  padding-top: 0;
+}
+/* 纸上方露出的压纸杆，标着模型名 */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 calc(var(--paper-pad) * -1) 16px;
+  padding: 8px var(--paper-pad);
+  background: linear-gradient(var(--brass-bright), var(--brass) 55%, var(--brass-deep));
+  color: var(--black);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.08em;
+}
+.barLabel {
+  font-weight: 600;
+}
+.barModel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sheetHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.firstLine {
+  margin: 0;
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.sideError {
+  color: var(--expired-paper);
+}
+
+.day {
+  margin-top: 14px;
+}
+.dayHead {
+  margin: 0 0 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.stops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.stop {
+  margin: 2px 0;
+  line-height: 1.5;
+}
+.stop[data-only="true"] {
+  background: rgba(68, 96, 122, 0.12);
+}
+.time {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.onlyTag {
+  margin-left: 6px;
+  font-family: var(--font-note);
+  font-size: calc(var(--size-note) * 0.8);
+  color: var(--pencil);
+}
+.leg {
+  margin: 0;
+  padding-left: 12px;
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.issuesHead {
+  margin: 8px 0 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--expired-paper);
+}
+.issues {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-label);
+  line-height: 1.5;
+  color: var(--expired-paper);
+}
+
+/* 评分卡 */
+.tableWrap {
+  margin-top: 8px;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-label);
+  line-height: 1.45;
+}
+.table th,
+.table td {
+  padding: 5px 6px;
+  border-bottom: 1px dashed var(--paper-shade);
+  text-align: left;
+  vertical-align: top;
+}
+.table thead th {
+  font-family: var(--font-label);
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--ink-soft);
+}
+.table tbody th {
+  font-family: var(--font-label);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.notes {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-label);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+.notes li {
+  margin-top: 3px;
+}
+.disclaimer {
+  margin: 10px 0 0;
+  font-size: var(--size-label);
+  line-height: 1.5;
+}
+
+/* 差异 */
+.near {
+  margin: 4px 0 8px;
+  color: var(--pencil);
+}
+.diffList {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 8px 0;
+}
+.diffList dt {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.diffList dd {
+  margin: 0;
+}
+.dayDiffs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dayDiffs li {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.orders {
+  display: grid;
+  gap: 2px;
+  margin-top: 2px;
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+
+.empty {
+  color: var(--text-muted);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+}
+
+/* ---------- 历次对比：桌角一叠纸条 ---------- */
+
+.history {
+  position: sticky;
+  top: 24px;
+}
+.historyHead {
+  margin: 0 0 10px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+.historyEmpty {
+  color: var(--text-muted);
+  font-size: var(--size-label);
+}
+.stack {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.slip {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-object);
+  transition: transform var(--t-hover) var(--ease-silk), box-shadow var(--t-hover) var(--ease-silk);
+}
+.slip:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lifted);
+}
+.slip:focus-visible {
+  outline: 2px solid var(--brass-bright);
+  outline-offset: 2px;
+}
+.slip[aria-current="true"] {
+  outline: 2px solid var(--brass);
+}
+.slipMeta,
+.slipSides {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.slipSides {
+  display: grid;
+}
+.slipReq {
+  font-family: var(--font-paper);
+  font-size: var(--size-ui);
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slip {
+    transition: none;
+  }
+  .slip:hover {
+    transform: none;
+  }
+}
+
+/* 平板：两张纸并排，评分卡移到下面 */
+@media (max-width: 1067px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .history {
+    position: static;
+  }
+  .stack {
+    max-height: none;
+  }
+  .desk {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "left right"
+      "score score";
+  }
+}
+
+/* 手机：一次看一张纸，用纸签切换 */
+@media (max-width: 733px) {
+  .tabs {
+    display: flex;
+  }
+  .desk {
+    grid-template-columns: 1fr;
+    grid-template-areas: "left" "score";
+  }
+  .side[data-active="false"] {
+    display: none;
+  }
+  .side[data-side="1"] {
+    grid-area: left;
+  }
+  .progressSides {
+    grid-template-columns: 1fr;
+  }
+  .go {
+    margin-left: 0;
+  }
+}
