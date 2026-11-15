@@ -14,6 +14,7 @@
  */
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/i18n/LangProvider";
 import type { ReactNode } from "react";
 import { STAGE_READY_TIMEOUT_MS, deviceAllows3D, flatForced, readPref, webglAvailable, writePref } from "@/lib/scene3d/precheck";
 import type { StageCommand, StageEngine, StageFailReason, StageRequest, StageState } from "@/lib/scene3d/types";
@@ -367,11 +368,17 @@ export function StageScene({ kind, sceneKey: key, data }: { kind: StageRequest["
 /** 右上角"普通版 / 立体版"的切换。设备不能用立体时不显示 */
 export function StageToggle({ className = "stage-toggle" }: { className?: string }) {
   const stage = useStage();
+  const t = useT();
   if (!stage || !stage.canOffer3D || stage.mode === "checking") return null;
   const on = stage.mode === "on" || stage.mode === "loading";
   return (
-    <button type="button" className={className} onClick={() => stage.choose(on ? "flat" : "3d")} aria-label={on ? "切换到普通版" : "切换到立体版"}>
-      {on ? "普通版" : "立体版"}
+    <button
+      type="button"
+      className={className}
+      onClick={() => stage.choose(on ? "flat" : "3d")}
+      aria-label={on ? t("切换到普通版", "Switch to the plain version") : t("切换到立体版", "Switch to the 3D version")}
+    >
+      {on ? t("普通版", "Plain") : t("立体版", "3D")}
     </button>
   );
 }
@@ -382,6 +389,7 @@ export function StageToggle({ className = "stage-toggle" }: { className?: string
  */
 function FocusProxy({ active }: { active: boolean }) {
   const [text, setText] = useState<string | null>(null);
+  const t = useT();
   useEffect(() => {
     if (!active) {
       setText(null);
@@ -409,7 +417,7 @@ function FocusProxy({ active }: { active: boolean }) {
   }, [active]);
   return (
     <div className="stage-focus" aria-hidden="true" data-on={text ? "" : undefined}>
-      {text ? `焦点 · ${text} · 回车打开` : null}
+      {text ? t(`焦点 · ${text} · 回车打开`, `Focus · ${text} · Enter to open`) : null}
     </div>
   );
 }

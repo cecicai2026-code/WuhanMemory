@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/components/i18n/LangProvider";
 import { MENU } from "@/lib/scenes";
 import s from "./shell.module.css";
 
@@ -19,6 +20,7 @@ export function Menu() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const root = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   // 打开时：按 Esc 或点菜单以外的地方就关上
   useEffect(() => {
@@ -38,7 +40,7 @@ export function Menu() {
   }, [open]);
 
   return (
-    <nav className={s.menu} ref={root} aria-label="页面导航">
+    <nav className={s.menu} ref={root} aria-label={t("页面导航", "Site navigation")}>
       <button
         className={s.menuButton}
         type="button"
@@ -51,7 +53,7 @@ export function Menu() {
           <i />
           <i />
         </span>
-        菜单
+        {t("菜单", "Menu")}
       </button>
       {open ? (
         <ul className={s.panel} id="site-menu">
@@ -62,9 +64,9 @@ export function Menu() {
                 aria-current={isCurrent(pathname, item.path) ? "page" : undefined}
                 onClick={() => setOpen(false)}
               >
-                <span className={s.pageName}>{item.page}</span>
+                <span className={s.pageName}>{t(item.page, item.en.page)}</span>
                 <span className={s.sceneNo}>
-                  {item.no} · {item.name}
+                  {item.no} · {t(item.name, item.en.name)}
                 </span>
               </Link>
             </li>

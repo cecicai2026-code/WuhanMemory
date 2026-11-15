@@ -1,0 +1,79 @@
+/*
+ * 语言切换：一块小黄铜铭牌，和主按钮同样的黄铜渐变（设计规范 7 节"主按钮"），只是小一号，放在菜单旁边。
+ * 当前语言是墨色字，另一个是淡的；悬停时淡的那个变深。
+ */
+.plate {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 30px;
+  padding: 0 4px;
+  overflow: hidden;
+  border: 1px solid var(--brass-deep);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #f0d898 0%, var(--brass) 45%, #8a6a30 100%);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.08em;
+  text-transform: none;
+  color: var(--ink);
+}
+/* 换语言、服务器在重做页面时，铭牌上一道高光慢慢扫过 */
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.plate[data-switching]::after {
+  animation: sweep 900ms var(--ease-inout) infinite;
+}
+@keyframes sweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+
+.plate button {
+  /* 点得到的范围比铭牌高，手机上也好点 */
+  position: relative;
+  min-width: 34px;
+  height: 44px;
+  margin: -7px 0;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  color: rgba(42, 36, 32, 0.45);
+  transition: color var(--t-micro);
+}
+.plate button:hover {
+  color: rgba(42, 36, 32, 0.8);
+}
+.plate button[aria-pressed="true"] {
+  cursor: default;
+  font-weight: 700;
+  color: var(--ink);
+}
+.plate button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -6px;
+}
+.slash {
+  color: rgba(42, 36, 32, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate[data-switching]::after {
+    animation: none;
+  }
+}

@@ -4,6 +4,7 @@
  */
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Tr } from "@/components/i18n/Tr";
 import s from "./ui.module.css";
 
 function cx(...names: Array<string | false | null | undefined>) {
@@ -152,10 +153,10 @@ export function Rule({ dashed }: { dashed?: boolean }) {
 
 export type Status = "verified" | "pending" | "expired";
 
-const STATUS_TEXT: Record<Status, string> = {
-  verified: "已核实",
-  pending: "待确认",
-  expired: "已过期"
+const STATUS_TEXT: Record<Status, { zh: string; en: string }> = {
+  verified: { zh: "已核实", en: "Verified" },
+  pending: { zh: "待确认", en: "To confirm" },
+  expired: { zh: "已过期", en: "Expired" }
 };
 
 interface StampProps {
@@ -169,7 +170,7 @@ interface StampProps {
 
 /** 状态：绿色印章、蓝灰色铅笔批注、红色印章。一定带文字，不只靠颜色 */
 export function Stamp({ status, children, onDark, className }: StampProps) {
-  return <span className={cx(s.stamp, s[status], onDark && s.onDark, className)}>{children ?? STATUS_TEXT[status]}</span>;
+  return <span className={cx(s.stamp, s[status], onDark && s.onDark, className)}>{children ?? <Tr {...STATUS_TEXT[status]} />}</span>;
 }
 
 /** 手写批注：只用在纸面上的短句，例如"待补充" */

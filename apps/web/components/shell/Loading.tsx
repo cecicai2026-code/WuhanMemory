@@ -2,6 +2,7 @@ import { Paper, PaperMark, PaperTitle } from "@/components/ui";
 import type { SceneInfo } from "@/lib/scenes";
 import { Scene } from "./Scene";
 import s from "./blank.module.css";
+import { Tr } from "@/components/i18n/Tr";
 
 interface Props {
   scene: SceneInfo;
@@ -19,7 +20,9 @@ export function Loading({ scene, text, title, fit }: Props) {
   return (
     <Scene scene={scene} title={title} fit={fit} showPlan={!fit}>
       <Paper as="section" className={s.sheet} tilt={-1}>
-        <PaperMark>请稍等</PaperMark>
+        <PaperMark>
+          <Tr zh="请稍等" en="One moment" />
+        </PaperMark>
         <PaperTitle level={3}>
           <span role="status">{text}</span>
         </PaperTitle>

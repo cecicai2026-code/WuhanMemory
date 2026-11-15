@@ -46,7 +46,7 @@ function sheet(w: number, h: number, draw: (g: CanvasRenderingContext2D, W: numb
 }
 
 /* ---------- 灯箱：黄铜边框，里面是自己发光的"地图" ---------- */
-function makeLightbox(w: number, d: number, owned: THREE.Texture[]) {
+function makeLightbox(w: number, d: number, owned: THREE.Texture[], caption: string) {
   const M = materials(),
     g = new THREE.Group(),
     bar = 0.3;
@@ -77,7 +77,7 @@ function makeLightbox(w: number, d: number, owned: THREE.Texture[]) {
     }
     c.fillStyle = "rgba(233,223,198,.55)";
     c.font = `${W / 52}px ${MONO}`;
-    c.fillText("示意：景点的相对位置", W * 0.025, H * 0.95);
+    c.fillText(caption, W * 0.025, H * 0.95);
   });
   owned.push(T);
   const sm = new THREE.MeshStandardMaterial({ color: 0x000000, emissiveMap: T, emissive: 0xffffff, emissiveIntensity: 1.0, roughness: 0.9 });
@@ -159,7 +159,7 @@ function makeTypewriter(label: string, owned: THREE.Texture[]) {
 }
 
 /* ---------- 合着的笔记本：墨绿封皮、黄铜包角、一根松紧带，封面贴着写"我的行程"的标签 ---------- */
-function makeNotebook(owned: THREE.Texture[]) {
+function makeNotebook(owned: THREE.Texture[], title: string) {
   const M = materials(),
     g = new THREE.Group();
   contact(g, 8.4, 10.2);
@@ -178,8 +178,8 @@ function makeNotebook(owned: THREE.Texture[]) {
       c.fillStyle = COLORS.ink;
       c.textAlign = "center";
       c.textBaseline = "middle";
-      c.font = `600 ${Math.round(h * 0.34)}px ${SERIF}`;
-      c.fillText("我的行程", w / 2, h * 0.52);
+      c.font = `600 ${Math.round(h * (title.length > 6 ? 0.26 : 0.34))}px ${SERIF}`;
+      c.fillText(title, w / 2, h * 0.52);
     },
     owned
   );
@@ -202,7 +202,7 @@ function makePen() {
   contact(o, 3.6, 1.0);
   return o;
 }
-function makeTicket(owned: THREE.Texture[]) {
+function makeTicket(owned: THREE.Texture[], en: boolean) {
   return sheet(
     2.3,
     1.15,
@@ -213,10 +213,10 @@ function makeTicket(owned: THREE.Texture[]) {
       g.fillRect(14, 14, W - 28, H - 28);
       g.fillStyle = COLORS.brass;
       g.font = `${H * 0.11}px ${MONO}`;
-      g.fillText("METRO · 单程票", 36, H * 0.27);
+      g.fillText(en ? "METRO · SINGLE JOURNEY" : "METRO · 单程票", 36, H * 0.27);
       g.fillStyle = COLORS.paper;
       g.font = `600 ${H * 0.3}px ${SERIF}`;
-      g.fillText("武汉地铁", 36, H * 0.63);
+      g.fillText(en ? "Wuhan Metro" : "武汉地铁", 36, H * 0.63);
       for (let x = 36; x < W - 36; x += 9) g.fillRect(x, H * 0.76, 3, H * 0.1);
     },
     owned
@@ -227,6 +227,9 @@ type V3 = [number, number, number];
 
 export function createDesk(env: ActEnv, req0: StageRequest): Act {
   let data = (req0 as StageRequest<DeskData>).data;
+  // 物件上的字按搭场景时的语言画；换了语言时 update 返回 false，引擎重搭这一幕
+  const lang = data.lang;
+  const en = lang === "en";
   const owned: THREE.Texture[] = [];
 
   const scene = new THREE.Scene();
@@ -256,23 +259,23 @@ export function createDesk(env: ActEnv, req0: StageRequest): Act {
   const BOX_W = 4.9,
     BOX_D = 3.3;
   function buildTexty() {
-    const box = makeLightbox(BOX_W, BOX_D, owned);
+    const box = makeLightbox(BOX_W, BOX_D, owned, en ? "Sketch: where the places are, relative to each other" : "示意：景点的相对位置");
     box.position.set(-2.5, 0, 1.5);
     box.rotation.y = 0.14;
     const pair = new THREE.Group();
     pair.position.set(3.9, 0, -1.8);
-    ["千问", "豆包"].forEach((label, k) => {
+    (en ? ["Qwen", "Doubao"] : ["千问", "豆包"]).forEach((label, k) => {
       const tw = makeTypewriter(label, owned);
       tw.scale.setScalar(0.56);
       tw.position.set(k ? 1.65 : -1.65, 0, k ? 0.25 : 0);
       tw.rotation.y = k ? -0.14 : 0.1;
       pair.add(tw);
     });
-    const book = makeNotebook(owned);
+    const book = makeNotebook(owned, en ? "My Trips" : "我的行程");
     book.scale.setScalar(0.5);
     book.position.set(7.0, 0, 2.2);
     book.rotation.y = -0.2;
-    const metro = makeTicket(owned);
+    const metro = makeTicket(owned, en);
     metro.scale.setScalar(0.8);
     metro.position.set(-5.9, 0.03, 2.6);
     metro.rotation.y = -0.3;
@@ -471,7 +474,7 @@ export function createDesk(env: ActEnv, req0: StageRequest): Act {
   }
 
   const ready = (async () => {
-    await ensureFonts("武汉千问豆包我的行程地铁单程票示意：景点的相对位置WUHANMEMORYMETRO·");
+    await ensureFonts(en ? "武汉WUHANMEMORYMETRO·SINGLEJOURNEYQwenDoubaoMyTripsSketch:wherethepaces" : "武汉千问豆包我的行程地铁单程票示意：景点的相对位置WUHANMEMORYMETRO·");
     const { box, pair, book } = buildTexty();
     box.add(pins);
     objs.push(box, pair, book);
@@ -485,6 +488,7 @@ export function createDesk(env: ActEnv, req0: StageRequest): Act {
     camera,
     ready,
     update(next) {
+      if ((next as StageRequest<DeskData>).data.lang !== lang) return false;
       data = (next as StageRequest<DeskData>).data;
       leaving = false;
       emit();

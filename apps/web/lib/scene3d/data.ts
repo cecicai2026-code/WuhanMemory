@@ -3,6 +3,7 @@
  * 普通版和立体版用的是同一次取到的同一份数据。这个文件不引用 three.js。
  */
 import type { PoiSummary } from "@wuhanmemory/shared";
+import type { Lang } from "@/lib/i18n";
 import { countsText, isClosed, pad2, photoCredit } from "@/lib/places";
 
 /** 胶片上的一格 = 一个景点 */
@@ -86,6 +87,8 @@ export interface DeskData {
   at?: number;
   /** 要不要播开场（这次访问的第一个页面是首页、还没播过） */
   intro: boolean;
+  /** 物件上画的字用哪种语言；换了语言场景要重搭 */
+  lang: Lang;
 }
 
 /** 胶卷罐侧面的一行小字，只放真实的值 */
