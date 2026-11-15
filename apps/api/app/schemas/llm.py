@@ -22,23 +22,6 @@ class LLMProvidersOut(BaseModel):
     providers: list[LLMProviderOut]
 
 
-class LLMPingRequest(BaseModel):
-    # 不填就用默认模型
-    provider: str | None = None
-
-
-class LLMPingOut(BaseModel):
-    provider: str
-    label: str
-    # 对方返回的真实模型名
-    model: str
-    reply: str
-    latencyMs: int
-    attempts: int
-    retried: bool
-    repaired: bool
-
-
 class LLMErrorOut(BaseModel):
     code: str
     message: str
