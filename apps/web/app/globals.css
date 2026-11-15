@@ -143,3 +143,61 @@ input {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ---------- 立体场景（设计规范第 15 节，components/stage/StageProvider.tsx） ----------
+   <html data-stage="pending">：判断能用立体，正在加载，盖一层"显影中"的暗幕（最多 6.5 秒）。
+   <html data-stage="on">：画布显示，四角浮在画布上，普通版的正文在视觉上隐藏，读屏软件和键盘照样能用。
+   其余情况（"flat" 或没有这个属性）：普通网页版。 */
+.stage-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: none;
+}
+.stage-canvas canvas {
+  display: block;
+}
+html[data-stage="on"] .stage-canvas {
+  display: block;
+}
+html[data-stage="pending"] body::after {
+  content: "显影中";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 55%, #1a0806 0%, var(--black) 70%);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+}
+html[data-stage="pending"] body,
+html[data-stage="on"] body {
+  overflow: hidden;
+}
+html[data-stage="on"] [data-shell-main] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html[data-stage="on"] [data-shell-top],
+html[data-stage="on"] [data-shell-bottom] {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 30;
+}
+html[data-stage="on"] [data-shell-top] {
+  top: 0;
+}
+html[data-stage="on"] [data-shell-bottom] {
+  bottom: 0;
+  background: none;
+}

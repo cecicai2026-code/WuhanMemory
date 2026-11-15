@@ -18,6 +18,8 @@ interface SceneProps {
   showPlan?: boolean;
   /** 正好占满一屏（地图工作台用） */
   fit?: boolean;
+  /** 右上角菜单前面的东西，例如"普通版 / 立体版"的切换（components/stage/StageProvider.tsx） */
+  corner?: ReactNode;
   children: ReactNode;
 }
 
@@ -34,21 +36,24 @@ export function Scene({
   back = { href: "/", label: "回到桌面" },
   showPlan = true,
   fit,
+  corner,
   children
 }: SceneProps) {
   return (
+    // data-shell-* 给立体场景用：立体场景打开时四角浮在画布上，正文在视觉上隐藏（globals.css 的"立体场景"一节）
     <div className={fit ? `${s.scene} ${s.fit}` : s.scene}>
-      <header className={s.top}>
+      <header className={s.top} data-shell-top>
         <span>
           第 {scene.no} 幕 — {scene.name}
         </span>
         <div className={s.topRight}>
           {count ? <span className={s.count}>{count}</span> : null}
+          {corner}
           <Menu />
         </div>
       </header>
 
-      <main className={s.main}>
+      <main className={s.main} data-shell-main>
         {title ? (
           <div className={s.head}>
             {kicker ? <Label className={s.kicker}>{kicker}</Label> : null}
@@ -60,7 +65,7 @@ export function Scene({
       </main>
 
       {back || showPlan ? (
-        <footer className={s.bottom}>
+        <footer className={s.bottom} data-shell-bottom>
           {back ? <TextLink href={back.href}>← {back.label}</TextLink> : <span />}
           {showPlan ? (
             <BrassButton href="/map" round>
