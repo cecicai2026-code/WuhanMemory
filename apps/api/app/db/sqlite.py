@@ -148,6 +148,16 @@ CREATE TABLE IF NOT EXISTS share_links (
     revoked_at  TEXT                   -- 撤回的时间；没撤回为空
 );
 
+-- 公开模式的次数限制（板块 7）：每次规划或对比记一行。不存原始网络地址，只存它的摘要；两天前的自动删掉
+CREATE TABLE IF NOT EXISTS rate_events (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client      TEXT NOT NULL,         -- 网络地址的摘要（sha256）
+    weight      INTEGER NOT NULL,      -- 规划 1，对比 2
+    created_at  TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS rate_events_time_idx ON rate_events (created_at);
+
 -- 同一个版本只能有一个没撤回的链接（两个请求同时分享同一版本时也成立）
 CREATE UNIQUE INDEX IF NOT EXISTS share_links_active_idx ON share_links (version_id) WHERE revoked_at IS NULL;
 """

@@ -20,6 +20,7 @@ from uuid import uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field
 
+from app.core.site_policy import rate_limited
 from app.api.planning import Factory, Itineraries, PipelineFactory
 from app.core.config import settings
 from app.repositories.itinerary_repository import ItineraryRepository
@@ -177,7 +178,13 @@ async def _run(job: CompareJob, factory: PipelineFactory, comparisons: ModelComp
     job.status = "completed"
 
 
-@router.post("/comparisons", response_model=CompareStartOut, status_code=202)
+@router.post(
+    "/comparisons",
+    response_model=CompareStartOut,
+    status_code=202,
+    # 公开模式下限次数，两个模型各排一份，算 2 次（app/core/site_policy.py）
+    dependencies=[Depends(rate_limited(2))],
+)
 async def start_comparison(
     body: CompareRequest,
     background: BackgroundTasks,

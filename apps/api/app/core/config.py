@@ -41,6 +41,16 @@ class Settings(BaseSettings):
     # 自定义地图样式的上游地址（高德官方代理示例里 /_AMapService/v4/map/styles 转到这里）
     amap_webapi_url: str = "https://webapi.amap.com"
 
+    # 公开模式（板块 7）：网站给别人用时打开，本机开发时关着。见 app/core/site_policy.py
+    public_mode: bool = False
+    # 公开模式下，我的行程、生成和撤回分享链接要这个口令；不设就关掉这些功能
+    owner_passcode: str | None = None
+    # 公开模式下规划和对比的次数上限（对比一次算 2 次）；带对口令的不限
+    rate_per_client_per_hour: int = 5
+    rate_per_day: int = 50
+    # 网站前面有反向代理或隧道时打开，用 X-Forwarded-For 里的第一个地址认人；没有代理时不要打开，否则谁都能伪造
+    trust_proxy_headers: bool = False
+
     # 景点资料（data/pois/*.json）和照片所在的目录，见 ADR 0003
     data_dir: Path = REPO_ROOT / "data"
     # SQLite 数据库文件。相对路径按 apps/api 算

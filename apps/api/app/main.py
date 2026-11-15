@@ -62,11 +62,13 @@ app.include_router(comparisons_router)
 
 # 景点照片。自己拍的在 data/photos/，官网占位的在 data/photos-placeholder/（不进 git）
 app.mount("/media/photos", StaticFiles(directory=settings.data_dir / "photos", check_dir=False), name="photos")
-app.mount(
-    "/media/photos-placeholder",
-    StaticFiles(directory=settings.data_dir / "photos-placeholder", check_dir=False),
-    name="photos-placeholder",
-)
+# 公开模式下不提供占位照片（见 app/core/site_policy.py）
+if not settings.public_mode:
+    app.mount(
+        "/media/photos-placeholder",
+        StaticFiles(directory=settings.data_dir / "photos-placeholder", check_dir=False),
+        name="photos-placeholder",
+    )
 
 
 @app.get("/health")

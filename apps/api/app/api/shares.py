@@ -6,6 +6,7 @@
 - GET    /api/share/{slug}：分享页的内容，就是分享时绑定的那个版本。撤回了是 410，没有这个链接是 404。
 - DELETE /api/share/{slug}：撤回。撤回后链接永远是撤回状态，再分享换新链接。
 
+公开模式下（app/core/site_policy.py），生成、查询、撤回要网站主人的口令；打开分享页不要。
 字段说明见 docs/architecture/api-contracts.md 的"分享"一节。
 """
 
@@ -17,6 +18,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 
 from app.api.planning import Itineraries
 from app.core.config import settings
+from app.core.site_policy import require_owner
 from app.repositories.share_link_repository import ShareLinkRepository, SqliteShareLinkRepository
 from app.schemas.share import ShareLinkOut, SharePageOut
 
@@ -30,7 +32,7 @@ def get_share_links() -> ShareLinkRepository:
 ShareLinks = Annotated[ShareLinkRepository, Depends(get_share_links)]
 
 
-@router.post("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut)
+@router.post("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut, dependencies=[Depends(require_owner)])
 async def publish_share(version_id: str, response: Response, itineraries: Itineraries, links: ShareLinks) -> ShareLinkOut:
     version = itineraries.get_version(version_id)
     if version is None:
@@ -46,7 +48,7 @@ async def publish_share(version_id: str, response: Response, itineraries: Itiner
     return ShareLinkOut.of(links.create(version_id))
 
 
-@router.get("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut)
+@router.get("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut, dependencies=[Depends(require_owner)])
 async def get_version_share(version_id: str, links: ShareLinks) -> ShareLinkOut:
     link = links.active_for_version(version_id)
     if link is None:
@@ -67,7 +69,7 @@ async def get_share(slug: str, itineraries: Itineraries, links: ShareLinks) -> S
     return SharePageOut(slug=link.slug, createdAt=link.createdAt, version=version)
 
 
-@router.delete("/share/{slug}", response_model=ShareLinkOut)
+@router.delete("/share/{slug}", response_model=ShareLinkOut, dependencies=[Depends(require_owner)])
 async def revoke_share(slug: str, links: ShareLinks) -> ShareLinkOut:
     link = links.revoke(slug)
     if link is None:
