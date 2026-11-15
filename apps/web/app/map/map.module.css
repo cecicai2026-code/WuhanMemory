@@ -423,48 +423,218 @@
 .modelTick:empty {
   display: none;
 }
-.tryOne {
-  margin-left: auto;
-  min-height: 44px;
-  padding: 0 10px;
-  border: 1px solid var(--ink-soft);
-  border-radius: 2px;
-  background: transparent;
-  color: var(--ink-soft);
-  font-family: var(--font-label);
-  font-size: var(--size-label);
-  letter-spacing: 0.1em;
-  cursor: pointer;
-}
-.tryOne:hover:not(:disabled),
-.tryOne:focus-visible {
-  border-color: var(--ink);
-  color: var(--ink);
-  background: rgba(201, 164, 92, 0.25);
-}
-.tryOne:focus-visible {
-  outline: 2px solid var(--pencil);
-  outline-offset: 2px;
-}
-.tryOne:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
 .modelsNote {
   margin: 6px 0 0;
   font-family: var(--font-label);
   font-size: var(--size-label);
   color: var(--ink-soft);
 }
-.pingResult {
-  margin-top: 6px;
+/* ---------- 对话（板块 5）：用户的话加粗，回复是纸上正文；下面是规划进度 ---------- */
+.lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.pingResult p {
-  margin: 2px 0 0;
+.line {
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(107, 94, 76, 0.35);
 }
-.pingReply {
+.line p {
+  margin: 0;
   font-family: var(--font-paper);
+  white-space: pre-wrap;
+}
+.line[data-role="user"] p {
+  font-weight: 700;
+}
+.line[data-kind="error"] p,
+.line[data-kind="failed"] p {
+  color: var(--expired-paper);
+}
+.lineWho {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.progress {
+  margin-top: 12px;
+}
+.progressHead {
+  margin: 0 0 4px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.stages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-paper);
+  font-size: var(--size-ui);
+  color: var(--ink-soft);
+}
+.stages li[data-current] {
   color: var(--ink);
+}
+.restart {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  cursor: pointer;
+}
+.restart:hover,
+.restart:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* ---------- 行程卡（板块 5） ---------- */
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.cardHead > :last-child {
+  flex: none;
+}
+.defaults {
+  margin: 8px 0 0;
+  padding-left: 1.2em;
+  font-size: var(--size-ui);
+  color: var(--ink-soft);
+}
+.issuesHead {
+  margin: 8px 0 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--expired-paper);
+}
+.issues {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-ui);
+}
+.issues li {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.issues li > span:first-child {
+  flex: none;
+  width: 1em;
+  font-family: var(--font-label);
+  font-weight: 700;
+}
+.issues li[data-level="error"] {
+  color: var(--expired-paper);
+}
+.issues li[data-level="warning"] {
+  color: var(--pending-paper);
+}
+.warnings {
+  margin-top: 8px;
+}
+.warnings summary {
+  min-height: 32px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--pending-paper);
+  cursor: pointer;
+}
+.legend {
+  margin: 10px 0 0;
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.dayPick {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.timeline {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.stop {
+  padding: 8px 0;
+}
+.stop p {
+  margin: 0;
+}
+.stopTime {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.stopName {
+  font-family: var(--font-paper);
+  font-size: var(--size-paper-body);
+}
+.stopReason {
+  margin-top: 2px;
+  font-size: var(--size-ui);
+}
+.facts {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 10px;
+  margin: 6px 0 0;
+  font-size: var(--size-label);
+}
+.facts dt {
+  font-family: var(--font-label);
+  color: var(--ink-soft);
+}
+.facts dd {
+  margin: 0;
+}
+.factText {
+  white-space: pre-line;
+}
+.factTag {
+  white-space: nowrap;
+  font-family: var(--font-note);
+  font-size: 16px;
+  line-height: 1;
+}
+.factTag[data-status="pending"],
+.factTag[data-status="missing"] {
+  color: var(--pending-paper);
+}
+.factTag[data-status="expired"] {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  font-weight: 700;
+  color: var(--expired-paper);
+}
+.leg {
+  margin-left: 6px;
+  padding: 4px 0 4px 12px;
+  border-left: 2px dotted var(--ink-soft);
+  font-size: var(--size-ui);
+}
+.leg p {
+  margin: 0;
+}
+.legMeta {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
 }
 
 /* ---------- 平板：地图在上，对话和行程在下面并排 ---------- */
@@ -546,12 +716,8 @@
   .col .chat {
     padding: 20px;
   }
-  /* 手机上纸只有不到半屏高：对话记录少留一点，"试一句是临时的"这行说明不显示，
-     这样模型选择、输入横线和"发送"不用滚动就都在纸上 */
+  /* 手机上纸只有不到半屏高：对话记录少留一点，这样模型选择、输入横线和"发送"不用滚动就都在纸上 */
   .log {
     min-height: 3.6em;
-  }
-  .tryNote {
-    display: none;
   }
 }
