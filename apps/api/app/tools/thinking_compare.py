@@ -2,7 +2,7 @@
 
 用法（在 Mac 终端）：
     cd ~/WuhanMemory-project2 && corepack pnpm plan:thinking
-    cd ~/WuhanMemory-project2 && corepack pnpm plan:thinking -- --repeat 2 --timeout 120
+    cd ~/WuhanMemory-project2 && corepack pnpm plan:thinking --repeat 2 --timeout 180
 
 每条请求分别在"开着思考""关着思考"下跑一遍完整的规划链路（抽偏好、排行程、查交通、校验、必要时修正一次），
 和网站用的是同一条路，只是对话和行程存进一个临时数据库，不进网站的数据库。
@@ -160,6 +160,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="比较豆包开着和关着深度思考时的规划效果（真实调用）")
     parser.add_argument("--repeat", type=int, default=1, help="每条请求在每种模式下跑几次，默认 1")
     parser.add_argument("--timeout", type=int, default=None, help="每次模型调用的超时秒数，默认用 .env 里的设置")
+    if argv is None:
+        argv = sys.argv[1:]
+    # 有的 pnpm 版本会把 "pnpm 脚本 -- 参数" 里的 "--" 原样传进来，去掉它
+    argv = [a for a in argv if a != "--"]
     args = parser.parse_args(argv)
 
     # 放在这里才 import：要读 .env

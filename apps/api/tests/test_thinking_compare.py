@@ -9,7 +9,7 @@ from typing import Any
 
 from app.services.llm.base import LLMCallRecord
 from app.services.llm.gateway import LLMGateway
-from app.tools.thinking_compare import _prompts, run_all, summarize
+from app.tools.thinking_compare import _prompts, main, run_all, summarize
 from tests.llm_fakes import FakeProvider, Sleeps
 from tests.test_planning_pipeline import DATED, Setup, plan, prefs
 
@@ -69,3 +69,13 @@ async def test_errors_and_questions_are_counted(tmp_path: Path) -> None:
 def test_prompts_have_a_future_date() -> None:
     ps = _prompts("2026-11-15")
     assert len(ps) == 3 and all("2026-11-22" in p for p in ps)
+
+
+def test_stray_double_dash_is_ignored(capsys) -> None:
+    """pnpm 有时把 "--" 原样传进来；--help 能正常打印就说明参数解析过了这一关。"""
+    import pytest
+
+    with pytest.raises(SystemExit) as exc:
+        main(["--", "--timeout", "180", "--help"])
+    assert exc.value.code == 0
+    assert "--timeout" in capsys.readouterr().out
