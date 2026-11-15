@@ -16,6 +16,7 @@
     "llm:smoke": "cd apps/api && .venv/bin/python -m app.tools.llm_smoke",
     "plan:thinking": "cd apps/api && .venv/bin/python -m app.tools.thinking_compare",
     "routes:prewarm": "cd apps/api && .venv/bin/python -m app.tools.route_prewarm",
+    "eval:run": "cd apps/api && .venv/bin/python -m app.tools.model_eval",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {

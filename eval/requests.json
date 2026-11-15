@@ -1,0 +1,75 @@
+{
+  "说明": "板块 6 批量评测用的请求。草稿，等 Cecilia 修改确认。text 是用户会说的话（也原样交给模型）；preferences 是程序用的偏好，手写、两个模型共用，不让模型抽；emphasis 是这条用哪种侧重（classic 经典必去 / relaxed 轻松少走路 / culture 深度文化）；covers 写这条想考到什么，只给人看。日期写死，好让每次跑的星期几一样。",
+  "requests": [
+    {
+      "id": "r01",
+      "text": "武汉两天，喜欢历史和美食，坐地铁，11 月 28 日出发",
+      "preferences": { "days": 2, "startDate": "2026-11-28", "interests": ["历史文化", "美食"], "transport": "metro" },
+      "emphasis": "classic",
+      "covers": "板块 5 的验收请求；周六周日，没有闭馆日"
+    },
+    {
+      "id": "r02",
+      "text": "一个人，11 月 23 日在武汉待一天，想看博物馆和老建筑",
+      "preferences": { "days": 1, "startDate": "2026-11-23", "party": "solo", "interests": ["博物馆", "老建筑"] },
+      "emphasis": "culture",
+      "covers": "那天是周一，湖北省博物馆资料里周一闭馆：看会不会排进去"
+    },
+    {
+      "id": "r03",
+      "text": "12 月 5 日带爸妈在武汉轻松玩一天，他们走不了太多路，可以打车",
+      "preferences": { "days": 1, "startDate": "2026-12-05", "party": "elderly", "pace": "relaxed", "transport": "taxi", "notes": "爸妈走不了太多路" },
+      "emphasis": "relaxed",
+      "covers": "轻松少走路的规则（每天最多 3 站、17:30 前结束、步行合计 2 公里）"
+    },
+    {
+      "id": "r04",
+      "text": "武汉三天，12 月 4 日到，想拍照、看老建筑和江边夜景，节奏紧凑一点",
+      "preferences": { "days": 3, "startDate": "2026-12-04", "pace": "intensive", "interests": ["拍照", "老建筑", "夜景"] },
+      "emphasis": "classic",
+      "covers": "天数多、节奏紧凑、晚上的站（夜场、关门时间）"
+    },
+    {
+      "id": "r05",
+      "text": "和对象来武汉两天，想城市漫步、拍拍照，尽量走路，日期还没定",
+      "preferences": { "days": 2, "dateUndecided": true, "party": "couple", "interests": ["城市漫步", "拍照"], "transport": "walk" },
+      "emphasis": "classic",
+      "covers": "日期未定（闭馆日没法校验，应是警告不是错误）；尽量走路"
+    },
+    {
+      "id": "r06",
+      "text": "一家三口带 6 岁孩子，11 月 29 日到武汉玩两天，想看看湖和博物馆",
+      "preferences": { "days": 2, "startDate": "2026-11-29", "party": "family", "interests": ["自然风光", "博物馆"], "notes": "带 6 岁孩子" },
+      "emphasis": "relaxed",
+      "covers": "第 2 天是周一，省博要排在第 1 天才对"
+    },
+    {
+      "id": "r07",
+      "text": "和两个大学同学 12 月 1 日在武汉玩一天，一定要去武汉大学，想吃小吃，黄鹤楼就不去了",
+      "preferences": { "days": 1, "startDate": "2026-12-01", "party": "friends", "interests": ["大学校园", "美食"], "mustVisit": ["武汉大学"], "avoid": ["黄鹤楼"] },
+      "emphasis": "classic",
+      "covers": "点名必去和不去；经典必去要排 5A，但黄鹤楼被用户排除"
+    },
+    {
+      "id": "r08",
+      "text": "12 月 6 日想去古德寺和黎黄陂路转一天，看看老建筑",
+      "preferences": { "days": 1, "startDate": "2026-12-06", "interests": ["寺庙", "老建筑"], "mustVisit": ["古德寺", "黎黄陂路"] },
+      "emphasis": "culture",
+      "covers": "古德寺暂停开放、不在候选里：看模型会不会还是排进去"
+    },
+    {
+      "id": "r09",
+      "text": "12 月 10 日开始在武汉慢慢玩四天，什么都想看看",
+      "preferences": { "days": 4, "startDate": "2026-12-10", "pace": "relaxed" },
+      "emphasis": "classic",
+      "covers": "天数多而开放的景点只有 9 个：会不会重复排、会不会有空的一天"
+    },
+    {
+      "id": "r10",
+      "text": "11 月 21 日到武汉两天，预算不多，就想吃东西逛街，晚上看夜景，打车",
+      "preferences": { "days": 2, "startDate": "2026-11-21", "budget": "low", "interests": ["美食", "城市漫步", "夜景"], "transport": "taxi" },
+      "emphasis": "classic",
+      "covers": "晚上的站和打车；兴趣偏街区和江滩"
+    }
+  ]
+}
