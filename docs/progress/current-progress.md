@@ -54,7 +54,8 @@
 - [x] 第 9 步：项目说明 `docs/project-statement.md`（Cecilia 确认提纲后写）。Claude 在浏览器面板打开了 GitHub：`cecicai2026-code/WuHan-Memory` 是公开的，只有一次提交（`404a5bc`，2026-06-28，Initial commit），`package.json` 用 Express，`.env.example` 是 DeepSeek。`cecicai2026-code/WuhanMemory` 没登录时打开是 404，现在是私有仓库，学校看不到；要不要公开由 Cecilia 定。等 Cecilia 读过、改过再定稿。
 - [x] Cecilia 在 `block-7-share` 上运行 `pnpm build`，通过（2026-11-15）：编译、类型检查和 10 个页面（含 `/s/[slug]`、`/trips/[versionId]`、自定义 404）都没有报错。
 - [x] Cecilia 同意，合进 main（2026-11-15，合并提交 `02bdf32`）。合并后在 main 上后端测试 419 个通过，前端类型检查通过。
-- [ ] Cecilia 在 GitHub Desktop 推送 main；决定仓库公开还是邀请学校查看。
+- [x] Cecilia 在 GitHub Desktop 推送了 main；决定公开仓库（2026-11-15）。公开前 Claude 只读检查了本地全部 14 个分支、174 次提交：没有提交过 `.env` 或数据库文件；现在后端 `.env`、前端 `.env.local` 和旧仓库 `.env` 里的 key 在所有提交里都出现 0 次；提交过的图片只有测试用的 12 个 `sample.jpg`（同一个 23 字节的文本占位），官网照片只记了图片地址。要知道的两处：所有提交的作者邮箱是 QQ 邮箱（改要重写历史，不改）；文档里写明了申请港理工和文书内容。Cecilia 用 `cecicai2026-code` 登录后改成公开，没登录时打开仓库页面返回 200。
+- [ ] 提交作者是 `1667294353-debug`，仓库主人是 `cecicai2026-code`，两个 GitHub 账号。项目说明里要不要写明两个都是本人的，等 Cecilia 定（导出给老师的版本时一起改）。
 - [ ] 还要 Cecilia 定的：上线办法（`docs/operations/hosting-options.md`）、截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
