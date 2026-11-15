@@ -50,6 +50,9 @@ class PlanStop(BaseModel):
     arrive: str
     leave: str
     reason: str = ""
+    # 板块 6C：程序推不出钟点的站（前面交通没查到、或已经推过了午夜）为 false，arrive 和 leave 是空的。
+    # 原因已经是一条错误，校验跳过这一站的时间检查，免得把空时间再报成别的错
+    scheduled: bool = True
 
 
 class PlanDay(BaseModel):

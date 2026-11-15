@@ -161,6 +161,8 @@ def _check_stop(
     elif poi.operatingStatus and poi.operatingStatus.value and poi.operatingStatus.value.code == "closed-temporarily":
         c.error("poi-closed", f"第 {d} 天的{poi.name}现在暂停开放，不能排进行程。", dayNumber=d, poiId=stop.poiId)
 
+    if not stop.scheduled:
+        return None  # 程序推不出钟点（板块 6C），原因已经是一条错误
     name = poi.name if poi else stop.poiId
     arrive, leave = parse_hhmm(stop.arrive), parse_hhmm(stop.leave)
     if arrive is None or leave is None:

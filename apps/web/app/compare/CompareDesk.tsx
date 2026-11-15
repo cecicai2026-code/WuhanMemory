@@ -96,7 +96,7 @@ function Sheet({ side, version, only }: { side: SideResult; version: ItineraryVe
                       )}
                       <p className={s.stop} data-only={only.has(stop.poiId)}>
                         <span className={s.time}>
-                          {stop.arrive}–{stop.leave}
+                          {stop.arrive ? `${stop.arrive}–${stop.leave}` : "没排出时间"}
                         </span>{" "}
                         {stop.name}
                         {only.has(stop.poiId) && <span className={s.onlyTag}>只有这边</span>}

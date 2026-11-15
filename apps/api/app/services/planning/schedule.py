@@ -8,6 +8,7 @@
 5. 离开 = 到达 + 停留时长。
 6. 相邻两站的交通没查到（高德出错）：这段排不出时间，记一条错误 transport-unknown，这份不展示。
 7. 推过了午夜：这天排不下，记一条错误 day-overflow，后面的站不再推。
+8. 推不出钟点的站：钟点留空、标 scheduled=False，校验跳过它们的时间检查（原因已经是第 6、7 条的错误）。
 
 纯函数，不调用模型、不联网。推完的行程照常交给 validate_itinerary 查开放时间、最晚入场、闭馆日、每天总时长、侧重规则。
 """
@@ -16,17 +17,20 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from app.schemas.planning import PlanDay, PlanDraft, PlanOutline, PlanStop, TripFrame, ValidationIssue
+from app.schemas.planning import OutlineStop, PlanDay, PlanDraft, PlanOutline, PlanStop, TripFrame, ValidationIssue
 from app.schemas.poi import PoiFile
 from app.schemas.route import RouteOut
 from app.services.planning.validate import TRANSPORT_SLACK_MINUTES, _matching_periods, day_date, fmt, parse_hhmm
 
 ROUND_TO = 5
 MIDNIGHT = 24 * 60
-# 推不出时间的站写这个钟点，同一天已经有一条错误
-UNSCHEDULED = "23:59"
+# 推不出时间的站：钟点留空、标 scheduled=False（同一天已经有一条错误说明原因）
 
 Legs = Mapping[tuple[str, str], RouteOut | None]
+
+
+def _unscheduled(s: OutlineStop) -> PlanStop:
+    return PlanStop(poiId=s.poiId, arrive="", leave="", reason=s.reason, scheduled=False)
 
 
 def _round_up(minutes: int) -> int:
@@ -77,7 +81,7 @@ def schedule(
         if start is None:
             issues.append(ValidationIssue(level="error", code="bad-time", dayNumber=d,
                                           message=f"第 {d} 天的出发时间「{day.start}」格式不对，应该是 HH:MM。"))
-            stops = [PlanStop(poiId=s.poiId, arrive=UNSCHEDULED, leave=UNSCHEDULED, reason=s.reason) for s in day.stops]
+            stops = [_unscheduled(s) for s in day.stops]
             days.append(PlanDay(dayNumber=d, theme=day.theme, stops=stops))
             continue
 
@@ -85,7 +89,7 @@ def schedule(
         stuck = False
         for i, s in enumerate(day.stops):
             if stuck:
-                stops.append(PlanStop(poiId=s.poiId, arrive=UNSCHEDULED, leave=UNSCHEDULED, reason=s.reason))
+                stops.append(_unscheduled(s))
                 continue
             if i == 0 or clock is None:
                 arrive = start
@@ -101,7 +105,7 @@ def schedule(
                             message=f"第 {d} 天{pois[prev.poiId].name}到{pois[s.poiId].name}的交通没查到，没法排后面的时间。{why}",
                         ))
                         stuck = True
-                        stops.append(PlanStop(poiId=s.poiId, arrive=UNSCHEDULED, leave=UNSCHEDULED, reason=s.reason))
+                        stops.append(_unscheduled(s))
                         continue
                     travel = route.durationMinutes
                 # 景点不存在、重复的段没有路线：校验会报错，这里只加余量
@@ -115,7 +119,7 @@ def schedule(
                     message=f"第 {d} 天从 {fmt(start)} 出发，按停留时长和真实交通推下来，到{name}已经过了午夜，这天排不下这么多站或停留太久。",
                 ))
                 stuck = True
-                stops.append(PlanStop(poiId=s.poiId, arrive=UNSCHEDULED, leave=UNSCHEDULED, reason=s.reason))
+                stops.append(_unscheduled(s))
                 continue
             stops.append(PlanStop(poiId=s.poiId, arrive=fmt(arrive), leave=fmt(leave), reason=s.reason))
             clock = leave

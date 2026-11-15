@@ -99,14 +99,21 @@ def test_unknown_transport_stops_the_day() -> None:
                              legs={("a", "b"): bad, ("b", "c"): route(10)}, frame=TUESDAY)
     assert [i.code for i in issues] == ["transport-unknown"]
     assert "测试：查询出错" in issues[0].message
-    assert times(draft)[1:] == [("b", "23:59", "23:59"), ("c", "23:59", "23:59")]
+    assert times(draft)[1:] == [("b", "", ""), ("c", "", "")]
+    assert [st.scheduled for st in draft.days[0].stops] == [True, False, False]
 
 
 def test_past_midnight_is_an_error() -> None:
     draft, issues = schedule(outline(("20:00", [("a", 200), ("b", 120)])), pois=POIS,
                              legs={("a", "b"): route(10)}, frame=TUESDAY)
     assert [i.code for i in issues] == ["day-overflow"]
-    assert times(draft)[1] == ("b", "23:59", "23:59")
+    assert times(draft)[1] == ("b", "", "")
+    # 推不出钟点的站不再被校验报成别的错（以前的占位钟点会被报"离开不晚于到达""晚于 22:00"）
+    report = validate_itinerary(draft, pois=POIS, legs={("a", "b"): route(10)}, frame=TUESDAY, today=TUESDAY.startDate)  # type: ignore[arg-type]
+    errors = [i.code for i in report.errors]
+    assert "time-order" not in errors and "bad-time" not in errors
+    # a 20:00 到、23:20 走：晚于 17:00 关门和 22:00 是真的错，照样报
+    assert "after-close" in errors and "day-window" in errors
 
 
 def test_bad_start_time() -> None:
