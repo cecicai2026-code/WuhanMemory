@@ -68,7 +68,8 @@ function Proof({ v }: { v: TripVersionSummary }) {
  */
 export function TripsNotebook() {
   const [load, setLoad] = useState<Load>({ kind: "loading" });
-  const tr = makeT(useLang());
+  const lang = useLang();
+  const tr = makeT(lang);
 
   const fetchTrips = useCallback((afterPasscode = false) => {
     setLoad({ kind: "loading" });
@@ -81,7 +82,8 @@ export function TripsNotebook() {
       });
   }, []);
 
-  useEffect(() => fetchTrips(), [fetchTrips]);
+  // 换了语言重新取：侧重名由后端按请求的语言写
+  useEffect(() => fetchTrips(), [fetchTrips, lang]);
 
   if (load.kind === "loading") {
     return (

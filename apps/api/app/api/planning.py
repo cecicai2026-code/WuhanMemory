@@ -19,7 +19,6 @@ from functools import lru_cache
 from typing import Annotated
 
 import httpx
-from app.services.planning.emphasis import EMPHASES
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
 from app.core.config import settings
@@ -50,6 +49,7 @@ from app.services.planning.pipeline import PlanningPipeline, stage_label
 from app.core.lang import L, current_lang, run_in_lang
 from app.services.routing.amap import AmapRouteProvider
 from app.services.routing.service import RouteService
+from app.services.planning.emphasis import EMPHASES
 
 logger = logging.getLogger("wuhanmemory.planning")
 

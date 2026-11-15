@@ -53,7 +53,8 @@ export function Menu() {
           <i />
           <i />
         </span>
-        {t("菜单", "Menu")}
+        {/* 手机上只显示三条横线，字留给读屏软件（加了语言铭牌后右上角放不下） */}
+        <span className={s.menuWord}>{t("菜单", "Menu")}</span>
       </button>
       {open ? (
         <ul className={s.panel} id="site-menu">

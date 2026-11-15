@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
 import type { ItineraryVersion, PlanningRound, PoiSummary, Route } from "@wuhanmemory/shared";
 import { NoteButton } from "@/components/ui";
-import { useT } from "@/components/i18n/LangProvider";
+import { useLang, useT } from "@/components/i18n/LangProvider";
 import { itineraryPins, itineraryRoutes, type PinOverride } from "@/lib/itinerary-map";
 import { getRound, getVersion } from "@/lib/planning-client";
 import { ChatPaper, type PlanResult } from "./ChatPaper";
@@ -96,6 +96,22 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
       closed = true;
     };
   }, [result, setValidation]);
+
+  // 换了语言：方案对比卡（侧重名、对比表）是后端按请求的语言现算的，重新取一次。行程版本本身存下后不变，不用重取
+  const lang = useLang();
+  const langSeen = useRef(lang);
+  useEffect(() => {
+    if (langSeen.current === lang) return;
+    langSeen.current = lang;
+    if (!round) return;
+    let closed = false;
+    getRound(round.id)
+      .then((got) => !closed && setRound(got))
+      .catch(() => {});
+    return () => {
+      closed = true;
+    };
+  }, [lang, round]);
 
   function pick(index: number) {
     if (!round?.versions[index]) return;

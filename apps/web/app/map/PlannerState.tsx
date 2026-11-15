@@ -52,7 +52,7 @@ export function usePlannerState(): PlannerState {
 
 export const VALIDATION_TEXT: Record<ValidationStatus, { zh: string; en: string }> = {
   passed: { zh: "通过", en: "passed" },
-  warning: { zh: "有警告", en: "with warnings" },
+  warning: { zh: "有警告", en: "warnings" },
   failed: { zh: "未通过", en: "failed" },
 };
 
@@ -70,7 +70,7 @@ export function PlannerCorner() {
   if (validation) {
     const by = validationBy && validationBy !== providerLabel ? validationBy : null;
     const v = VALIDATION_TEXT[validation];
-    parts.push(t(`${by ? `${by}排的行程 ` : ""}校验 ${v.zh}`, `${by ? `${modelName(by, lang)}'s trip ` : ""}check ${v.en}`));
+    parts.push(t(`${by ? `${by}排的行程 ` : ""}校验 ${v.zh}`, `${by ? `${modelName(by, lang)}'s trip, ` : ""}check: ${v.en}`));
   }
   // 每一段不在中间断开；手机上放不下一行时在段与段之间换行
   return (

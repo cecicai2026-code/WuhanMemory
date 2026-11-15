@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import sqlite3
-from app.services.planning.emphasis import EMPHASES
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Protocol
@@ -11,6 +10,7 @@ from uuid import uuid4
 
 from app.db.sqlite import connect, init_schema
 from app.schemas.comparison import ModelComparison, ModelComparisonData, ModelComparisonSummary, SideBrief
+from app.services.planning.emphasis import EMPHASES
 
 
 class ModelComparisonRepository(Protocol):

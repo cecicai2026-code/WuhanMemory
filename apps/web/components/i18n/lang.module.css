@@ -77,3 +77,10 @@
     animation: none;
   }
 }
+
+@media (max-width: 733px) {
+  .plate button {
+    min-width: 30px;
+    padding: 0 4px;
+  }
+}
