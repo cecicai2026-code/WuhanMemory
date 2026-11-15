@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     # 高德 Web 服务 key，只在后端用（地点搜索、路线规划）
     amap_web_service_key: str | None = None
     amap_base_url: str = "https://restapi.amap.com"
+    # JS key 配套的安全密钥。只在后端用：浏览器的地图请求经过 /_AMapService 代理时由后端加上（见 app/api/amap_proxy.py）
+    amap_security_js_code: str | None = None
+    # 自定义地图样式的上游地址（高德官方代理示例里 /_AMapService/v4/map/styles 转到这里）
+    amap_webapi_url: str = "https://webapi.amap.com"
 
     # 景点资料（data/pois/*.json）和照片所在的目录，见 ADR 0003
     data_dir: Path = REPO_ROOT / "data"
