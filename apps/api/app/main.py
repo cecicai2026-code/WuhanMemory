@@ -13,6 +13,7 @@ from app.api.planning import router as planning_router
 from app.api.pois import router as pois_router
 from app.api.routing import router as routing_router
 from app.api.shares import router as shares_router
+from app.api.trips import router as trips_router
 from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.db.import_pois import import_pois
@@ -51,6 +52,7 @@ app.add_middleware(
 )
 
 app.include_router(shares_router)
+app.include_router(trips_router)
 app.include_router(planning_router)
 app.include_router(pois_router)
 app.include_router(amap_proxy_router)

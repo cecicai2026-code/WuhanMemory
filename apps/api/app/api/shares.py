@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from app.api.planning import Itineraries
 from app.core.config import settings
 from app.repositories.share_link_repository import ShareLinkRepository, SqliteShareLinkRepository
-from app.schemas.share import ShareLink, ShareLinkOut, SharePageOut
+from app.schemas.share import ShareLinkOut, SharePageOut
 
 router = APIRouter(prefix="/api", tags=["share"])
 
@@ -27,10 +27,6 @@ def get_share_links() -> ShareLinkRepository:
 
 
 ShareLinks = Annotated[ShareLinkRepository, Depends(get_share_links)]
-
-
-def link_out(link: ShareLink) -> ShareLinkOut:
-    return ShareLinkOut(**link.model_dump(), path=f"/s/{link.slug}")
 
 
 @router.post("/itinerary-versions/{version_id}/share", response_model=ShareLinkOut)
@@ -43,10 +39,10 @@ async def publish_share(version_id: str, response: Response, itineraries: Itiner
     existing = links.active_for_version(version_id)
     if existing is not None:
         response.status_code = 200
-        return link_out(existing)
+        return ShareLinkOut.of(existing)
     # 两个请求同时来时，create 会给回另一个请求刚建的链接，不会建出第二个
     response.status_code = 201
-    return link_out(links.create(version_id))
+    return ShareLinkOut.of(links.create(version_id))
 
 
 @router.get("/share/{slug}", response_model=SharePageOut)
@@ -67,4 +63,4 @@ async def revoke_share(slug: str, links: ShareLinks) -> ShareLinkOut:
     link = links.revoke(slug)
     if link is None:
         raise HTTPException(status_code=404, detail=f"没有这个分享链接：{slug}")
-    return link_out(link)
+    return ShareLinkOut.of(link)

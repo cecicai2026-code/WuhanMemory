@@ -21,6 +21,10 @@ class ShareLinkOut(ShareLink):
     # 网站上的路径，例如 /s/k3f9x2qa。完整网址由前端按当前网站拼，后端不知道网站开在哪个域名
     path: str
 
+    @classmethod
+    def of(cls, link: ShareLink) -> ShareLinkOut:
+        return cls(**link.model_dump(), path=f"/s/{link.slug}")
+
 
 class SharePageOut(BaseModel):
     slug: str
