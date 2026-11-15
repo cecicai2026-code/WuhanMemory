@@ -121,6 +121,16 @@ CREATE TABLE IF NOT EXISTS itinerary_versions (
     data_json         TEXT NOT NULL,     -- 整个版本（ItineraryVersionData）
     UNIQUE (itinerary_id, version_number)
 );
+
+-- 规划的"轮"（板块 5B）：一次规划按三种侧重排几份方案，每份存成一个行程版本，这里记下是哪几份、哪些没展示、为什么。
+CREATE TABLE IF NOT EXISTS planning_rounds (
+    id              TEXT PRIMARY KEY,
+    conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    round_number    INTEGER NOT NULL,  -- 同一段对话从 1 开始
+    created_at      TEXT NOT NULL,
+    data_json       TEXT NOT NULL,     -- 整轮（PlanningRoundData）
+    UNIQUE (conversation_id, round_number)
+);
 """
 
 
@@ -136,6 +146,8 @@ def connect(path: Path) -> sqlite3.Connection:
 _ADDED_COLUMNS = (
     ("conversation_messages", "kind", "TEXT"),
     ("conversation_messages", "asked", "TEXT"),
+    # 板块 5B：这条回复带出的那一轮方案
+    ("conversation_messages", "planning_round_id", "TEXT"),
 )
 
 

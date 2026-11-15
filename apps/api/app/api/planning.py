@@ -24,6 +24,7 @@ from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.repositories.conversation_repository import ConversationRepository, SqliteConversationRepository
 from app.repositories.itinerary_repository import ItineraryRepository, SqliteItineraryRepository
+from app.repositories.planning_round_repository import PlanningRoundRepository, SqlitePlanningRoundRepository
 from app.repositories.poi_repository import SqlitePoiRepository
 from app.repositories.route_cache_repository import SqliteRouteCacheRepository
 from app.schemas.api import (
@@ -68,6 +69,7 @@ async def _default_pipeline() -> AsyncIterator[PlanningPipeline]:
             routes=routes,
             itineraries=SqliteItineraryRepository(settings.database_path),
             conversations=SqliteConversationRepository(settings.database_path),
+            rounds=SqlitePlanningRoundRepository(settings.database_path),
             today=today_in_city,
         )
 

@@ -168,3 +168,41 @@ class ItineraryVersion(ItineraryVersionData):
     itineraryId: str
     versionNumber: int
     createdAt: datetime
+
+
+class RoundPlan(BaseModel):
+    """一轮里的一份方案。"""
+
+    emphasis: str
+    label: str
+    # 模型调用出错、没排出来时为 null
+    itineraryId: str | None
+    versionId: str | None
+    shown: bool
+    # 不展示的原因（几乎一样、没通过校验、模型出错），给用户看的话
+    removedReason: str | None = None
+
+
+class PlanningRoundData(BaseModel):
+    """一次规划产生一轮：同一个请求按三种侧重排的几份方案（板块 5B）。再发消息就是新的一轮，旧的保留。"""
+
+    conversationId: str
+    roundNumber: int
+    provider: str
+    providerLabel: str
+    # 按"经典必去 → 轻松少走路 → 深度文化"的顺序
+    plans: list[RoundPlan]
+    # 程序替用户补上的默认值，三份共用
+    defaultsUsed: list[str] = Field(default_factory=list)
+
+
+class PlanningRound(PlanningRoundData):
+    id: str
+    createdAt: datetime
+
+
+class PlanningRoundOut(PlanningRound):
+    """接口返回的一轮：附上展示的几份方案的版本和比较表。"""
+
+    versions: list[ItineraryVersion]
+    comparison: PlanComparison | None
