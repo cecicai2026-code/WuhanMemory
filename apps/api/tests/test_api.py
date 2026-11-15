@@ -142,11 +142,6 @@ def test_one_job_per_conversation(api) -> None:
     assert client.get(f"/api/conversations/{conv}").json()["runningJobId"] == job.id
 
 
-def test_share_not_implemented_yet() -> None:
-    client = TestClient(app)
-    assert client.get("/api/share/anything").status_code == 404
-
-
 
 def test_planning_round_with_comparison(api) -> None:
     from tests.test_planning_rounds import ALL, CLASSIC, CULTURE, POIS, WALKS

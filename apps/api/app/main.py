@@ -12,7 +12,7 @@ from app.api.llm import router as llm_router
 from app.api.planning import router as planning_router
 from app.api.pois import router as pois_router
 from app.api.routing import router as routing_router
-from app.api.routes import router
+from app.api.shares import router as shares_router
 from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.db.import_pois import import_pois
@@ -50,7 +50,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+app.include_router(shares_router)
 app.include_router(planning_router)
 app.include_router(pois_router)
 app.include_router(amap_proxy_router)

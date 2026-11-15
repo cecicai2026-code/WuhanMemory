@@ -139,6 +139,17 @@ CREATE TABLE IF NOT EXISTS model_comparisons (
     eval_request_id TEXT,              -- 批量评测时是请求的 id（例如 r01），页面上发起的为空
     data_json       TEXT NOT NULL      -- 整次对比（ModelComparisonData）
 );
+
+-- 分享链接（板块 7）：指向一个行程版本（版本不可变）。一个版本同时最多一个没撤回的链接；撤回后再分享换新链接。
+CREATE TABLE IF NOT EXISTS share_links (
+    slug        TEXT PRIMARY KEY,      -- 8 位随机小写字母和数字
+    version_id  TEXT NOT NULL REFERENCES itinerary_versions(id) ON DELETE CASCADE,
+    created_at  TEXT NOT NULL,
+    revoked_at  TEXT                   -- 撤回的时间；没撤回为空
+);
+
+-- 同一个版本只能有一个没撤回的链接（两个请求同时分享同一版本时也成立）
+CREATE UNIQUE INDEX IF NOT EXISTS share_links_active_idx ON share_links (version_id) WHERE revoked_at IS NULL;
 """
 
 
