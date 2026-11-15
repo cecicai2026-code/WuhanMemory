@@ -127,3 +127,26 @@ async def test_relaxed_rides_after_ten_minutes_walk(tmp_path: Path) -> None:
     relaxed_leg = out.versions[1].days[0].legs[0]
     assert classic_leg.route.mode == "walk"
     assert relaxed_leg.route.mode == "transit" and "10 分钟" in relaxed_leg.choice
+
+
+async def test_relaxed_plan_says_its_own_pace(tmp_path: Path) -> None:
+    # 用户没说节奏：三份共用"节奏：适中（按默认）"，但轻松那份实际按轻松排，要写清楚
+    s = setup(tmp_path, [prefs(**DATED), CLASSIC, RELAXED, CULTURE])
+    out = await s.send("去")
+    classic, relaxed, culture = out.versions
+    assert relaxed.frame.pace == "relaxed"
+    assert not any("适中" in d for d in relaxed.defaultsUsed)
+    assert any(d.startswith("节奏：轻松") and "轻松少走路" in d for d in relaxed.defaultsUsed)
+    assert "节奏：适中（你没说，按默认）" in classic.defaultsUsed and "节奏：适中（你没说，按默认）" in culture.defaultsUsed
+    # 一轮里记的是三份共用的
+    assert "节奏：适中（你没说，按默认）" in out.round.defaultsUsed
+
+
+async def test_relaxed_plan_mentions_user_pace_it_overrides(tmp_path: Path) -> None:
+    s = setup(tmp_path, [prefs(**DATED, pace="intensive"), CLASSIC, RELAXED, CULTURE])
+    out = await s.send("紧凑一点")
+    relaxed = out.versions[1]
+    line = next(d for d in relaxed.defaultsUsed if d.startswith("节奏："))
+    assert "轻松" in line and "你说的是紧凑" in line
+    # 其他两份照用户说的，不写节奏
+    assert not any(d.startswith("节奏：") for d in out.versions[0].defaultsUsed)

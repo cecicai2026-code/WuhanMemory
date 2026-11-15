@@ -44,8 +44,8 @@ from app.services.planning import prompts
 from app.services.planning.candidates import Candidates, candidate_brief, select_candidates
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
+from app.services.planning.preferences import PACE_LABELS, TRANSPORT_LABELS, Frame, frame_for, merge, question_for
 from app.services.planning.schedule import schedule
-from app.services.planning.preferences import TRANSPORT_LABELS, Frame, frame_for, merge, question_for
 from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
 from app.services.poi_view import fact_status
@@ -198,7 +198,11 @@ class PlanningPipeline:
             _Plan(
                 emphasis=e,
                 candidates=candidates_for(e, base, library),
-                trip=Frame(frame=emphasis_frame(e, trip.frame), transport=trip.transport, defaults_used=defaults),
+                trip=Frame(
+                    frame=emphasis_frame(e, trip.frame),
+                    transport=trip.transport,
+                    defaults_used=_plan_defaults(e, emphasis_frame(e, trip.frame), trip.frame, prefs, defaults),
+                ),
                 walk_max=walk_limit(e),
             )
             for e in self.emphases
@@ -271,7 +275,7 @@ class PlanningPipeline:
                               removedReason=p.removed)
                 )
                 continue
-            data = self._version_data(p, prefs, defaults, provider_name, labels, today)
+            data = self._version_data(p, prefs, provider_name, labels, today)
             itinerary_id = self._itinerary_for(previous, p.emphasis.id, conversation_id)
             version = self.itineraries.add_version(itinerary_id, data)
             versions.append(version)
@@ -364,7 +368,7 @@ class PlanningPipeline:
                 await self._check_all([plan], {0: (r.parsed, r.model)}, today, stage, into="final")  # type: ignore[dict-item]
 
         await stage("saving")
-        data = self._version_data(plan, prefs, defaults, provider, labels, today)
+        data = self._version_data(plan, prefs, provider, labels, today)
         version = self.itineraries.add_version(self.itineraries.create_itinerary(None), data)
         return SingleOutcome(provider=provider, version=version, defaults=defaults, repair_error=repair_error)
 
@@ -377,10 +381,15 @@ class PlanningPipeline:
         plan = _Plan(
             emphasis=e,
             candidates=candidates_for(e, base, library),
-            trip=Frame(frame=emphasis_frame(e, trip.frame), transport=trip.transport, defaults_used=defaults),
+            trip=Frame(
+                frame=emphasis_frame(e, trip.frame),
+                transport=trip.transport,
+                # 和 handle 里的每一份一样：侧重改了节奏时写这份按什么节奏排（main 上 d08e962 的规则）
+                defaults_used=_plan_defaults(e, emphasis_frame(e, trip.frame), trip.frame, prefs, defaults),
+            ),
             walk_max=walk_limit(e),
         )
-        return plan, defaults
+        return plan, plan.trip.defaults_used
 
     def transit_for(self, prefs: TravelerPreferences, emphasis: str) -> list[str]:
         """plan_single 会给模型看的真实交通表。双模型对比先算一份，两边共用。"""
@@ -496,7 +505,6 @@ class PlanningPipeline:
         self,
         p: _Plan,
         prefs: TravelerPreferences,
-        defaults: list[str],
         provider_name: str,
         labels: dict[str, str],
         today: date,
@@ -507,7 +515,7 @@ class PlanningPipeline:
             title=final.draft.title or f"武汉 {p.trip.frame.days} 日 · {p.emphasis.label}",
             frame=p.trip.frame,
             preferences=prefs,
-            defaultsUsed=defaults,
+            defaultsUsed=p.trip.defaults_used,
             days=_build_days(final, p.candidates, p.trip.frame, today),
             validation=final.report,
             planner=PlannerInfo(
@@ -552,6 +560,17 @@ def _generate_prompt(
         previous=previous,
         emphasis=plan.emphasis.prompt,
     )
+
+
+def _plan_defaults(
+    emphasis: Emphasis, frame: TripFrame, shared: TripFrame, prefs: TravelerPreferences, defaults: list[str]
+) -> list[str]:
+    """一份方案的"按默认补的设置"。侧重改了节奏（轻松少走路按轻松排）时，不能再写三份共用的"节奏：适中（按默认）"。"""
+    if frame.pace == shared.pace:
+        return list(defaults)
+    said = f"；你说的是{PACE_LABELS[prefs.pace]}" if prefs.pace is not None else ""
+    note = f"节奏：{PACE_LABELS[frame.pace]}（这份是「{emphasis.label}」，按{PACE_LABELS[frame.pace]}排{said}）"
+    return [d for d in defaults if not d.startswith("节奏：")] + [note]
 
 
 # ---------- 存进版本的快照 ----------

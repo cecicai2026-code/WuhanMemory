@@ -146,3 +146,13 @@ async def test_no_date_means_undecided(tmp_path: Path) -> None:
     out, _ = await s.run("qwen", prefs=TravelerPreferences(days=1))
     assert out.version is not None and out.version.preferences.dateUndecided
     assert "date-unknown" in [i.code for i in out.version.validation.issues]
+
+
+async def test_relaxed_plan_says_it_uses_relaxed_pace(tmp_path: Path) -> None:
+    # 和 /map 的三份方案同一条规则（main 上 d08e962）：侧重改了节奏，就不写共用的"节奏：适中（按默认）"
+    s = TwoModels(tmp_path, [plan([("a", "09:30", "11:30")])], [])
+    out, _ = await s.run("qwen", emphasis="relaxed")
+    assert out.version is not None
+    pace = [d for d in out.version.defaultsUsed if d.startswith("节奏：")]
+    assert pace == ["节奏：轻松（这份是「轻松少走路」，按轻松排）"]
+    assert out.defaults == out.version.defaultsUsed
