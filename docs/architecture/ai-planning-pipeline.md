@@ -54,7 +54,7 @@ sequenceDiagram
 | ⑦ 修正 | 上一版行程、具体错误、真实交通时间 | 新行程 → 再做 ⑤ ⑥ | 模型 + 程序 | `prompts.REPAIR_SYSTEM` |
 | ⑧ 保存 | 最终行程 | 一个不可变的行程版本 | 程序 | `pipeline.py`、`itinerary_repository.py` |
 
-代码都在 `apps/api/app/services/planning/`，编排在 `pipeline.py`。所有模型调用都经过 `LLMGateway.complete_json`，用界面上选中的模型（每次请求指定，见 `llm-provider-gateway.md`）。
+代码都在 `apps/api/app/services/planning/`，编排在 `pipeline.py`。所有模型调用都经过 `LLMGateway.complete_json`，用界面上选中的模型（每次请求指定，见 `llm-provider-gateway.md`）。"排行程"和"修正"是慢请求，超时直接报错、不重试（2026-11-15 Cecilia 定的）；限流和对方出错照样重试。
 
 没有用模型的"工具调用"：链路的每一步都由程序决定什么时候查什么，模型只回答固定结构的 JSON。这样两个模型走的路完全一样，板块 6 对比时才公平；也不用担心模型跳过某个查询。
 
@@ -182,5 +182,5 @@ sequenceDiagram
 
 - 雨天备选、排队、预算约束、天气。
 - 餐饮和住宿不在景点库里，行程里不安排。
-- 路线不按天分色：地图一次只画一天，用"地图上看 第 N 天"切换（设计规范 9.1 写的是按天分色，待 Cecilia 决定要不要加"全部天"的视图）。
+- 地图一次只画一天，用"地图上看 第 N 天"切换。Cecilia 决定（2026-11-15）加一个"全部天"、每天一种颜色的视图，颜色待定。
 - 规划任务只存在内存里，后端重启后正在跑的任务会丢（结果已存的不丢）。

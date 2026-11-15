@@ -156,21 +156,24 @@ class LLMGateway:
         schema: type[BaseModel] | None = None,
         provider: str | None = None,
         temperature: float = 0.2,
+        retry_on_timeout: bool = True,
     ) -> LLMJsonResult:
         """让模型回答一个 JSON 对象。
 
         task 是这次调用的用途（比如 "extract_preferences"），只用于记录。
         provider 不填就用默认模型。schema 填了的话，输出还要通过它的校验。
+        retry_on_timeout=False 时超时不重试，直接报错（2026-11-15 Cecilia 定的：排行程这种慢请求，
+        超时再试一般也是超时，重试两次要让用户白等 3 分钟）；限流、对方出错照样重试。
         """
         chosen = self._resolve(provider)
         try:
-            return await self._run(chosen, task, system_prompt, user_prompt, schema, temperature)
+            return await self._run(chosen, task, system_prompt, user_prompt, schema, temperature, retry_on_timeout)
         except LLMError:
             fallback = self._fallback_for(explicit=provider is not None, failed=chosen)
             if fallback is None:
                 raise
             logger.warning("llm %s 失败，换用备用模型 %s", chosen.name, fallback.name)
-            return await self._run(fallback, task, system_prompt, user_prompt, schema, temperature)
+            return await self._run(fallback, task, system_prompt, user_prompt, schema, temperature, retry_on_timeout)
 
     def _fallback_for(self, *, explicit: bool, failed: LLMProvider) -> LLMProvider | None:
         if explicit or not self.fallback_provider or self.fallback_provider == failed.name:
@@ -185,6 +188,7 @@ class LLMGateway:
         user_prompt: str,
         schema: type[BaseModel] | None,
         temperature: float,
+        retry_on_timeout: bool = True,
     ) -> LLMJsonResult:
         trace_id = uuid4().hex
         started_at = datetime.now(timezone.utc)
@@ -225,7 +229,7 @@ class LLMGateway:
                 LLMMessage("system", f"{system_prompt.rstrip()}\n\n{JSON_ONLY_INSTRUCTION}"),
                 LLMMessage("user", user_prompt),
             ]
-            reply = await self._chat_with_retry(provider, messages, temperature, trace_id, stats)
+            reply = await self._chat_with_retry(provider, messages, temperature, trace_id, stats, retry_on_timeout)
             try:
                 payload, parsed = _parse_output(reply, schema)
             except _OutputProblem as problem:
@@ -240,7 +244,7 @@ class LLMGateway:
                         f"请重新回答原来的问题。{JSON_ONLY_INSTRUCTION}",
                     ),
                 ]
-                reply = await self._chat_with_retry(provider, repair_messages, temperature, trace_id, stats)
+                reply = await self._chat_with_retry(provider, repair_messages, temperature, trace_id, stats, retry_on_timeout)
                 try:
                     payload, parsed = _parse_output(reply, schema)
                 except _OutputProblem as second:
@@ -269,6 +273,7 @@ class LLMGateway:
         temperature: float,
         trace_id: str,
         stats: _CallStats,
+        retry_on_timeout: bool = True,
     ) -> ProviderReply:
         attempt = 0
         while True:
@@ -277,6 +282,8 @@ class LLMGateway:
                 reply = await self._chat_once(provider, messages, temperature, trace_id)
             except LLMError as exc:
                 if not exc.retryable or attempt >= self.max_retries:
+                    raise
+                if isinstance(exc, LLMTimeoutError) and not retry_on_timeout:
                     raise
                 wait = self._wait_seconds(exc, attempt)
                 logger.warning(

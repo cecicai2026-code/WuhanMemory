@@ -357,3 +357,12 @@ async def test_unknown_opening_hours_never_passes(tmp_path: Path) -> None:
     assert v is not None and v.validation.status == "warning"
     assert any("开放时间未知，无法校验" in i.message for i in v.validation.issues)
     assert v.days[0].stops[0].facts.openingHours.status == "missing"
+
+
+async def test_generation_timeout_is_not_retried(tmp_path: Path) -> None:
+    from app.services.llm.errors import LLMTimeoutError
+
+    s = Setup(tmp_path, [prefs(**DATED), LLMTimeoutError("测试：超时"), plan([("a", "09:30", "11:30")])])
+    with pytest.raises(LLMTimeoutError):
+        await s.send("去")
+    assert len(s.model.calls) == 2  # 抽偏好一次、排行程一次，超时后没有再发

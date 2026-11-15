@@ -252,6 +252,27 @@ async def test_timeout_is_retried() -> None:
     assert sleeps.waits == [1.0]
 
 
+async def test_timeout_not_retried_when_asked() -> None:
+    """排行程这种慢请求：超时直接报错，不让用户白等几轮。"""
+    provider = FakeProvider("a", script=[Slow(1.0), GOOD])
+    gateway, sleeps, records = make_gateway(provider, timeout_seconds=0.05)
+
+    with pytest.raises(LLMTimeoutError):
+        await ask(gateway, retry_on_timeout=False)
+
+    assert (records.items[0].attempts, records.items[0].retried) == (1, False)
+    assert sleeps.waits == []
+
+
+async def test_rate_limit_still_retried_when_timeouts_are_not() -> None:
+    provider = FakeProvider("a", script=[LLMRateLimitError("限流"), GOOD])
+    gateway, _, _ = make_gateway(provider)
+
+    result = await ask(gateway, retry_on_timeout=False)
+
+    assert (result.record.attempts, result.record.retried) == (2, True)
+
+
 # ---- 输出修复 ----
 
 

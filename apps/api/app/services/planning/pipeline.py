@@ -168,6 +168,8 @@ class PlanningPipeline:
             user_prompt=gen_prompt,
             schema=PlanDraft,
             provider=provider_name,
+            # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
+            retry_on_timeout=False,
         )
         first = await self._check(generated.parsed, generated.model, candidates, trip, today, stage)  # type: ignore[arg-type]
         final = first
@@ -186,6 +188,7 @@ class PlanningPipeline:
                 ),
                 schema=PlanDraft,
                 provider=provider_name,
+                retry_on_timeout=False,
             )
             final = await self._check(repaired.parsed, repaired.model, candidates, trip, today, stage)  # type: ignore[arg-type]
 
