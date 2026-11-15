@@ -153,7 +153,35 @@ corepack pnpm eval:run     # 批量评测（真实调用，先跑 routes:prewarm
 
 ## 截图
 
-截图放在 [`docs/screenshots/`](docs/screenshots/)，要截哪几张写在那个文件夹的说明里。还没截。
+2026-11-15 在本机开发环境截的，数据是开发数据库里真实排出来的行程和对比（豆包，"武汉两天，喜欢历史和美食，坐地铁"）。怎么截的写在 [`docs/screenshots/README.md`](docs/screenshots/README.md)。
+
+**地图工作台**：左边对话，中间地图上是第 1 天的路线，右边是三份方案的对比卡。
+
+![地图工作台](docs/screenshots/map-desktop.png)
+
+**行程卡的一天**：时间线、开放时间、预约、门票，没资料的写"待补充"；两站之间是高德查到的真实交通。
+
+<img src="docs/screenshots/plan-card.png" alt="行程卡的一天" width="360">
+
+**手机上的地图工作台**：地图在上，行程在下。
+
+<img src="docs/screenshots/map-phone.png" alt="手机上的地图工作台" width="300">
+
+**模型对比**：同一个请求交给千问和豆包，中间的评分卡由程序算。
+
+![模型对比](docs/screenshots/compare.png)
+
+**地点档案**：每个条目下面写来源、核实日期。
+
+![地点档案](docs/screenshots/places-detail.png)
+
+**分享页**：明信片和地图，指向固定的版本。
+
+![分享页](docs/screenshots/share.png)
+
+**我的行程**：一段对话下面的几份方案和版本，没通过校验的不能分享。
+
+![我的行程](docs/screenshots/trips.png)
 
 ## 计划中（还没做）
 

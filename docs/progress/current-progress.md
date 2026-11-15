@@ -48,7 +48,7 @@
   - 次数的默认值（5 和 50）是 Claude 定的，Cecilia 可以在 `.env` 里改。路线接口和高德代理没有限次数。
 - [x] 第 7 步：r07 选做法 A（点名必去优先）：用户点名了必去时，经典必去只要求用户点名的；没排进去的 5A 是警告 `emphasis-5a-skipped`。提示词同步改了。4 个测试先写，后端测试 406 个通过。ADR 0005 追加更新，`ai-planning-pipeline.md` 的侧重表已改。之前的评测结果文件保留原样；要不要重跑评测由 Cecilia 定。
   - 改的时候发现：除了经典必去里的 5A，"用户点名必去"本身没有校验规则（轻松、深度文化两份漏了用户点名的景点不会报错）。这次没改，等 Cecilia 定要不要加。
-- [x] 第 8 步：重写 `README.md`（只写已做的功能，没做的列在"计划中"；评测数字取自 `eval/results/`，写明三次之间链路改过）。截图清单在 `docs/screenshots/README.md`，截图还没截。
+- [x] 第 8 步：重写 `README.md`（只写已做的功能，没做的列在"计划中"；评测数字取自 `eval/results/`，写明三次之间链路改过）。截图清单在 `docs/screenshots/README.md`。2026-11-15 Claude 截了 7 张（Cecilia 打不开开发者工具，让 Claude 截），Cecilia 看过后接进 README 的"截图"一节。
 - [x] 第 10 步：上线办法比较 `docs/operations/hosting-options.md`（六种办法，附出处）。Claude 推荐香港轻量服务器，同时准备录屏备用。等 Cecilia 选。不管选哪种，上线前都要先改代码：浏览器只连网站一个地址（前端把 `/api`、`/_AMapService`、`/media` 转给后端）。
 - [x] 第 11 步：演示录屏步骤清单 `docs/demo-script.md`。
 - [x] 第 9 步：项目说明 `docs/project-statement.md`（Cecilia 确认提纲后写）。Claude 在浏览器面板打开了 GitHub：`cecicai2026-code/WuHan-Memory` 是公开的，只有一次提交（`404a5bc`，2026-06-28，Initial commit），`package.json` 用 Express，`.env.example` 是 DeepSeek。`cecicai2026-code/WuhanMemory` 没登录时打开是 404，现在是私有仓库，学校看不到；要不要公开由 Cecilia 定。等 Cecilia 读过、改过再定稿。
@@ -64,7 +64,7 @@
   - [x] Cecilia 同意，`deploy-hk` 合进 main（2026-11-15）。合并时进度文档和开发日志和 main 上"仓库公开前的检查"那次提交冲突，两边内容都保留。
   - [ ] Cecilia 在 GitHub Desktop 推送 main（服务器拉的是 GitHub 上的 main）。
   - [ ] Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
-- [ ] 还要 Cecilia 定的：截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
+- [ ] 还要 Cecilia 定的：读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
 
@@ -398,7 +398,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 7 主体和上线准备（`deploy-hk`）都已合进 main。Cecilia 推送 main，买香港轻量服务器和域名，照 `docs/operations/deploy-hk.md` 部署；截图。下一个板块是 1B（立体场景）。
+板块 7 主体和上线准备（`deploy-hk`）都已合进 main。Cecilia 推送 main，买香港轻量服务器和域名，照 `docs/operations/deploy-hk.md` 部署。截图已截好（2026-11-15）。下一个板块是 1B（立体场景）。
 
 r07 的冲突已定（板块 7，点名必去优先）。5B 没做的几项（见上面）以后再排。
 
