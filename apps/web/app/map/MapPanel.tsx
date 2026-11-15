@@ -14,8 +14,10 @@ const JS_KEY = process.env.NEXT_PUBLIC_AMAP_JS_KEY ?? "";
 const WUHAN_CENTER = { lng: 114.3055, lat: 30.5928 };
 /** 和 map.module.css 的手机断点一致 */
 const PHONE_QUERY = "(max-width: 733px)";
+/** 底图这么久还没画完，就提示一句"加载得比较慢"，但继续等 */
+const SLOW_MS = 15000;
 
-type LoadState = { kind: "loading" } | { kind: "ready" } | { kind: "error"; message: string };
+type LoadState = { kind: "loading"; slow: boolean } | { kind: "ready" } | { kind: "error"; message: string };
 
 interface Props {
   pois: PoiSummary[];
@@ -33,7 +35,7 @@ interface Props {
 export function MapPanel({ pois, poisError, routes }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const providerRef = useRef<AmapProvider | null>(null);
-  const [load, setLoad] = useState<LoadState>({ kind: "loading" });
+  const [load, setLoad] = useState<LoadState>({ kind: "loading", slow: false });
   const [mode, setMode] = useState<MapMode>("2d");
   const [selected, setSelected] = useState<string | null>(null);
   const [cardHost, setCardHost] = useState<HTMLDivElement | null>(null);
@@ -52,20 +54,26 @@ export function MapPanel({ pois, poisError, routes }: Props) {
       classes: { pin: s.pin, pinHead: s.pinHead, pinLabel: s.pinLabel },
     });
     let cancelled = false;
+    const slowTimer = window.setTimeout(() => {
+      setLoad((cur) => (cur.kind === "loading" ? { kind: "loading", slow: true } : cur));
+    }, SLOW_MS);
     provider
       .mount(box, { center: WUHAN_CENTER, zoom: 12, mode: initialMode })
       .then(() => {
+        window.clearTimeout(slowTimer);
         if (cancelled) return;
         providerRef.current = provider;
         provider.onPinSelect(setSelected);
         setLoad({ kind: "ready" });
       })
       .catch((err: unknown) => {
+        window.clearTimeout(slowTimer);
         if (cancelled) return;
         setLoad({ kind: "error", message: err instanceof Error ? err.message : String(err) });
       });
     return () => {
       cancelled = true;
+      window.clearTimeout(slowTimer);
       providerRef.current = null;
       provider.destroy();
     };
@@ -119,6 +127,12 @@ export function MapPanel({ pois, poisError, routes }: Props) {
           {load.kind === "loading" && (
             <p className={s.notice} role="status">
               <Label>灯箱</Label> 地图加载中……
+              {load.slow && (
+                <>
+                  <br />
+                  加载得比较慢。可能是网络慢；如果一直不出来，看看后端有没有启动（地图请求要经过后端加安全密钥）。
+                </>
+              )}
             </p>
           )}
           {load.kind === "error" && (

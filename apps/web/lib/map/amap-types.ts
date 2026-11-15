@@ -25,6 +25,7 @@ export interface AMapMap extends AMapEventTarget {
   setStatus(status: { pitchEnable?: boolean; rotateEnable?: boolean }): void;
   setBounds(bounds: AMapBounds, immediately?: boolean, avoid?: [number, number, number, number]): void;
   setMapStyle(style: string): void;
+  setZoomAndCenter(zoom: number, center: LngLatTuple, immediately?: boolean, duration?: number): void;
   add(overlay: unknown | unknown[]): void;
   remove(overlay: unknown | unknown[]): void;
   destroy(): void;

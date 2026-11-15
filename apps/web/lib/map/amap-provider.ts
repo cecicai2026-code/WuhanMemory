@@ -14,11 +14,12 @@ import type { AMapInfoWindow, AMapMap, AMapMarker, AMapNamespace, AMapPolyline, 
 
 export const MAP_STYLE = "amap://styles/dark";
 const PITCH_3D = 50;
-const LOAD_TIMEOUT_MS = 15000;
 /** 框住景点时四周留的空白（上、右、下、左，像素）。上面多留，图钉是往上长的 */
 const FIT_PADDING: [number, number, number, number] = [70, 50, 40, 50];
 /** 卡片在图钉上方多高（像素），和 map.module.css 里图钉的高度对应 */
 const CARD_OFFSET_Y = -46;
+/** 框住景点或路线时最多放大到这一级，免得两点很近时贴得太近 */
+const MAX_FIT_ZOOM = 16;
 
 /** 路线颜色：按交通方式分。板块 5 按天分色时再加一组 */
 const LINE_STYLE = {
@@ -50,6 +51,9 @@ export class AmapProvider implements MapProvider {
   private card: AMapInfoWindow | null = null;
   private selectHandler: (id: string | null) => void = () => {};
   private onMapClick = () => this.selectHandler(null);
+  /** destroy() 之后为 true。React 开发模式会挂载两次，第一次的脚本加载完时不能再建地图 */
+  private destroyed = false;
+  private container: HTMLElement | null = null;
 
   constructor(private readonly opts: AmapProviderOptions) {}
 
@@ -64,7 +68,9 @@ export class AmapProvider implements MapProvider {
     } catch (err) {
       throw new AmapLoadError(`高德地图脚本加载失败：${err instanceof Error ? err.message : String(err)}。请检查网络和 JS key。`);
     }
+    if (this.destroyed) throw new AmapLoadError("地图已经关掉了");
     this.AMap = AMap;
+    this.container = container;
     const map = new AMap.Map(container, {
       center: tuple(options.center),
       zoom: options.zoom,
@@ -77,15 +83,8 @@ export class AmapProvider implements MapProvider {
     this.map = map;
     map.on("click", this.onMapClick);
 
-    await new Promise<void>((resolve, reject) => {
-      const timer = window.setTimeout(() => {
-        reject(new AmapLoadError("高德底图 15 秒内没有加载出来。可能是网络问题，或后端没有启动（安全密钥要经过后端）。"));
-      }, LOAD_TIMEOUT_MS);
-      map.on("complete", () => {
-        window.clearTimeout(timer);
-        resolve();
-      });
-    });
+    // 等底图画完。不设超时：网络慢或页面在后台时会久一点，页面上另外提示"加载得比较慢"
+    await new Promise<void>((resolve) => map.on("complete", () => resolve()));
   }
 
   setMode(mode: MapMode): void {
@@ -184,10 +183,30 @@ export class AmapProvider implements MapProvider {
     if (this.lines.length) map.add(this.lines);
   }
 
+  /**
+   * 缩放到正好框住这个范围。高德的 setBounds / setFitView 只给整数级缩放，框得偏松，
+   * 所以这里按墨卡托投影自己算带小数的缩放级别和中心点。
+   */
   focusBounds(bounds: MapBounds): void {
-    const { map, AMap } = this;
-    if (!map || !AMap) return;
-    map.setBounds(new AMap.Bounds(tuple(bounds.southWest), tuple(bounds.northEast)), false, FIT_PADDING);
+    const { map, container } = this;
+    if (!map || !container) return;
+    const [top, right, bottom, left] = FIT_PADDING;
+    const w = Math.max(container.clientWidth - left - right, 40);
+    const h = Math.max(container.clientHeight - top - bottom, 40);
+    const mercY = (lat: number) => Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
+    const sw = bounds.southWest;
+    const ne = bounds.northEast;
+    const dx = Math.max(((ne.lng - sw.lng) * Math.PI) / 180, 1e-9);
+    const dy = Math.max(mercY(ne.lat) - mercY(sw.lat), 1e-9);
+    // 缩放级别 z 时，整个世界宽 256 * 2^z 像素，对应 2π 弧度
+    const zoom = Math.min(Math.log2((w * 2 * Math.PI) / (256 * dx)), Math.log2((h * 2 * Math.PI) / (256 * dy)), MAX_FIT_ZOOM);
+    // 中心点：留白上下不一样多，中心往下挪一点，让图钉（往上长）不出框
+    const midY = (mercY(ne.lat) + mercY(sw.lat)) / 2;
+    const pxPerRad = (256 * 2 ** zoom) / (2 * Math.PI);
+    const centerY = midY + (top - bottom) / 2 / pxPerRad;
+    const centerLat = ((2 * Math.atan(Math.exp(centerY)) - Math.PI / 2) * 180) / Math.PI;
+    const centerLng = (sw.lng + ne.lng) / 2 + ((((right - left) / 2) / pxPerRad) * 180) / Math.PI;
+    map.setZoomAndCenter(zoom, tuple({ lng: centerLng, lat: centerLat }), false, 500);
   }
 
   /** 框住全部图钉 */
@@ -197,6 +216,7 @@ export class AmapProvider implements MapProvider {
   }
 
   destroy(): void {
+    this.destroyed = true;
     this.closeCard();
     this.map?.off("click", this.onMapClick);
     this.map?.destroy();

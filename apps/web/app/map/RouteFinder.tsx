@@ -84,7 +84,7 @@ export function RouteFinder({ pois, shown, onShow }: Props) {
       <form className={s.finderForm} onSubmit={search}>
         <label className={s.pick}>
           <span>从</span>
-          <select value={from} onChange={(e) => setFrom(e.target.value)} required>
+          <select aria-label="起点" value={from} onChange={(e) => setFrom(e.target.value)} required>
             <option value="">选起点</option>
             {pois.map((p) => (
               <option key={p.id} value={p.id}>
@@ -95,7 +95,7 @@ export function RouteFinder({ pois, shown, onShow }: Props) {
         </label>
         <label className={s.pick}>
           <span>到</span>
-          <select value={to} onChange={(e) => setTo(e.target.value)} required>
+          <select aria-label="终点" value={to} onChange={(e) => setTo(e.target.value)} required>
             <option value="">选终点</option>
             {pois.map((p) => (
               <option key={p.id} value={p.id}>
