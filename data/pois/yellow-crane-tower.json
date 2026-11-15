@@ -78,7 +78,8 @@
     "value": "武汉市武昌区蛇山西山坡特1号",
     "verification": "confirmed",
     "sourceId": "s3",
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "intro": {
     "value": "武汉的城市名片，江南三大名楼之一。主楼五层，登顶可俯瞰长江与武汉长江大桥，是武昌老城视线的中心。白天看江景与古建，晚上有「夜上黄鹤楼」光影演艺。",
@@ -130,7 +131,8 @@
       "s7"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "日场时间和夜场 19:30—22:00（21:30 停止入园）在本地宝旅游地图页里对上了；周五至周日夜场延到 22:30 的说法出自打不开的页面，没有核对。"
   },
   "ticket": {
     "value": {
@@ -162,7 +164,7 @@
     ],
     "lastCheckedAt": "2026-11-15",
     "expiresAt": "2027-05-14",
-    "note": "日场票价的来源是黄鹤楼官网，2026-11-15 Claude 抽查时官网证书出错打不开，没能对上原文。"
+    "note": "日场 70 元、半票 35 元在本地宝景点列表页里对上了（黄鹤楼官网证书出错打不开）；夜场票价出自打不开的页面，没有核对。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "reservation": {
     "value": {
@@ -208,7 +210,8 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15"
+    "expiresAt": "2027-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "recommendedDurationMinutes": {
     "value": null,
@@ -220,7 +223,7 @@
     "verification": "confirmed",
     "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -231,7 +234,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -241,7 +245,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -251,7 +256,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -261,7 +267,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -271,7 +278,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "food": [
@@ -284,7 +292,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -295,7 +304,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],

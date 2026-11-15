@@ -82,7 +82,8 @@
     "extraSourceIds": [
       "s5"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "东起中山路、西至得胜桥、全长 1200 米在区政府页面里对上了。"
   },
   "intro": {
     "value": "武昌老城的「活着的近代史书」，1200 米长的街上叠着 50 多栋百年建筑：教堂、医院、教会学校、名人公馆和江夏民居混在一起。现在是咖啡馆、手作店和展馆的聚集地，白天文艺、晚上亮灯更好看。",
@@ -103,7 +104,8 @@
       "s3",
       "s4"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "洪武四年（1371 年）、明清时期的说法、52 处历史建筑 2024 年完成升级都在政府页面里对上了。客流的原话是「2025 年突破 1200 万人次」，资料包写的 1218 万没有找到。"
   },
   "openingHours": {
     "value": {
@@ -118,7 +120,8 @@
       "s6"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "ticket": {
     "value": {
@@ -148,7 +151,8 @@
       "s6"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "payment": {
     "value": null,
@@ -179,21 +183,22 @@
       "s6"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15"
+    "expiresAt": "2027-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "recommendedDurationMinutes": {
     "value": 120,
     "verification": "confirmed",
     "sourceId": "s6",
     "lastCheckedAt": "2026-11-15",
-    "note": "攻略「纯逛 2 小时、拍照+手作 4 小时」，取纯逛值。"
+    "note": "攻略「纯逛 2 小时、拍照+手作 4 小时」，取纯逛值。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "bestTime": {
     "value": "工作日上午 9:00—16:00 人少光好；傍晚 18:30—21:00 灯笼亮起，夜景最好看。",
     "verification": "confirmed",
     "sourceId": "s6",
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -204,7 +209,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s6",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -214,7 +220,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s6",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -234,7 +241,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s6",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -244,7 +252,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "food": [
@@ -257,7 +266,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -268,7 +278,8 @@
       "verification": "confirmed",
       "sourceId": "s6",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -279,7 +290,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],

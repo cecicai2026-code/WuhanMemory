@@ -95,7 +95,8 @@
     "extraSourceIds": [
       "s6"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "「八一路 299 号」在能打开的本地宝参观攻略里没有找到，另一个来源打不开，待确认。"
   },
   "intro": {
     "value": "被称为「中国最美大学」之一，环抱珞珈山、面向东湖。核心看点是老斋舍（樱花城堡）、樱顶老图书馆、行政楼与凌波门栈桥。2026 年 5 月 13 日起全面取消社会公众预约，带身份证就能进。",
@@ -151,7 +152,8 @@
       "s1"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "无需预约、凭身份证从珞珈门和弘毅门步行入校，在市政府公告和本地宝攻略里对上了；研学团队每日限 2000 人在保卫部通知里对上了。"
   },
   "payment": {
     "value": null,
@@ -182,21 +184,22 @@
       "s6"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15"
+    "expiresAt": "2027-11-15",
+    "note": "地铁 2 号线街道口站、8 号线小洪山站和三条公交线在本地宝攻略里对上了。"
   },
   "recommendedDurationMinutes": {
     "value": 180,
     "verification": "confirmed",
     "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "攻略给出的「3 小时经典路线」，非官方数据；深度逛可一天。"
+    "note": "攻略给出的「3 小时经典路线」，非官方数据；深度逛可一天。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "bestTime": {
     "value": "早上或傍晚光线柔和、人也少；樱花季要早到。",
     "verification": "confirmed",
     "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -207,7 +210,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -217,7 +221,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -227,7 +232,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -237,7 +243,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -247,7 +254,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -257,7 +265,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "food": [
@@ -270,7 +279,8 @@
       "verification": "confirmed",
       "sourceId": "s7",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -281,7 +291,8 @@
       "verification": "confirmed",
       "sourceId": "s7",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -292,7 +303,8 @@
       "verification": "confirmed",
       "sourceId": "s8",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],
