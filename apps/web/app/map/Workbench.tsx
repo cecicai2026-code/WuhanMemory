@@ -6,6 +6,7 @@ import type { ItineraryVersion, PoiSummary, Route } from "@wuhanmemory/shared";
 import { NoteButton } from "@/components/ui";
 import { getVersion } from "@/lib/planning-client";
 import { ChatPaper } from "./ChatPaper";
+import { dayColor } from "./day-colors";
 import { ItineraryCards } from "./ItineraryCards";
 import { MapPanel, type PinOverride } from "./MapPanel";
 import { usePlannerState } from "./PlannerState";
@@ -30,7 +31,8 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
   const [version, setVersion] = useState<ItineraryVersion | null>(null);
   const [versionLoading, setVersionLoading] = useState(false);
   const [versionError, setVersionError] = useState<string | null>(null);
-  const [shownDay, setShownDay] = useState<number | null>(null);
+  // 地图上看哪一天；"all" 是全部天，每天一种颜色
+  const [shownDay, setShownDay] = useState<number | "all" | null>(null);
   // "两点之间怎么走"（板块 3，临时）选中的那一种交通方式
   const [shownRoute, setShownRoute] = useState<Route | null>(null);
 
@@ -60,24 +62,37 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
     };
   }, [versionId, setValidation]);
 
-  const shown = version && version.validation.status !== "failed" ? version.days.find((d) => d.dayNumber === shownDay) : undefined;
+  const ok = version && version.validation.status !== "failed" ? version : null;
+  const shownDays = ok ? ok.days.filter((d) => shownDay === "all" || d.dayNumber === shownDay) : [];
+  const all = shownDay === "all";
 
   const routes = useMemo<MapRoute[]>(() => {
-    if (shown) {
-      return [
-        {
-          id: `day-${shown.dayNumber}`,
-          dayNumber: shown.dayNumber,
-          lines: shown.legs.filter((l) => l.route.polyline.length > 1).map((l) => ({ mode: l.route.mode, path: l.route.polyline })),
-        },
-      ];
+    if (shownDays.length) {
+      return shownDays.map((d) => ({
+        id: `day-${d.dayNumber}`,
+        dayNumber: d.dayNumber,
+        // 全部天：按天分色，交通方式只用线型区分；一天：按交通方式分色
+        color: all ? dayColor(d.dayNumber) : undefined,
+        lines: d.legs.filter((l) => l.route.polyline.length > 1).map((l) => ({ mode: l.route.mode, path: l.route.polyline })),
+      }));
     }
     return shownRoute ? [{ id: shownRoute.mode, dayNumber: null, lines: [{ mode: shownRoute.mode, path: shownRoute.polyline }] }] : [];
-  }, [shown, shownRoute]);
+    // shownDays 由 version 和 shownDay 算出来
+  }, [version, shownDay, shownRoute]);
 
   const pins = useMemo<PinOverride[] | null>(
-    () => (shown ? shown.stops.map((st, i) => ({ id: st.poiId, name: `${i + 1} · ${st.name}`, location: st.location })) : null),
-    [shown],
+    () =>
+      shownDays.length
+        ? shownDays.flatMap((d) =>
+            d.stops.map((st, i) => ({
+              id: st.poiId,
+              // 一天："2 · 黄鹤楼"；全部天："1-2 · 黄鹤楼"（第 1 天第 2 站）
+              name: `${all ? `${d.dayNumber}-` : ""}${i + 1} · ${st.name}`,
+              location: st.location,
+            })),
+          )
+        : null,
+    [version, shownDay],
   );
 
   function choose(next: Tab) {

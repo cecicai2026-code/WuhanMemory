@@ -564,6 +564,44 @@
   flex-wrap: wrap;
   gap: 10px;
 }
+/* "全部天"的图例：一小段深色底上的彩色线，和地图上一样（纸色的线画在纸上看不见，所以垫深色底） */
+/* 图例和"地图上看"不在纸上、在桌面上，用桌面上的次要文字色（墨色在深色木头上看不清） */
+.dayPick .deskLabel {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+.dayLegend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--text-secondary);
+}
+.dayLegend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.swatch {
+  flex: none;
+  width: 28px;
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(var(--line), var(--line)) center / 20px 4px no-repeat, #150e0a;
+}
+.swatch[data-color="brass"] {
+  --line: var(--brass-bright);
+}
+.swatch[data-color="paper"] {
+  --line: var(--paper);
+}
+.swatch[data-color="film"] {
+  --line: var(--film);
+}
 .timeline {
   margin: 10px 0 0;
   padding: 0;

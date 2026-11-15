@@ -12,6 +12,7 @@ import type {
 } from "@wuhanmemory/shared";
 import { NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule, Soft, Stamp, TextLink } from "@/components/ui";
 import { formatOpeningHours, formatPayment, formatReservation, formatTicket } from "@/lib/format-poi";
+import { DAY_COLOR_NAMES, dayColor } from "./day-colors";
 import s from "./map.module.css";
 
 const WEEKDAY = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -159,8 +160,8 @@ interface Props {
   version: ItineraryVersion | null;
   loading: boolean;
   error: string | null;
-  shownDay: number | null;
-  onShowDay: (day: number) => void;
+  shownDay: number | "all" | null;
+  onShowDay: (day: number | "all") => void;
 }
 
 /**
@@ -258,13 +259,27 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay }:
         <>
           {v.days.length > 1 && (
             <div className={s.dayPick} role="group" aria-label="地图上看哪一天">
-              <Soft>地图上看</Soft>
+              <Soft className={s.deskLabel}>地图上看</Soft>
               {v.days.map((d) => (
                 <NoteButton key={d.dayNumber} pressed={shownDay === d.dayNumber} onClick={() => onShowDay(d.dayNumber)}>
                   第 {d.dayNumber} 天
                 </NoteButton>
               ))}
+              <NoteButton pressed={shownDay === "all"} onClick={() => onShowDay("all")}>
+                全部
+              </NoteButton>
             </div>
+          )}
+          {shownDay === "all" && (
+            <ul className={s.dayLegend} aria-label="地图上每天路线的颜色">
+              {v.days.map((d) => (
+                <li key={d.dayNumber}>
+                  <span className={s.swatch} data-color={dayColor(d.dayNumber)} aria-hidden="true" />
+                  第 {d.dayNumber} 天（{DAY_COLOR_NAMES[dayColor(d.dayNumber)]}）
+                </li>
+              ))}
+              <li>虚线是步行，实线是公交地铁或打车；图钉上的“1-2”是第 1 天第 2 站</li>
+            </ul>
           )}
           {v.days.map((day, i) => (
             <DayCard key={day.dayNumber} day={day} issues={report.issues} tilt={i % 2 ? 1 : -1} />
