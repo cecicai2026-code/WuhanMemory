@@ -117,8 +117,9 @@ export const STATUS_TEXT: Record<FactStatus, string> = {
   missing: "待补充"
 };
 
-/** 一张纸的状态：有过期就是过期，有待确认或待补充就是待确认 */
+/** 一张纸的状态：有过期就是过期，有待确认或待补充就是待确认；一条资料都没有（例如周边美食是空的）也算待确认，不能盖"已核实" */
 export function sheetStatus(facts: Array<PoiFact<unknown>>): "verified" | "pending" | "expired" {
+  if (facts.length === 0) return "pending";
   if (facts.some((f) => f.status === "expired")) return "expired";
   if (facts.some((f) => f.status === "pending" || f.status === "missing")) return "pending";
   return "verified";

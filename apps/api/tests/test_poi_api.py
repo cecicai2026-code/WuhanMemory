@@ -98,7 +98,8 @@ def test_get_poi_detail_statuses(client: TestClient) -> None:
     assert poi["ticket"]["source"]["type"] == "field-visit"
     assert poi["openingHours"]["lastCheckedAt"] == "2026-11-10"
     assert poi["openingHours"]["expiresAt"] == "2027-02-08"
-    assert poi["counts"] == {"verified": 6, "pending": 3, "expired": 0, "missing": 3}
+    # 待补充 4 条：3 条 TODO，加上空着的周边美食
+    assert poi["counts"] == {"verified": 6, "pending": 3, "expired": 0, "missing": 4}
 
 
 def test_expired_fact_status(client: TestClient) -> None:
@@ -122,3 +123,33 @@ def test_unknown_poi_404(client: TestClient) -> None:
 def test_district_filter(client: TestClient) -> None:
     assert len(client.get("/api/pois", params={"district": "测试区"}).json()["pois"]) == 2
     assert client.get("/api/pois", params={"district": "别的区"}).json()["pois"] == []
+
+
+def test_empty_lists_are_not_verified(tmp_path: Path) -> None:
+    """其余信息都核实过，但拍照机位和周边美食是空的：不能算"已核实"，空列表各算一条待补充。"""
+    poi = good_poi("all-onsite")
+    onsite = {"verification": "onsite", "sourceId": "visit", "lastCheckedAt": "2026-10-01"}
+    for key in ("intro", "history", "bestTime"):
+        poi[key] = {"value": "测试", **onsite}
+    poi["openingHours"] |= {**onsite, "expiresAt": "2026-12-30"}
+    poi["reservation"] |= {**onsite, "expiresAt": "2026-12-30"}
+    poi["payment"] = {"value": {"methods": ["wechat"]}, **onsite, "expiresAt": "2027-03-30"}
+    poi["photoSpots"] = []
+    poi["food"] = []
+    data = write_data_dir(tmp_path / "data", [poi], {"all-onsite": ["sample.jpg"]})
+    conn = connect(tmp_path / "t.db")
+    try:
+        report, imported = import_pois(conn, data, today)
+    finally:
+        conn.close()
+    assert report.ok and imported == ["all-onsite"]
+
+    app.dependency_overrides[get_poi_repository] = lambda: SqlitePoiRepository(tmp_path / "t.db")
+    app.dependency_overrides[get_today] = lambda: today
+    app.dependency_overrides[get_data_dir] = lambda: data
+    try:
+        summary = TestClient(app).get("/api/pois").json()["pois"][0]
+    finally:
+        app.dependency_overrides.clear()
+    assert summary["counts"] == {"verified": 11, "pending": 0, "expired": 0, "missing": 2}
+    assert summary["status"] == "pending"

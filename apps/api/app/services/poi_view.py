@@ -46,6 +46,8 @@ def _counts(poi: PoiFile, today: date) -> FactCounts:
     for fact in _all_facts(poi):
         s = fact_status(fact, today)
         setattr(counts, s, getattr(counts, s) + 1)
+    # 拍照机位、周边美食是列表，空着就是还没有资料，各算一条待补充；否则空列表会让景点显示成"已核实"
+    counts.missing += (not poi.photoSpots) + (not poi.food)
     return counts
 
 

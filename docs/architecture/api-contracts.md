@@ -43,7 +43,7 @@ Response（`PoiListOut`，前端类型 `PoiList`）：
 
 - `asOf`：状态按哪一天算的（武汉时间的今天）。
 - `status`：`verified` / `pending` / `expired`，规则见 `data-model.md` 第 5 节。
-- `counts`：各状态的信息条数，程序数出来的。
+- `counts`：各状态的信息条数，程序数出来的。拍照机位、周边美食空着时各算一条 `missing`。
 - 只返回通过数据检查、已导入 SQLite 的景点，按文件名排序。
 
 ### 景点详情
