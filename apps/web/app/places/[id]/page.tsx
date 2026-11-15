@@ -54,7 +54,7 @@ export default async function Page({ params }: Props) {
       count={`第 ${pad2(index + 1)} 张 / 共 ${pad2(all.length)} 张`}
       title={poi.name}
       kicker={poi.district}
-      back={{ href: "/places", label: "回到胶卷" }}
+      back={{ href: `/places?at=${encodeURIComponent(poi.id)}`, label: "回到胶卷" }}
     >
       <div className={s.detail}>
         <nav className={s.themes} aria-label="四个主题">

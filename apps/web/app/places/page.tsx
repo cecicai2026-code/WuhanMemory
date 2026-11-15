@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { Scene } from "@/components/shell/Scene";
 import { Paper, PaperMark, PaperTitle, PencilNote, Soft, Stamp, TextLink } from "@/components/ui";
 import { formatDate } from "@/lib/format-poi";
-import { ApiUnavailableError, listDistricts, listPlaces, pad2, photoUrl } from "@/lib/places";
+import { ApiUnavailableError, countsText, isClosed, listDistricts, listPlaces, pad2, photoUrl } from "@/lib/places";
 import type { PoiList } from "@/lib/places";
 import { SCENES } from "@/lib/scenes";
+import { StageToggle } from "@/components/stage/StageProvider";
+import { rollsFrame } from "@/lib/scene3d/data";
+import type { RollsData } from "@/lib/scene3d/data";
+import { RollsStage } from "./RollsStage";
 import { ApiDown } from "./PlaceParts";
 import s from "./places.module.css";
 
@@ -19,7 +23,7 @@ const TILT = [-1.2, 0.8, 1.4, -0.8, 1, -1.4];
  * 立体的胶卷幕在板块 1B 做；这一版以后留作手机端、无障碍和立体场景加载失败时的版本。
  * 区域筛选写在地址里（/places?district=武昌区），刷新或分享链接后看到的是同一个结果。
  */
-export default async function Page({ searchParams }: { searchParams: Promise<{ district?: string | string[] }> }) {
+export default async function Page({ searchParams }: { searchParams: Promise<{ district?: string | string[]; at?: string | string[]; debug?: string | string[] }> }) {
   const params = await searchParams;
 
   let data: PoiList;
@@ -41,6 +45,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   const district = districts.some((d) => d.name === asked) ? asked : undefined;
   const shown = district ? all.filter((p) => p.district === district) : all;
 
+  // 立体版（胶卷幕）用的数据：和下面的卡片是同一份
+  // 开发时地址带 ?debug=nophoto：假装没有照片，看公开模式下（占位照片不对外）胶卷是什么样子。正式运行时不认
+  const noPhoto = process.env.NODE_ENV !== "production" && params.debug === "nophoto";
+  const stageData: RollsData = {
+    frames: shown.map((p) => rollsFrame(noPhoto ? { ...p, coverPhoto: null } : p, all.indexOf(p) + 1)),
+    total: all.length,
+    district: district ?? null,
+    at: typeof params.at === "string" ? params.at : null
+  };
+
   return (
     <Scene
       scene={SCENES.places}
@@ -48,6 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
       title="地点档案"
       kicker="胶卷"
       intro={all.length ? `每张卡上的章按 ${formatDate(data.asOf)} 的日期计算。` : undefined}
+      corner={<StageToggle />}
     >
       {all.length === 0 ? (
         <Paper className={s.notice}>
@@ -56,7 +71,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
         </Paper>
       ) : (
         <>
-          <nav className={s.filter} aria-label="按区域筛选">
+          {shown.length > 0 && <RollsStage data={stageData} stageKey={`rolls:${district ?? "all"}`} />}
+          <nav className={s.filter} aria-label="按区域筛选" data-stage-show>
             <TextLink href="/places" current={!district}>
               全部 {all.length}
             </TextLink>
@@ -72,7 +88,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
               const no = all.indexOf(p) + 1;
               const cover = p.coverPhoto;
               const src = photoUrl(cover?.url ?? null);
-              const { pending, missing, expired } = p.counts;
               return (
                 <li key={p.id}>
                   <Paper kind="card" href={`/places/${p.id}`} tilt={TILT[i % TILT.length]} className={s.card}>
@@ -91,17 +106,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
                     <span className={s.foot}>
                       <Soft>
                         {p.district}
-                        {p.operatingStatus?.value?.code === "closed-temporarily" && " · 暂停开放"}
+                        {isClosed(p) && " · 暂停开放"}
                       </Soft>
                       <Stamp status={p.status} />
                     </span>
-                    {(pending > 0 || missing > 0 || expired > 0) && (
-                      <span className={s.cardCounts}>
-                        {[expired && `已过期 ${expired}`, pending && `待确认 ${pending}`, missing && `待补充 ${missing}`]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </span>
-                    )}
+                    {countsText(p.counts) && <span className={s.cardCounts}>{countsText(p.counts)}</span>}
                   </Paper>
                 </li>
               );

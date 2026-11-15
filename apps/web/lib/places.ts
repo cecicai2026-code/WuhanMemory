@@ -111,6 +111,22 @@ export const THEMES: Theme[] = [
   }
 ];
 
+/** 卡片上的计数，例如"已过期 1 · 待确认 9 · 待补充 4"。全部核实时是空字符串 */
+export function countsText(counts: PoiSummary["counts"]): string {
+  const { expired, pending, missing } = counts;
+  return [expired && `已过期 ${expired}`, pending && `待确认 ${pending}`, missing && `待补充 ${missing}`].filter(Boolean).join(" · ");
+}
+
+export function isClosed(p: PoiSummary): boolean {
+  return p.operatingStatus?.value?.code === "closed-temporarily";
+}
+
+/** 占位照片的出处，写在照片旁边（设计规范第 12 节） */
+export function photoCredit(photo: PoiSummary["coverPhoto"]): string | null {
+  if (!photo?.placeholder) return null;
+  return `占位照片 · 出处：${photo.license === "third-party-placeholder" ? (photo.author ?? "来源链接") : "官方页面"}`;
+}
+
 /** 按地址里的主题 id 找主题（/places/[id]/[主题]），找不到返回 undefined */
 export function findTheme(id: string): Theme | undefined {
   return THEMES.find((t) => t.id === id);

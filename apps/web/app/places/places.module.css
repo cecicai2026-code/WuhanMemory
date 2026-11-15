@@ -290,3 +290,15 @@
   gap: 0 28px;
   margin-top: 28px;
 }
+
+/* 立体版（胶卷幕）打开时，区域筛选浮在左上角（设计规范第 15 节第 6 条） */
+:global(html[data-stage="on"]) .filter {
+  position: fixed;
+  left: var(--edge);
+  top: 72px;
+  z-index: 30;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  margin: 0;
+}
