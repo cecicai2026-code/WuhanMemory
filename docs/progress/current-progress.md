@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 6、6B、6C 已合进 main；板块 7 主体开工，分支 `block-7-share`；1B 放到 7 主体之后）
+最后更新: 2026-11-15（板块 7 主体已合进 main；下一个是板块 1B）
 
 ## 当前阶段
 
@@ -15,7 +15,7 @@
 
 2026-11-15 Cecilia 又决定先做板块 7 的主体，再做 1B，顺序变成：0 → 1A → 2 → 3 → 4 → 5（含 5B）→ 6 → 7（主体）→ 1B。主体包括分享页、我的行程、全站检查、README、给学校看的项目说明、让别人能打开网站的办法、演示步骤清单。
 
-**板块 7 主体（进行中，分支 `block-7-share`，从 main 的 `6be5397` 分出来）**：见下面"板块 7 完成情况"。
+**板块 7 主体（已完成，2026-11-15 合进 main，合并提交 `02bdf32`，分支 `block-7-share` 保留）**：见下面"板块 7 完成情况"。
 
 **板块 6（已完成，2026-11-15 合进 main，分支 `block-6-compare`，从 `block-5b-planning` 分出来）**：双模型并排对比和批量评测。要复用 5B 的比较计算，而 5B 还没合进 main，所以从 5B 的分支上开；合进 main 时要先合 5B。
 
@@ -53,7 +53,9 @@
 - [x] 第 11 步：演示录屏步骤清单 `docs/demo-script.md`。
 - [x] 第 9 步：项目说明 `docs/project-statement.md`（Cecilia 确认提纲后写）。Claude 在浏览器面板打开了 GitHub：`cecicai2026-code/WuHan-Memory` 是公开的，只有一次提交（`404a5bc`，2026-06-28，Initial commit），`package.json` 用 Express，`.env.example` 是 DeepSeek。`cecicai2026-code/WuhanMemory` 没登录时打开是 404，现在是私有仓库，学校看不到；要不要公开由 Cecilia 定。等 Cecilia 读过、改过再定稿。
 - [x] Cecilia 在 `block-7-share` 上运行 `pnpm build`，通过（2026-11-15）：编译、类型检查和 10 个页面（含 `/s/[slug]`、`/trips/[versionId]`、自定义 404）都没有报错。
-- [ ] 合进 main（等 Cecilia 同意）。
+- [x] Cecilia 同意，合进 main（2026-11-15，合并提交 `02bdf32`）。合并后在 main 上后端测试 419 个通过，前端类型检查通过。
+- [ ] Cecilia 在 GitHub Desktop 推送 main；决定仓库公开还是邀请学校查看。
+- [ ] 还要 Cecilia 定的：上线办法（`docs/operations/hosting-options.md`）、截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
 
@@ -387,7 +389,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 6、6B、6C 已合进 main（`dc9f5be`）。Cecilia 在 GitHub Desktop 推送 main。现在做板块 7 的主体（分支 `block-7-share`），做完再做板块 1B（立体场景）。
+板块 7 主体已合进 main（`02bdf32`）。Cecilia 推送 main、选上线办法、截图。下一个板块是 1B（立体场景）；上线办法选定后，先做"浏览器只连网站一个地址"的代码改动和部署步骤。
 
 r07 的冲突已定（板块 7，点名必去优先）。5B 没做的几项（见上面）以后再排。
 
