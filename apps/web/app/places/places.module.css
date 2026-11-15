@@ -280,3 +280,13 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- 主题页（纸页幕的普通版，板块 1B） ---------- */
+/* 纸下面的四个主题索引，当前主题是黄铜色带下划线 */
+.topicIndex {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 28px;
+  margin-top: 28px;
+}

@@ -111,4 +111,18 @@ export const THEMES: Theme[] = [
   }
 ];
 
+/** 按地址里的主题 id 找主题（/places/[id]/[主题]），找不到返回 undefined */
+export function findTheme(id: string): Theme | undefined {
+  return THEMES.find((t) => t.id === id);
+}
+
+/**
+ * 详情页、主题页要的数据：这个景点的详情，加上全部景点的清单（算第几张、上一个下一个）。
+ * 景点不存在时 place 是 null。后端连不上时抛 ApiUnavailableError。
+ */
+export async function getPlaceWithList(id: string): Promise<{ place: PoiDetailResponse | null; all: PoiSummary[] }> {
+  const [place, list] = await Promise.all([getPlace(id), listPlaces()]);
+  return { place, all: list.pois };
+}
+
 export type { PoiDetail, PoiList, PoiSummary };

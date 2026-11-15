@@ -14,6 +14,7 @@ export const SCENES = {
   desk: { no: "01", name: "桌面", path: "/", page: "首页" },
   places: { no: "02", name: "胶卷", path: "/places", page: "地点档案" },
   place: { no: "03", name: "晾片", path: "/places", page: "地点档案" },
+  sheet: { no: "04", name: "纸页", path: "/places", page: "地点档案" },
   map: { no: "05", name: "灯箱", path: "/map", page: "地图工作台" },
   compare: { no: "06", name: "两台打字机", path: "/compare", page: "模型对比" },
   trips: { no: "07", name: "笔记本", path: "/trips", page: "我的行程" },
