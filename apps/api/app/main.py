@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.amap_proxy import router as amap_proxy_router
 from app.api.comparisons import router as comparisons_router
+from app.api.media import router as media_router
 from app.api.llm import router as llm_router
 from app.api.planning import router as planning_router
 from app.api.pois import router as pois_router
@@ -59,6 +60,7 @@ app.include_router(amap_proxy_router)
 app.include_router(routing_router)
 app.include_router(llm_router)
 app.include_router(comparisons_router)
+app.include_router(media_router)
 
 # 景点照片。自己拍的在 data/photos/，官网占位的在 data/photos-placeholder/（不进 git）
 app.mount("/media/photos", StaticFiles(directory=settings.data_dir / "photos", check_dir=False), name="photos")

@@ -1,0 +1,426 @@
+/* 地点档案立体版画布上面的网页元素。样式照样片 docs/design/prototypes/darkroom-rolls.html */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+.overlay button,
+.overlay a {
+  pointer-events: auto;
+}
+
+/* 暗角：画面边缘压到暗角黑（规范 3.2） */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 55%, rgba(7, 5, 4, 0) 34%, rgba(7, 5, 4, 0.6) 68%, rgba(7, 5, 4, 0.97) 100%);
+  transition: background 1.2s var(--ease-silk);
+}
+.vignette[data-entering] {
+  background: radial-gradient(ellipse at 50% 50%, rgba(7, 5, 4, 0) 22%, rgba(7, 5, 4, 0.7) 55%, rgba(7, 5, 4, 0.98) 100%);
+}
+.grain {
+  position: absolute;
+  left: -50%;
+  top: -50%;
+  width: 200%;
+  height: 200%;
+  image-rendering: pixelated;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  animation: grain 0.9s steps(6) infinite;
+}
+:global(html[data-stage-quality="low"]) .grain {
+  display: none;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-3%, 2%); }
+  40% { transform: translate(2%, -3%); }
+  60% { transform: translate(-2%, -2%); }
+  80% { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 上方中间：格号和景点名 */
+.head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 7vh;
+  text-align: center;
+  transition: opacity 0.6s var(--ease-silk), transform 1.2s var(--ease-silk);
+}
+.head[data-entering] {
+  opacity: 0;
+}
+.no,
+.sub {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+.sub {
+  margin-top: 6px;
+  color: var(--text-secondary);
+}
+.credit {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+}
+.title {
+  height: 1.3em;
+  margin-top: 10px;
+  overflow: hidden;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(30px, 3.4vw, 44px);
+  color: var(--paper);
+}
+.title span {
+  display: block;
+  transition: transform 0.7s var(--ease-silk), opacity 0.5s var(--ease-silk);
+}
+.title span.out {
+  transform: translateY(-110%);
+  opacity: 0;
+}
+.title span.in {
+  transform: translateY(110%);
+  opacity: 0;
+  transition: none;
+}
+
+/* 底部：两个黄铜圆按钮，中间是范围和刻度 */
+.pager {
+  position: absolute;
+  left: 50%;
+  bottom: 4.5vh;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  transform: translateX(-50%);
+  transition: opacity 0.6s var(--ease-silk), transform 0.9s var(--ease-silk);
+}
+.pager[data-entering] {
+  opacity: 0;
+  transform: translateX(-50%) translateY(30px);
+}
+.pager[data-entering] button {
+  pointer-events: none;
+}
+.btn {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--brass-deep);
+  border-radius: 50%;
+  cursor: pointer;
+  background: radial-gradient(circle at 34% 28%, #f0d898 0%, var(--brass) 38%, #8a6a30 78%, #5b431c 100%);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+  transition: transform 0.45s var(--ease-silk), box-shadow 0.45s var(--ease-silk), filter 0.45s var(--ease-silk);
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.8s var(--ease-silk);
+}
+.btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+}
+.btn:hover:not(:disabled)::after {
+  transform: translateX(120%);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.96);
+  transition-duration: 0.12s;
+}
+.btn:disabled {
+  cursor: default;
+  filter: grayscale(0.7) brightness(0.5);
+}
+.btn svg {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.45s var(--ease-silk);
+}
+.prev:hover:not(:disabled) svg {
+  transform: translateX(-3px);
+}
+.next:hover:not(:disabled) svg {
+  transform: translateX(3px);
+}
+.scale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  min-width: 240px;
+}
+.range {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+.range b {
+  font-weight: 400;
+  color: var(--paper);
+}
+.ticks {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 16px;
+}
+.ticks i {
+  width: 2px;
+  height: 7px;
+  background: #5a4a36;
+  transition: height 0.5s var(--ease-silk), background 0.5s var(--ease-silk);
+}
+.ticks i.tickGroup {
+  height: 11px;
+  background: var(--text-muted);
+}
+.ticks i.tickSel {
+  height: 16px;
+  background: var(--brass);
+}
+
+/* 点了一格以后：底部显示景点名，然后黑幕落下 */
+.enter {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8vh;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.8s var(--ease-silk) 0.5s, transform 1s var(--ease-silk) 0.5s;
+}
+.enter[data-entering] {
+  opacity: 1;
+  transform: none;
+}
+.enterName {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 34px;
+  color: var(--paper);
+}
+.enterSub {
+  margin-top: 10px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+.curtain {
+  position: absolute;
+  inset: 0;
+  background: var(--black);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-silk);
+}
+.curtain[data-entering] {
+  opacity: 1;
+  transition-delay: 0.85s;
+}
+
+/* ---------- 晾片幕 ---------- */
+/* 左右两侧换景点的黄铜按钮 */
+.side {
+  position: absolute;
+  top: 56vh;
+  transition: opacity 0.6s var(--ease-silk);
+}
+.side.prev {
+  left: 3vw;
+}
+.side.next {
+  right: 3vw;
+}
+.side[data-entering] {
+  opacity: 0;
+  pointer-events: none;
+}
+/* 显影盘上方的提示；悬停主题卡时换成主题名 */
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 23vh;
+  text-align: center;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  transition: opacity 0.6s var(--ease-silk);
+}
+.hint[data-entering] {
+  opacity: 0;
+}
+/* 暂停开放：标题下面一个黄铜色的章 */
+.closedStamp {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 2px 10px;
+  border: 1.5px solid var(--brass);
+  transform: rotate(-3deg);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  color: var(--brass-bright);
+}
+
+/* ---------- 纸页幕 ---------- */
+/* 暗角和颗粒在纸下面 */
+.overlay.under {
+  z-index: 1;
+}
+
+/* ---------- 首页桌面（样式照样片 docs/design/prototypes/kit.css） ---------- */
+.deskHero {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13vh;
+  text-align: center;
+  transition: opacity 0.8s var(--ease-silk), transform 1.2s var(--ease-silk);
+}
+.deskHero[data-off] {
+  opacity: 0;
+  transform: translateY(-24px);
+}
+.deskKicker {
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.3em;
+  color: var(--brass);
+}
+.deskName {
+  margin: 14px 0 10px;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(54px, 8vw, 116px);
+  letter-spacing: 0.14em;
+  color: var(--paper);
+  text-shadow: 0 6px 34px rgba(0, 0, 0, 0.85);
+}
+.deskSub {
+  margin: 0;
+  font-family: var(--font-paper);
+  font-size: 18px;
+  color: var(--paper);
+  text-shadow: 0 2px 12px #000;
+}
+.deskSkip {
+  margin-top: 18px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+/* 停在某件物件时旁边的说明 */
+.deskStop {
+  position: absolute;
+  top: 50%;
+  width: min(400px, 40vw);
+  padding: 26px 30px;
+  background: rgba(7, 5, 4, 0.66);
+  box-shadow: 0 0 50px 30px rgba(7, 5, 4, 0.66);
+  opacity: 0;
+  transform: translateY(-50%) translateY(18px);
+  transition: opacity 0.7s var(--ease-silk), transform 1s var(--ease-silk);
+}
+.deskStop.right {
+  right: 6vw;
+}
+.deskStop.left {
+  left: 6vw;
+}
+.deskStop[data-on] {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+.deskStop[data-on] .deskGo {
+  pointer-events: auto;
+}
+.deskTitle {
+  margin: 12px 0 14px;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(30px, 3.2vw, 44px);
+  color: var(--paper);
+}
+.deskText {
+  margin: 0 0 18px;
+  font-family: var(--font-paper);
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--paper);
+  text-shadow: 0 2px 10px #000;
+}
+/* 入口：标注字的小字加箭头（规范第 7 节"文字链接"），不用红色手写字 */
+.overlay .deskGo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--brass);
+  text-decoration: none;
+  pointer-events: none;
+  transition: color var(--t-micro);
+}
+.overlay .deskGo:hover {
+  color: var(--brass-bright);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+.deskPager .range {
+  min-width: 170px;
+  text-align: center;
+}
+/* 平板宽度：说明挪到画面下方中间，不压在物件上 */
+@media (max-width: 1067px) {
+  .deskStop.left,
+  .deskStop.right {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: calc(4.5vh + 76px);
+    width: min(560px, calc(100vw - 2 * var(--edge)));
+    padding: 18px 24px;
+    transform: translateX(-50%) translateY(18px);
+  }
+  .deskStop[data-on] {
+    transform: translateX(-50%);
+  }
+  .deskTitle {
+    margin: 8px 0 8px;
+  }
+  .deskText {
+    margin-bottom: 8px;
+    font-size: 16px;
+  }
+}

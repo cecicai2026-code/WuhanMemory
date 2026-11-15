@@ -143,3 +143,221 @@ input {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ---------- 立体场景（设计规范第 15 节，components/stage/StageProvider.tsx） ----------
+   <html data-stage="pending">：判断能用立体，正在加载，盖一层"显影中"的暗幕（最多 6.5 秒）。
+   <html data-stage="on">：画布显示，四角浮在画布上，普通版的正文在视觉上隐藏，读屏软件和键盘照样能用。
+   其余情况（"flat" 或没有这个属性）：普通网页版。 */
+.stage-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: none;
+}
+.stage-canvas canvas {
+  display: block;
+}
+html[data-stage="on"] .stage-canvas {
+  display: block;
+}
+html[data-stage="pending"] body::after {
+  content: "显影中";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 55%, #1a0806 0%, var(--black) 70%);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.3em;
+  color: var(--text-muted);
+}
+html[data-stage="pending"] body,
+html[data-stage="on"] body {
+  overflow: hidden;
+}
+html[data-stage="on"] [data-shell-main] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+html[data-stage="on"] [data-shell-top],
+html[data-stage="on"] [data-shell-bottom] {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 30;
+}
+html[data-stage="on"] [data-shell-top] {
+  top: 0;
+}
+html[data-stage="on"] [data-shell-bottom] {
+  bottom: 0;
+  background: none;
+}
+/* 键盘聚焦到场景里的物件时，物件周围的黄铜框（第 7 节）。位置由场景每帧设 */
+.stage-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  border: 2px solid var(--brass-bright);
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-micro);
+}
+html:not([data-stage="on"]) .stage-ring {
+  display: none;
+}
+/* 立体模式下，正文里标了 data-stage-show 的部分（例如区域筛选）照样显示，位置由各页面自己定 */
+html[data-stage="on"] [data-shell-main]:has([data-stage-show]) {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  overflow: visible;
+  white-space: normal;
+}
+html[data-stage="on"] [data-shell-main]:has([data-stage-show]) > :not([data-stage-show]) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* 右上角"普通版 / 立体版"的切换：和菜单按钮同样的标注字 */
+.stage-toggle {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  transition: color var(--t-micro);
+}
+.stage-toggle:hover {
+  color: var(--paper);
+}
+/* 幕与幕之间的黑幕（落下 0.5 秒，揭开 1.1 秒，照样片） */
+.stage-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: var(--black);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.1s var(--ease-silk);
+}
+html[data-stage-curtain="on"] .stage-curtain {
+  opacity: 1;
+  transition-duration: 0.5s;
+}
+/* 悬停在物件上时物件下方的名字（标注字，规范 8.2） */
+.stage-tag {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.14em;
+  color: var(--paper);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-silk);
+}
+/* 键盘焦点在隐藏的正文里时，画面下方写出焦点在哪 */
+.stage-focus {
+  position: fixed;
+  left: 50%;
+  bottom: 15vh;
+  z-index: 26;
+  max-width: calc(100vw - 2 * var(--edge));
+  padding: 6px 14px;
+  transform: translateX(-50%);
+  border: 1px solid var(--brass-deep);
+  background: rgba(7, 5, 4, 0.88);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.08em;
+  color: var(--paper);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-micro);
+}
+.stage-focus[data-on] {
+  opacity: 1;
+}
+html:not([data-stage="on"]) .stage-tag,
+html:not([data-stage="on"]) .stage-focus {
+  display: none;
+}
+/* 纸页幕可以滚动页面（纸往上推）；上沿加一道渐暗，滚上去的纸不和左上角的字叠在一起 */
+html[data-stage="on"][data-stage-scroll] body {
+  overflow: auto;
+}
+html[data-stage="on"][data-stage-scroll] [data-shell-top] {
+  background: linear-gradient(180deg, rgba(7, 5, 4, 0.92), rgba(7, 5, 4, 0.6) 70%, rgba(7, 5, 4, 0));
+}
+/* 幕间转场的替身（lib/scene3d/flight.ts）：浮在黑幕上面 */
+.stage-flyer {
+  position: fixed;
+  z-index: 46;
+  display: none;
+  box-sizing: border-box;
+  perspective: 1400px;
+  pointer-events: none;
+}
+.stage-flyer[data-on] {
+  display: block;
+}
+.stage-flyer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.stage-flyer-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.stage-flyer-back {
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 60%, rgba(110, 83, 38, 0.16) 100%),
+    var(--paper);
+  box-shadow: 14px 22px 34px rgba(0, 0, 0, 0.55);
+}
+.stage-flyer[data-mode="print"] .stage-flyer-back {
+  display: none;
+}
+.stage-flyer-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 照片落在晾片绳上以前，纸页上的信纸等替身翻过来再露出 */
+html[data-stage-arrival] [data-stage-paper] {
+  opacity: 0;
+}

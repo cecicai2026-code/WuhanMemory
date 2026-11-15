@@ -127,6 +127,21 @@ export function sheetStatus(facts: Array<PoiFact<unknown>>): "verified" | "pendi
 }
 
 /** "2026-11-15" → "2026.11.15" */
+/** 景点类别的中文名（数据里存的是英文代号）。没收录的代号原样显示 */
+const CATEGORY_TEXT: Record<string, string> = {
+  campus: "校园",
+  "food-street": "美食街",
+  landmark: "地标",
+  museum: "博物馆",
+  park: "公园",
+  riverside: "江滩",
+  street: "街区",
+  temple: "寺庙"
+};
+export function categoryText(code: string): string {
+  return CATEGORY_TEXT[code] ?? code;
+}
+
 export function formatDate(iso: string | null): string {
   return iso ? iso.replaceAll("-", ".") : "";
 }

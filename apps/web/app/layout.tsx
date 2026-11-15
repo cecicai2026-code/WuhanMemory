@@ -11,6 +11,7 @@ import "@fontsource/noto-serif-sc/600.css";
 import "lxgw-wenkai-webfont/lxgwwenkai-regular.css";
 import "lxgw-wenkai-webfont/lxgwwenkai-bold.css";
 import "./globals.css";
+import { PRECHECK_SCRIPT } from "@/lib/scene3d/precheck";
 
 export const metadata: Metadata = {
   title: {
@@ -26,7 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    // data-stage 由 <head> 里的脚本在 React 接手前设好（立体场景的暗幕），所以 <html> 的属性可能和服务器输出的不一样
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PRECHECK_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

@@ -74,6 +74,8 @@ class PhotoOut(BaseModel):
     licenseNote: str | None
     # 相对于后端地址，例如 /media/photos/<id>/a.jpg；占位照片不在本机时为 null
     url: str | None
+    # 800 宽的缩略图（板块 1B），列表、图册、立体场景用它；没有 url 时也是 null
+    thumbUrl: str | None = None
 
 
 class FactCounts(BaseModel):
