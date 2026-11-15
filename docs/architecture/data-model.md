@@ -441,6 +441,21 @@ CREATE UNIQUE INDEX share_links_active_idx ON share_links (version_id) WHERE rev
 - 没通过校验的版本不能分享，这条规则在接口里查（`app/api/shares.py`），表上不管。
 - 代码：`apps/api/app/repositories/share_link_repository.py`。
 
-## 14. 以后的表
+## 14. 公开模式的次数记录（板块 7）
+
+```sql
+CREATE TABLE rate_events (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client      TEXT NOT NULL,         -- 网络地址的摘要（sha256），不存原始地址
+    weight      INTEGER NOT NULL,      -- 规划 1，对比 2
+    created_at  TEXT NOT NULL
+);
+CREATE INDEX rate_events_time_idx ON rate_events (created_at);
+```
+
+- 只在公开模式下写（ADR 0008）。每写一行顺便删掉两天前的，够算"每小时"和"今天"。
+- 代码：`apps/api/app/repositories/rate_event_repository.py`、`apps/api/app/core/site_policy.py`。
+
+## 15. 以后的表
 
 2026-07 按 PostgreSQL + PostGIS 写的旧草案已经删掉，可以在 git 历史和 `infra/migrations/0001_initial_schema.sql` 里查到。

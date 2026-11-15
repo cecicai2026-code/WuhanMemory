@@ -587,7 +587,15 @@ Response:
 
 ## 权限规则
 
-> 2026-11-15（板块 7）：现在没有登录，也没有匿名 session。分享页只读、撤回后打不开（410）已经做到；`/trips` 列的是数据库里的全部行程。下面是早期草案。
+> 2026-11-15（板块 7）：现在没有登录，也没有匿名 session。分享页只读、撤回后打不开（410）已经做到。
+>
+> **公开模式**（ADR 0008，后端 `.env` 的 `PUBLIC_MODE=true`；本机开发时关着，下面这些都不查）：
+>
+> - 要网站主人口令的接口（请求头 `X-Owner-Passcode`）：`GET /api/trips`、`POST /api/itinerary-versions/{id}/share`、`GET /api/itinerary-versions/{id}/share`、`DELETE /api/share/{slug}`。没带或不对是 401（`detail`："这个功能需要网站主人的口令"）；后端没设 `OWNER_PASSCODE` 是 403。`GET /api/share/{slug}` 不要口令。
+> - 限次数的接口：`POST /api/conversations/{id}/messages` 算 1 次，`POST /api/comparisons` 算 2 次。同一个地址每小时、全站每天各有上限，超了是 429，`detail` 是中文说明（"每小时最多……"或"今天全站的试用次数……用完了"）。带对口令的不限。
+> - 景点接口不返回占位照片（`placeholder` 为 true 的那些），`/media/photos-placeholder` 不挂。
+>
+> 下面是早期草案。
 
 - 未登录用户可以创建临时对话和分享页，但需要匿名 session id。
 - 登录用户可以保存多个行程。
