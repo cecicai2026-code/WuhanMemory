@@ -66,7 +66,7 @@ pip install -e ".[dev]"
 python3 -m uvicorn app.main:app --reload --port 8000
 ```
 
-默认 LLM provider 是 `mock`。配置豆包或 Qwen 时复制 `.env.example` 并填写对应 key。
+默认模型是 `qwen`（`apps/api/.env` 里的 `LLM_PROVIDER`，也可以填 `doubao`）。复制 `apps/api/.env.example` 为 `apps/api/.env` 并填写千问和豆包的 key。两个模型通不通用 `corepack pnpm llm:smoke` 测。
 
 ## 验证
 

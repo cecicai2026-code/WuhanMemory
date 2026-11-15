@@ -14,6 +14,8 @@
 > 下面"主要接口"一节是这些接口的设计草案。
 >
 > 2026-11-15（板块 3）：路线接口和高德安全密钥代理已实现，见"路线"和"高德安全密钥代理"两节。
+>
+> 2026-11-15（板块 4）：模型接口已实现，见"模型"一节。
 
 ### 景点列表
 
@@ -150,6 +152,79 @@ GET|POST /_AMapService/{path}
 ```
 
 给浏览器里的高德 JS API 用（`window._AMapSecurityConfig.serviceHost`），不是给页面代码调用的。照高德官方的 nginx 示例：`/_AMapService/v4/map/styles` 转到 `https://webapi.amap.com/v4/map/styles`，其余转到 `https://restapi.amap.com/`，转发时在查询参数末尾加上 `jscode=<安全密钥>`。只接受 `Referer` 或 `Origin` 是 CORS 白名单里网址的请求（否则 403）；没配安全密钥返回 503，连不上高德返回 502。
+
+### 模型：有哪些可以选
+
+```http
+GET /api/llm/providers
+```
+
+```json
+{
+  "defaultProvider": "qwen",
+  "providers": [
+    { "id": "qwen", "label": "通义千问", "configured": true, "isDefault": true },
+    { "id": "doubao", "label": "豆包", "configured": false, "isDefault": false }
+  ]
+}
+```
+
+- `configured`：`apps/api/.env` 里这个模型的 key 和模型名（豆包是接入点 ID）都填了。只说有没有，不返回 key，也不返回接入点 ID。
+- `defaultProvider`：`.env` 里 `LLM_PROVIDER` 指的模型。填的不是 `qwen` 或 `doubao` 时是 `null`。
+- 这个接口不调用模型。"已配置"不等于"key 有效"，key 对不对要真的调用一次才知道（冒烟测试或下面的试一句）。
+
+### 模型：试一句（临时）
+
+```http
+POST /api/llm/ping
+```
+
+```json
+{ "provider": "doubao" }
+```
+
+`provider` 不填就用默认模型。后端通过 `LLMGateway` 给这个模型发一句固定的话，每调一次都是一次真实调用。板块 5 接上对话后去掉这个接口。
+
+```json
+{
+  "provider": "doubao",
+  "label": "豆包",
+  "model": "<对方返回的真实模型名>",
+  "reply": "<模型的回答>",
+  "latencyMs": 2065,
+  "attempts": 1,
+  "retried": false,
+  "repaired": false
+}
+```
+
+- `latencyMs`：从开始到结束的总时间，含重试之间的等待。`attempts`：一共向模型发了几次请求。
+- `retried`：有没有因为超时、限流、对方出错而重试。`repaired`：有没有因为输出不合格让模型重答。
+
+### 模型：出错时
+
+所有经过 `LLMGateway` 的接口（现在是试一句，板块 5 起还有规划）出错时返回同一种结构：
+
+```json
+{ "detail": { "code": "rate_limited", "message": "豆包限流（HTTP 429，…）", "retryable": true, "provider": "doubao" } }
+```
+
+| `code` | 含义 | HTTP 状态码 | 网关会不会重试 |
+|---|---|---|---|
+| `unknown_provider` | 指定的模型不在清单里 | 400 | 不会 |
+| `not_configured` | 没配 key 或模型名 | 503 | 不会 |
+| `invalid_key` | key 无效或没有权限 | 502 | 不会 |
+| `bad_config` | 模型名或接入点填错 | 502 | 不会 |
+| `quota_exhausted` | 额度用完或账户欠费 | 502 | 不会 |
+| `content_blocked` | 被对方的内容审核拦下 | 502 | 不会 |
+| `bad_request` | 对方认为请求有问题 | 502 | 不会 |
+| `rate_limited` | 限流 | 429 | 会，先等一会儿 |
+| `timeout` | 规定时间内没有回答 | 504 | 会 |
+| `upstream_error` | 对方服务器出错或网络断开 | 502 | 会 |
+| `bad_output` | 让模型重答一次后输出仍不合格 | 502 | 已经重答过一次 |
+| `provider_error` | 对方返回的结构和预期不一样 | 502 | 不会 |
+
+`retryable` 说的是这种错值不值得过一会儿再试；返回给前端时网关自己的重试已经用完了。`message` 里不会出现 key。
 
 ## 主要接口（设计草案）
 

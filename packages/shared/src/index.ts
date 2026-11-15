@@ -110,3 +110,4 @@ export interface ShareResponse {
 // 景点接口（板块 2）
 export * from "./poi";
 export * from "./route";
+export * from "./llm";

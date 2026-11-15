@@ -84,7 +84,7 @@ AI 编排层必须通过 `LLMGateway` 调用模型，不能直接依赖具体厂
 
 - `qwen`: 阿里云百炼/Model Studio Qwen。
 - `doubao`: 火山方舟豆包。
-- `mock`: 本地开发、CI 和 Phase 1 原型。
+- 2026-11-15（板块 4）：`mock` 已移出应用代码，测试用 `apps/api/tests/llm_fakes.py` 里的假 provider。网关现在的样子见 `llm-provider-gateway.md`。
 
 provider 模式:
 

@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     public_app_url: str = "http://localhost:3000"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
 
-    llm_provider: str = "mock"
+    # 默认用哪个模型：qwen 或 doubao。每次请求也可以另外指定
+    llm_provider: str = "qwen"
     llm_fallback_provider: str | None = None
     llm_provider_mode: str = "fixed"
 
@@ -26,6 +27,8 @@ class Settings(BaseSettings):
     doubao_api_key: str | None = None
     doubao_base_url: str = "https://ark.cn-beijing.volces.com/api/v3"
     doubao_model: str | None = None
+    # 豆包的深度思考开关：留空用模型自己的默认值，enabled 强制思考，disabled 不思考
+    doubao_thinking: str = ""
 
     llm_request_timeout_seconds: int = 60
     llm_max_retries: int = 2

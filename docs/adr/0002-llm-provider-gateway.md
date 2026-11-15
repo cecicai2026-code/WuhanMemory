@@ -59,3 +59,18 @@ MVP 默认使用 mock provider。真实环境推荐 `qwen` 为主 provider，`do
 - 为豆包和 Qwen 各写 mock HTTP 单元测试。
 - 在 planning job trace 中记录 provider、model、latency 和 schema validation result。
 - 有真实 key 后增加 smoke test。
+
+## 2026-11-15 更新（板块 4）
+
+上面的决策不变：业务代码只认 `LLMGateway`，千问和豆包各有一个 provider。实现时定下来的几点：
+
+- **分工**：provider 只发一次请求、翻译错误；重试、限流等待、输出检查、让模型重答、记录都在网关里。这样网关的逻辑可以用假 provider 测，不用联网。
+- **切换**：`.env` 的 `LLM_PROVIDER` 是默认模型；每次请求可以用 `provider` 参数另外指定；界面上的模型选择用的就是这个参数。
+- **自动换备用模型默认关**（Cecilia 定的）。悄悄换模型会让"这次用了哪个模型"说不清，也会搅乱板块 6 的对比。配置项保留。
+- **mock provider 移出应用代码**。默认模型从 `mock` 改成 `qwen`；测试用 `apps/api/tests/llm_fakes.py` 里的假 provider。
+- **接口从两个减到一个**：只有 `complete_json`。`complete_with_tools` 和 shadow 模式没有做，要不要做留到板块 5、6。
+- **每次调用记一行到 SQLite 的 `llm_calls`**，不存提示词和回答（Cecilia 定的）。
+- **不引入两家的 SDK**，继续用 httpx 直接调 OpenAI 兼容接口。
+- **豆包的深度思考保持模型默认**（Cecilia 定的，2026-11-15），可以用 `DOUBAO_THINKING` 改。
+
+"后续任务"里的四条都已完成。现在的样子见 `docs/architecture/llm-provider-gateway.md`。

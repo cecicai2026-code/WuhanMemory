@@ -37,7 +37,7 @@
 - Database: JSON 种子文件（`data/pois/*.json`）+ SQLite，读写经过 repository 层，见 ADR 0003。
 - Cache: 存在 SQLite 的表里，带 `checkedAt` 和 `expiresAt`；不使用 Redis 和独立 worker。
 - Map MVP: 高德地图 JS API 2.0 + 高德 Web 服务 API。
-- LLM: 豆包和 Qwen 可切换，MVP 本地默认 mock provider。
+- LLM: 豆包和 Qwen 可切换，都经过 `LLMGateway`（见 `docs/architecture/llm-provider-gateway.md`）。默认模型在 `apps/api/.env` 的 `LLM_PROVIDER`；测试用假 provider，不调用真实接口。
 
 ## 安全提醒
 

@@ -25,10 +25,13 @@
   flex: 1;
   min-height: 0;
   padding: 28px;
+  /* 窗口很矮时纸装不下对话记录加输入区：整张纸可以滚动，不让"发送"掉到纸外面 */
+  overflow-y: auto;
 }
 .log {
   flex: 1;
-  min-height: 0;
+  /* 至少留出小标题和标题的高度 */
+  min-height: 4.5em;
   overflow-y: auto;
 }
 .ask {
@@ -352,6 +355,118 @@
   color: var(--expired-paper);
 }
 
+/* ---------- 模型选择和临时的"试一句"（板块 4）。在对话纸上，输入横线的上方 ---------- */
+.models {
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px dashed rgba(107, 94, 76, 0.45);
+  font-size: var(--size-ui);
+}
+.modelsLegend {
+  padding: 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
+.modelRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+/* 一个模型一张小签。选中的那张除了颜色变深，前面还有一个勾 */
+.model {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  color: var(--ink-soft);
+  font-family: var(--font-paper);
+  cursor: pointer;
+}
+.model input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+.model:hover,
+.model[data-checked] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.model[data-checked] {
+  background: rgba(201, 164, 92, 0.25);
+}
+.model:focus-within {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.model[data-disabled] {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  color: var(--ink-soft);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modelTick:empty {
+  display: none;
+}
+.tryOne {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--ink-soft);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.tryOne:hover:not(:disabled),
+.tryOne:focus-visible {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: rgba(201, 164, 92, 0.25);
+}
+.tryOne:focus-visible {
+  outline: 2px solid var(--pencil);
+  outline-offset: 2px;
+}
+.tryOne:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.modelsNote {
+  margin: 6px 0 0;
+  font-family: var(--font-label);
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.pingResult {
+  margin-top: 6px;
+}
+.pingResult p {
+  margin: 2px 0 0;
+}
+.pingReply {
+  font-family: var(--font-paper);
+  color: var(--ink);
+}
+
 /* ---------- 平板：地图在上，对话和行程在下面并排 ---------- */
 @media (max-width: 1067px) {
   .bench {
@@ -430,5 +545,13 @@
   }
   .col .chat {
     padding: 20px;
+  }
+  /* 手机上纸只有不到半屏高：对话记录少留一点，"试一句是临时的"这行说明不显示，
+     这样模型选择、输入横线和"发送"不用滚动就都在纸上 */
+  .log {
+    min-height: 3.6em;
+  }
+  .tryNote {
+    display: none;
   }
 }
