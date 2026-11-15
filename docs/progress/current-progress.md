@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（中英双语已合进 main，合并提交 `e8cb18b`，分支 `bilingual` 保留；等 Cecilia 推送）
+最后更新: 2026-11-15（先用 cpolar 临时网址，步骤见 `docs/operations/tunnel-cpolar.md`；中英双语已合进 main，合并提交 `e8cb18b`）
 
 ## 当前阶段
 
@@ -110,7 +110,13 @@ Cecilia 要求网站出中英双语版本，右上角一个按钮切换。开工
   - [x] Cecilia 同意，`deploy-hk` 合进 main（2026-11-15）。合并时进度文档和开发日志和 main 上"仓库公开前的检查"那次提交冲突，两边内容都保留。
   - [x] 仓库公开以后，部署说明第 6、7 步改成服务器直接用 HTTPS 拉代码，不再加部署密钥（2026-11-15，Cecilia 同意）。第 0 步加上：合并后先在 Mac 上跑一次 `pnpm build`（合并后只跑过类型检查）。
   - [ ] Cecilia 在 Mac 上运行 `pnpm build`，通过后在 GitHub Desktop 推送 main（服务器拉的是 GitHub 上的 main）。
-  - [ ] Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
+  - [ ] （先不做）Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
+- [x] 先用临时网址：Cecilia 选了 B，自己的 Mac + cpolar 内网穿透（2026-11-15），香港服务器先不做。
+  - [x] 步骤文档 `docs/operations/tunnel-cpolar.md`：装 Homebrew 和 cpolar、填 authtoken、打开公开模式、构建、启动正式版、`cpolar http 3000`、防睡眠、用完改回本机模式。cpolar 的命令和免费版限制来自 cpolar 官网（Mac 只能用 Homebrew 装；免费网址随机、官网说 24 小时内会变；1Mbps；同时 1 个进程）。
+  - [x] 根目录加了 `pnpm start:api`（不带 `--reload`）和 `pnpm start:web`（`next start`，3000 端口）。Claude 用现有构建在 3100 端口试过 `next start`：首页、`/map`、`/api/pois` 都是 200，接口转发能到后端。cpolar 本身没试（要 Cecilia 的账号）。
+  - [x] 查过：排行程和对比是后台任务加轮询，不会撞上 Next 转发接口的 30 秒超时。
+  - [x] `TRUST_PROXY_HEADERS` 文档里建议开：关着的话所有访客经过前端转发后是同一个地址，加起来每小时 5 次。cpolar 官网没写会不会加 X-Forwarded-For；伪造这个头绕不过全站每天 50 次。
+  - [ ] Cecilia 照 `tunnel-cpolar.md` 做一遍，把结果告诉 Claude（特别是：访客多了以后有没有一起被"每小时 5 次"拦住）。
 - [ ] 还要 Cecilia 定的：读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
@@ -444,6 +450,10 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 工作区 `.claude/worktrees/prototype-scenes` 保留，没有删除。
 
 ## 下一步
+
+先用 cpolar 给网站一个临时网址（`docs/operations/tunnel-cpolar.md`，2026-11-15 Cecilia 选的），香港服务器先不做。
+
+（以下是 2026-11-15 早些时候写的）
 
 板块 1B（立体场景）做完并合进了 main。所有板块都做完了，接下来是推送、部署到香港服务器（`docs/operations/deploy-hk.md`）、截图和演示。板块 7 时说过：1B 做完后，README 的截图和演示清单里涉及首页和地点档案的部分要不要更新，由 Cecilia 定。立体场景以后可以再做的见设计规范第 14 节最后一条。
 

@@ -6,6 +6,8 @@
     "dev": "corepack pnpm --filter @wuhanmemory/web dev",
     "dev:web": "corepack pnpm --filter @wuhanmemory/web dev",
     "dev:api": "cd apps/api && .venv/bin/python -m uvicorn app.main:app --reload --port 8000",
+    "start:web": "cd apps/web && ./node_modules/.bin/next start --port 3000",
+    "start:api": "cd apps/api && .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000",
     "build": "corepack pnpm --filter @wuhanmemory/shared build && corepack pnpm --filter @wuhanmemory/map-core build && corepack pnpm --filter @wuhanmemory/web build",
     "lint": "corepack pnpm --filter @wuhanmemory/shared lint && corepack pnpm --filter @wuhanmemory/map-core lint && corepack pnpm --filter @wuhanmemory/web lint",
     "typecheck": "corepack pnpm --filter @wuhanmemory/shared typecheck && corepack pnpm --filter @wuhanmemory/map-core typecheck && corepack pnpm --filter @wuhanmemory/web typecheck",
