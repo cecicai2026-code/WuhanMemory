@@ -42,7 +42,8 @@ export async function getActiveShareOnServer(versionId: string): Promise<ShareLi
   } catch {
     throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
   }
-  if (res.status === 404) return null;
+  // 404：还没有链接。401、403：公开模式下要口令（服务器端没有口令），先当作没有，点"生成"时再要
+  if (res.status === 404 || res.status === 401 || res.status === 403) return null;
   if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
   return (await res.json()) as ShareLink;
 }

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import type { ShareLink } from "@wuhanmemory/shared";
 import { NoteButton, Soft, TextLink } from "@/components/ui";
-import { publishShare, revokeShare } from "@/lib/planning-client";
+import { ApiError, publishShare, revokeShare } from "@/lib/planning-client";
+import { OwnerPasscodeForm } from "./OwnerPasscodeForm";
 import s from "./trip.module.css";
 
 interface Props {
@@ -25,12 +26,14 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [origin, setOrigin] = useState("");
+  // 公开模式下后端要口令：先输口令，再重做刚才那一步
+  const [needPasscode, setNeedPasscode] = useState<{ retry: () => void; wrong: boolean } | null>(null);
 
   useEffect(() => setOrigin(window.location.origin), []);
 
   if (failed) return <Soft className={s.shareHint}>没通过校验，不能分享</Soft>;
 
-  async function run(action: () => Promise<ShareLink | null>) {
+  async function run(action: () => Promise<ShareLink | null>, triedPasscode = false) {
     setBusy(true);
     setError(null);
     setCopied(false);
@@ -38,12 +41,19 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
       const next = await action();
       setLink(next);
       onChange?.(next);
+      setNeedPasscode(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (err instanceof ApiError && err.status === 401) {
+        setNeedPasscode({ retry: () => void run(action, true), wrong: triedPasscode });
+      } else {
+        setError(err instanceof Error ? err.message : String(err));
+      }
     } finally {
       setBusy(false);
     }
   }
+
+  if (needPasscode) return <OwnerPasscodeForm wrong={needPasscode.wrong} onSaved={needPasscode.retry} />;
 
   async function copy(url: string) {
     try {

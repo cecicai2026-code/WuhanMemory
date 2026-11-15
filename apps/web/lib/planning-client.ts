@@ -14,6 +14,8 @@ import type {
   TripConversation,
 } from "@wuhanmemory/shared";
 
+import { getOwnerPasscode } from "./owner-passcode";
+
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 /** 后端连不上，或返回了错误 */
@@ -29,11 +31,12 @@ export class ApiError extends Error {
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}${path}`, {
-      cache: "no-store",
-      ...init,
-      headers: init?.body ? { "content-type": "application/json" } : undefined,
-    });
+    const headers: Record<string, string> = {};
+    if (init?.body) headers["content-type"] = "application/json";
+    // 公开模式下，我的行程和分享管理要口令；规划带口令时不限次数（板块 7）
+    const passcode = typeof window !== "undefined" ? getOwnerPasscode() : null;
+    if (passcode) headers["X-Owner-Passcode"] = passcode;
+    res = await fetch(`${API_BASE}${path}`, { cache: "no-store", ...init, headers });
   } catch {
     throw new ApiError(`连不上后端 ${API_BASE}。先启动后端：corepack pnpm dev:api`, null);
   }
@@ -108,7 +111,8 @@ export async function getVersionShare(versionId: string): Promise<ShareLink | nu
   try {
     return await call<ShareLink>(`/api/itinerary-versions/${encodeURIComponent(versionId)}/share`);
   } catch (err) {
-    if (err instanceof ApiError && err.status === 404) return null;
+    // 404：还没有链接；401：公开模式下要口令，先当作没有，点"生成"时再要口令
+    if (err instanceof ApiError && (err.status === 404 || err.status === 401)) return null;
     throw err;
   }
 }

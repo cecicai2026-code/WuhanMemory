@@ -5,10 +5,15 @@ import type { TripConversation, TripVersionSummary } from "@wuhanmemory/shared";
 import { BrassButton, Paper, PaperMark, PaperTitle, Rule, Soft, Stamp, TextLink } from "@/components/ui";
 import { ShareControls } from "@/components/trip/ShareControls";
 import { cityDate } from "@/lib/dates";
-import { listTrips } from "@/lib/planning-client";
+import { OwnerPasscodeForm } from "@/components/trip/OwnerPasscodeForm";
+import { ApiError, listTrips } from "@/lib/planning-client";
 import s from "./trips.module.css";
 
-type Load = { kind: "loading" } | { kind: "error"; message: string } | { kind: "ready"; trips: TripConversation[] };
+type Load =
+  | { kind: "loading" }
+  | { kind: "error"; message: string }
+  | { kind: "passcode"; wrong: boolean }
+  | { kind: "ready"; trips: TripConversation[] };
 
 function cityTime(iso: string): string {
   return new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Shanghai", hour: "2-digit", minute: "2-digit", hour12: false }).format(
@@ -58,14 +63,18 @@ function Proof({ v }: { v: TripVersionSummary }) {
 export function TripsNotebook() {
   const [load, setLoad] = useState<Load>({ kind: "loading" });
 
-  const fetchTrips = useCallback(() => {
+  const fetchTrips = useCallback((afterPasscode = false) => {
     setLoad({ kind: "loading" });
     listTrips()
       .then((trips) => setLoad({ kind: "ready", trips }))
-      .catch((err: unknown) => setLoad({ kind: "error", message: err instanceof Error ? err.message : String(err) }));
+      .catch((err: unknown) => {
+        // 公开模式下要网站主人的口令（板块 7）
+        if (err instanceof ApiError && err.status === 401) setLoad({ kind: "passcode", wrong: afterPasscode });
+        else setLoad({ kind: "error", message: err instanceof Error ? err.message : String(err) });
+      });
   }, []);
 
-  useEffect(fetchTrips, [fetchTrips]);
+  useEffect(() => fetchTrips(), [fetchTrips]);
 
   if (load.kind === "loading") {
     return (
@@ -75,13 +84,22 @@ export function TripsNotebook() {
       </Paper>
     );
   }
+  if (load.kind === "passcode") {
+    return (
+      <Paper className={s.notice}>
+        <PaperMark>笔记本</PaperMark>
+        <PaperTitle level={3}>我的行程只给网站主人看</PaperTitle>
+        <OwnerPasscodeForm wrong={load.wrong} onSaved={() => fetchTrips(true)} />
+      </Paper>
+    );
+  }
   if (load.kind === "error") {
     return (
       <Paper className={s.notice}>
         <PaperMark>笔记本</PaperMark>
         <PaperTitle level={3}>行程暂时取不到</PaperTitle>
         <p role="alert">{load.message}</p>
-        <BrassButton onClick={fetchTrips}>再试一次</BrassButton>
+        <BrassButton onClick={() => fetchTrips()}>再试一次</BrassButton>
       </Paper>
     );
   }
