@@ -290,7 +290,37 @@ CREATE TABLE route_cache (
 
 这张表可以随时删掉，下次查询会重新向高德要。
 
-## 11. 以后的表
+## 11. 大模型调用记录（板块 4）
+
+网关（`LLMGateway`）每调用一次写一行，成功失败都写。板块 6 的双模型对比从这张表取耗时、重试和修复的情况。
+
+```sql
+CREATE TABLE llm_calls (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    trace_id      TEXT NOT NULL,
+    task          TEXT NOT NULL,      -- 这次调用的用途，例如 ping、extract_preferences
+    provider      TEXT NOT NULL,      -- qwen / doubao
+    model         TEXT,               -- 对方返回的真实模型名
+    started_at    TEXT NOT NULL,      -- 开始时间，UTC
+    latency_ms    INTEGER NOT NULL,   -- 从开始到结束的总时间，含重试之间的等待
+    attempts      INTEGER NOT NULL,   -- 一共向模型发了几次请求
+    retried       INTEGER NOT NULL,   -- 有没有因为超时、限流、对方出错而重试
+    repaired      INTEGER NOT NULL,   -- 有没有因为输出不合格让模型重答
+    ok            INTEGER NOT NULL,
+    error_code    TEXT,               -- 失败时的错误类型，例如 timeout、rate_limited、bad_output
+    input_tokens  INTEGER,
+    output_tokens INTEGER
+);
+```
+
+- 不存提示词和回答的内容，也不存 key（2026-11-15 Cecilia 选的）。
+- 豆包请求里填的是 endpoint ID，`model` 记的是对方返回的真实模型名。
+- 一次网关调用可能向模型发好几次请求（重试、让模型重答），`attempts` 是总次数，token 数是几次的合计。
+- 开了"自动换备用模型"时，失败的默认模型和接手的备用模型各写一行。
+- 记录写不进去不影响这次调用，只在日志里留一条警告。
+- 代码：repository `apps/api/app/repositories/llm_call_repository.py`，记录的结构 `LLMCallRecord` 在 `apps/api/app/services/llm/base.py`。
+
+## 12. 以后的表
 
 行程、行程版本、分享页、模型对比结果这些运行时数据也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件：
 

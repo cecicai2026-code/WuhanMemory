@@ -55,6 +55,27 @@ CREATE TABLE IF NOT EXISTS route_cache (
     expires_at  TEXT NOT NULL,
     PRIMARY KEY (from_poi_id, to_poi_id, mode)
 );
+
+-- 大模型调用记录（板块 4）。网关每调用一次写一行，成功失败都写。板块 6 的双模型对比要用。
+-- 只记"用了哪个模型、花了多久、发生了什么"，不存提示词和回答的内容，也不存 key。
+CREATE TABLE IF NOT EXISTS llm_calls (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    trace_id      TEXT NOT NULL,
+    task          TEXT NOT NULL,         -- 这次调用的用途，例如 ping、extract_preferences
+    provider      TEXT NOT NULL,         -- qwen / doubao
+    model         TEXT,                  -- 对方返回的真实模型名
+    started_at    TEXT NOT NULL,         -- 开始时间，UTC
+    latency_ms    INTEGER NOT NULL,      -- 从开始到结束的总时间，含重试之间的等待
+    attempts      INTEGER NOT NULL,      -- 一共向模型发了几次请求
+    retried       INTEGER NOT NULL,      -- 0 / 1：有没有因为超时、限流、对方出错而重试
+    repaired      INTEGER NOT NULL,      -- 0 / 1：有没有因为输出不合格让模型重答
+    ok            INTEGER NOT NULL,      -- 0 / 1
+    error_code    TEXT,                  -- 失败时的错误类型，例如 timeout、rate_limited、bad_output
+    input_tokens  INTEGER,
+    output_tokens INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS llm_calls_started_idx ON llm_calls (started_at);
 """
 
 

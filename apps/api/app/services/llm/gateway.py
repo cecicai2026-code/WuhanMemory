@@ -119,7 +119,7 @@ class LLMGateway:
         self.max_retries = max(0, max_retries)
         self.backoff_seconds = backoff_seconds
         self.max_rate_limit_wait_seconds = max_rate_limit_wait_seconds
-        self._recorder = recorder or _log_record
+        self._recorder = recorder
         self._sleep = sleep
 
     # ---- 有哪些模型 ----
@@ -207,10 +207,12 @@ class LLMGateway:
                 input_tokens=stats.input_tokens,
                 output_tokens=stats.output_tokens,
             )
-            try:
-                self._recorder(record)
-            except Exception as exc:  # 记录写不进去不能让这次调用失败
-                logger.warning("llm 调用记录没有写成功：%s", type(exc).__name__)
+            _log_record(record)
+            if self._recorder is not None:
+                try:
+                    self._recorder(record)
+                except Exception as exc:  # 记录写不进去不能让这次调用失败
+                    logger.warning("llm 调用记录没有写成功：%s", type(exc).__name__)
             return record
 
         try:

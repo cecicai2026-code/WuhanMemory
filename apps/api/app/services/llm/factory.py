@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 
 from app.core.config import Settings, settings
+from app.repositories.llm_call_repository import SqliteLLMCallRepository
 from app.services.llm.gateway import LLMGateway, Recorder
 from app.services.llm.providers import build_providers
 
@@ -23,4 +24,5 @@ def build_gateway(config: Settings, *, recorder: Recorder | None = None) -> LLMG
 
 @lru_cache
 def get_llm_gateway() -> LLMGateway:
-    return build_gateway(settings)
+    calls = SqliteLLMCallRepository(settings.database_path)
+    return build_gateway(settings, recorder=calls.add)
