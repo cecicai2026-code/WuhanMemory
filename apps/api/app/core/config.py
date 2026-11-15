@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     public_app_url: str = "http://localhost:3000"
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
 
-    llm_provider: str = "mock"
+    # 默认用哪个模型：qwen 或 doubao。每次请求也可以另外指定
+    llm_provider: str = "qwen"
     llm_fallback_provider: str | None = None
     llm_provider_mode: str = "fixed"
 
