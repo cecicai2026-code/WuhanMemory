@@ -17,6 +17,32 @@ from pydantic import BaseModel, Field
 Pace = Literal["relaxed", "moderate", "intensive"]
 
 
+Budget = Literal["low", "medium", "high"]
+Party = Literal["solo", "couple", "friends", "family", "elderly"]
+# 交通偏好：metro 地铁公交优先，walk 尽量走路，taxi 打车
+TransportPreference = Literal["metro", "walk", "taxi"]
+
+
+class TravelerPreferences(BaseModel):
+    """模型从对话里抽出来的偏好。没说的留空，不猜；程序决定要不要反问、哪些用默认值。"""
+
+    days: int | None = Field(default=None, ge=1, le=14)
+    # 第一天的日期，只有用户说了具体日期（或能换算的说法，如"下周六"）才填
+    startDate: date | None = None
+    # 用户明确说日期还没定
+    dateUndecided: bool = False
+    pace: Pace | None = None
+    interests: list[str] = Field(default_factory=list)
+    budget: Budget | None = None
+    party: Party | None = None
+    transport: TransportPreference | None = None
+    # 用户点名想去 / 不想去的地方，原话里的名字
+    mustVisit: list[str] = Field(default_factory=list)
+    avoid: list[str] = Field(default_factory=list)
+    # 其他要求，例如"不想早起""带老人少爬楼梯"
+    notes: str | None = None
+
+
 class PlanStop(BaseModel):
     poiId: str
     # "HH:MM"，到达和离开这个景点的时间。格式由 validate_itinerary 检查，这里不限制，
