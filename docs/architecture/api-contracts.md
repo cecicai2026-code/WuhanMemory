@@ -12,6 +12,8 @@
 > 2026-11-15（板块 2）：景点接口已实现。对话、规划、行程、分享接口原来返回同一份编出来的 mock 行程，已删掉；
 > 在板块 5、7 实现之前，`POST /api/conversations/{id}/messages` 返回 501，查询规划任务、行程和分享页返回 404。
 > 下面"主要接口"一节是这些接口的设计草案。
+>
+> 2026-11-15（板块 3）：路线接口和高德安全密钥代理已实现，见"路线"和"高德安全密钥代理"两节。
 
 ### 景点列表
 
@@ -82,6 +84,72 @@ Response（`PoiDetailResponse`）：`{ "asOf": "...", "poi": PoiDetail }`。`Poi
 GET /media/photos/{id}/{file}
 GET /media/photos-placeholder/{id}/{file}
 ```
+
+### 路线：三种交通方式对比
+
+```http
+GET /api/routes/compare?from=<起点景点id>&to=<终点景点id>
+```
+
+依次查步行、公交地铁、驾车，返回：
+
+```json
+{
+  "origin": { "id": "yellow-crane-tower", "name": "黄鹤楼", "location": { "lng": 114.302467, "lat": 30.544649 } },
+  "destination": { "id": "hubu-alley", "name": "户部巷", "location": { "...": "..." } },
+  "routes": [
+    {
+      "mode": "walk",
+      "status": "ok",
+      "durationMinutes": 9,
+      "distanceMeters": 699,
+      "cost": { "kind": "free", "amountCny": 0, "note": "步行不花钱" },
+      "summary": null,
+      "reason": null,
+      "polyline": [{ "lng": 114.302467, "lat": 30.544649 }],
+      "source": { "provider": "amap", "api": "/v5/direction/walking" },
+      "checkedAt": "2026-11-15T21:30:00+08:00",
+      "expiresAt": "2026-12-15T21:30:00+08:00",
+      "cache": "fresh",
+      "warning": null,
+      "error": null
+    }
+  ]
+}
+```
+
+（上面的数字只是说明格式。）
+
+| 字段 | 说明 |
+|---|---|
+| `mode` | `walk` 步行、`transit` 公交地铁、`drive` 驾车 / 打车 |
+| `status` | `ok` 有方案；`none` 高德没给方案（例如两地太近没有公交），看 `reason`；`error` 没查成，看 `error` |
+| `cost.kind` | `free` 步行；`fare` 公交地铁票价（高德估算）；`taxi` 打车费（高德估算），自驾过路费写在 `note` 里 |
+| `summary` | 公交地铁坐哪几条线，例如"地铁2号线 → 地铁4号线" |
+| `polyline` | 路线折线，GCJ-02 |
+| `checkedAt`、`expiresAt` | 向高德查询的时间和过期时间（武汉时间）。步行 30 天、公交地铁 7 天、驾车 1 天 |
+| `cache` | `fresh` 刚查的；`cached` 缓存里还没过期；`stale` 缓存过期了、重查又失败，先返回旧结果，`warning` 写原因 |
+| `error.code` | `amap-key-missing`（没配 Web 服务 key）、`amap-unreachable`（连不上高德）、`amap-<高德错误码>`，例如 `amap-10003` 当天次数用完、`amap-10021` 被限流 |
+
+某一种方式没查成不影响其他两种，整个接口仍返回 200。起点和终点是同一个景点返回 400，景点不存在返回 404。
+
+只接受景点 id，不接受任意坐标。前端不直接调用高德 Web 服务，Web 服务 key 只在后端。
+
+### 路线：只查一种
+
+```http
+GET /api/routes?from=<id>&to=<id>&mode=walk|transit|drive
+```
+
+返回上面 `routes` 里的一项。板块 5 的行程直接在后端调用同一个 `RouteService`。
+
+### 高德安全密钥代理
+
+```http
+GET|POST /_AMapService/{path}
+```
+
+给浏览器里的高德 JS API 用（`window._AMapSecurityConfig.serviceHost`），不是给页面代码调用的。照高德官方的 nginx 示例：`/_AMapService/v4/map/styles` 转到 `https://webapi.amap.com/v4/map/styles`，其余转到 `https://restapi.amap.com/`，转发时在查询参数末尾加上 `jscode=<安全密钥>`。只接受 `Referer` 或 `Origin` 是 CORS 白名单里网址的请求（否则 403）；没配安全密钥返回 503，连不上高德返回 502。
 
 ## 主要接口（设计草案）
 
