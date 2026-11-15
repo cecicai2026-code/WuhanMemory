@@ -40,6 +40,13 @@ def summary_of(c: ModelComparison) -> ModelComparisonSummary:
     )
 
 
+def _without_unanswered_model(data: ModelComparisonData) -> ModelComparisonData:
+    """模型没排出来的一边，对方没回答过，不知道真实模型名。2026-11-15 的一次评测里这一格存成了豆包的推理接入点 ID
+    （那时取的是失败调用里记的模型设置，已改），读出来时一律清空，接入点 ID 不给前端。"""
+    sides = [s.model_copy(update={"model": None}) if s.quality is None else s for s in data.sides]
+    return data.model_copy(update={"sides": sides})
+
+
 class SqliteModelComparisonRepository:
     def __init__(self, db_path: Path):
         self.db_path = db_path
@@ -65,7 +72,7 @@ class SqliteModelComparisonRepository:
 
     @staticmethod
     def _row(row: sqlite3.Row) -> ModelComparison:
-        data = ModelComparisonData.model_validate_json(row["data_json"])
+        data = _without_unanswered_model(ModelComparisonData.model_validate_json(row["data_json"]))
         return ModelComparison(**data.model_dump(), id=row["id"], createdAt=datetime.fromisoformat(row["created_at"]))
 
     def get(self, comparison_id: str) -> ModelComparison | None:

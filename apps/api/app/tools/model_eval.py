@@ -141,7 +141,8 @@ def csv_rows(runs: Sequence[EvalRun]) -> list[dict[str, object]]:
                 "emphasis": run.request.emphasis,
                 "request": run.request.text,
                 "provider": s.provider,
-                "model": s.model or "",
+                # 没排出来的一边对方没回答过，不知道真实模型名（见 model_compare.side_result）
+                "model": (s.model or "") if q is not None else "",
                 "error": s.error or "",
                 "first_passed": "" if q is None else int(q.firstPassed),
                 "first_errors": "" if q is None else q.firstErrorCount,
@@ -214,6 +215,7 @@ def _top(m: ModelSummary, k: int = 3) -> str:
 def render_summary(runs: Sequence[EvalRun], *, run_date: date, repeat: int, facts: DataFacts,
                    csv_name: str, providers: Sequence[str] = DEFAULT_PROVIDERS) -> str:
     sides = [s for r in runs for s in r.comparison.sides]
+    sides = [s if s.quality is not None else s.model_copy(update={"model": None}) for s in sides]
     summaries = [summarize(sides, p) for p in providers]
     request_ids = sorted({r.request.id for r in runs})
     lines = [
@@ -317,12 +319,35 @@ def data_facts(data_dir: Path, today: date, library: Sequence[object]) -> DataFa
 # ---------- 命令行 ----------
 
 
+def rerender(csv_path: Path, requests: Sequence[EvalRequest], comparisons: object, facts: DataFacts) -> tuple[str, str]:
+    """按 CSV 里记的对比 id，从 SQLite 取出存好的对比，重新生成 CSV 和汇总。不调用模型，数字都是当时跑出来存下的。
+    用在改了输出格式或修了输出里的问题之后（2026-11-15：模型出错那一边的模型名）。"""
+    by_id = {r.id: r for r in requests}
+    rows = list(csv.DictReader(io.StringIO(csv_path.read_text(encoding="utf-8"))))
+    runs: list[EvalRun] = []
+    seen: set[str] = set()
+    for row in rows:
+        cid = row["comparison_id"]
+        if cid in seen:
+            continue
+        seen.add(cid)
+        cmp = comparisons.get(cid)  # type: ignore[attr-defined]
+        if cmp is None:
+            raise ValueError(f"数据库里没有对比 {cid}，没法重新生成")
+        runs.append(EvalRun(request=by_id[row["request_id"]], repeat_no=int(row["repeat"]), comparison=cmp))
+    repeat = max(r.repeat_no for r in runs)
+    run_date = date.fromisoformat(csv_path.stem[:10])
+    return render_csv(runs), render_summary(runs, run_date=run_date, repeat=repeat, facts=facts, csv_name=csv_path.name)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="双模型批量评测（真实调用千问和豆包）")
     parser.add_argument("--dry-run", action="store_true", help="只检查请求文件、数要调用多少次，不调用模型")
     parser.add_argument("--repeat", type=int, default=1, help="每条请求每个模型跑几次，默认 1")
     parser.add_argument("--only", default="", help="只跑这几条，用逗号分开，例如 r01,r02")
     parser.add_argument("--requests", type=Path, default=REQUESTS_PATH)
+    parser.add_argument("--rerender", type=Path, default=None,
+                        help="不调用模型：按这个 CSV 里的对比 id 从数据库取出存好的结果，重新生成这一对 CSV 和汇总")
     if argv is None:
         argv = sys.argv[1:]
     argv = [a for a in argv if a != "--"]  # 有的 pnpm 版本会把 "--" 原样传进来
@@ -331,6 +356,19 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--repeat 至少是 1")
 
     requests = load_requests(args.requests)
+    if args.rerender is not None:
+        from app.core.config import settings
+        from app.data_quality.rules import today_in_city
+        from app.repositories.model_comparison_repository import SqliteModelComparisonRepository
+        from app.repositories.poi_repository import SqlitePoiRepository
+
+        csv_path = args.rerender if args.rerender.is_absolute() else (REPO_ROOT / args.rerender)
+        facts = data_facts(settings.data_dir, today_in_city(), SqlitePoiRepository(settings.database_path).list_pois())
+        new_csv, new_md = rerender(csv_path, requests, SqliteModelComparisonRepository(settings.database_path), facts)
+        csv_path.write_text(new_csv, encoding="utf-8")
+        csv_path.with_suffix(".md").write_text(new_md, encoding="utf-8")
+        print(f"重新生成了：{csv_path.relative_to(REPO_ROOT)}、{csv_path.with_suffix('.md').relative_to(REPO_ROOT)}（没有调用模型）")
+        return 0
     if args.only:
         wanted = [x.strip() for x in args.only.split(",") if x.strip()]
         unknown = [w for w in wanted if w not in {r.id for r in requests}]

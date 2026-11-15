@@ -152,7 +152,9 @@ def side_result(
         return SideResult(
             provider=provider,
             providerLabel=provider_label,
-            model=next((c.model for c in calls if c.model), None),
+            # 只取对方真的回答了的调用里的模型名。失败的调用里记的是配置里的模型设置，
+            # 豆包那是推理接入点 ID（ep- 开头），不能给前端，也不能写进评测结果
+            model=next((c.model for c in calls if c.ok and c.model), None),
             error=error or "没有排出行程",
             calls=call_stats(calls),
             wallMs=wall_ms,

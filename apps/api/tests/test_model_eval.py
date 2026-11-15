@@ -109,3 +109,39 @@ def test_dry_run_does_not_call_models(capsys: pytest.CaptureFixture[str], tmp_pa
     assert main(["--", "--dry-run", "--requests", str(p), "--repeat", "2"]) == 0
     out = capsys.readouterr().out
     assert "4 次对比" in out and "8 到 16 次" in out and "没有调用模型" in out
+
+
+async def test_failed_side_never_shows_configured_model_and_rerender(tmp_path: Path) -> None:
+    """模型出错那一边：失败的调用里记的是配置的模型设置（豆包是推理接入点 ID），不能当模型名写出去。"""
+    from tests.test_plan_single import TwoModels as _TwoModels
+
+    s = _TwoModels(tmp_path, [GOOD], [LLMAuthError("测试：额度")])
+    s.doubao.model = "ep-test-endpoint"  # 假的接入点 ID
+    repo = SqliteModelComparisonRepository(tmp_path / "t.db")
+    runs = await run_eval(ModelComparer(s.pipeline, repo), [req("r01")], 1, out=lambda _: None)
+    side = runs[0].comparison.sides[1]
+    assert side.quality is None and side.model is None
+    text = render_csv(runs) + render_summary(runs, run_date=date(2026, 11, 15), repeat=1, facts=FACTS, csv_name="x.csv")
+    assert "ep-test-endpoint" not in text
+
+    # 以前存成了接入点 ID 的旧数据：读出来时清空
+    import sqlite3
+
+    conn = sqlite3.connect(tmp_path / "t.db")
+    raw = conn.execute("SELECT data_json FROM model_comparisons").fetchone()[0]
+    data = json.loads(raw)
+    data["sides"][1]["model"] = "ep-test-endpoint"
+    with conn:
+        conn.execute("UPDATE model_comparisons SET data_json = ?", (json.dumps(data),))
+    conn.close()
+    assert repo.get(runs[0].comparison.id).sides[1].model is None  # type: ignore[union-attr]
+
+    # 重新生成：按 CSV 里的对比 id 从数据库取，不调用模型，数字不变
+    csv_path = tmp_path / "2026-11-15.csv"
+    csv_path.write_text(render_csv(runs), encoding="utf-8")
+    from app.tools.model_eval import rerender
+
+    new_csv, new_md = rerender(csv_path, [req("r01")], repo, FACTS)
+    assert "ep-test-endpoint" not in new_csv + new_md
+    assert new_csv == render_csv(runs)
+    assert "| 模型出错（没排出来） | 0 | 1 |" in new_md
