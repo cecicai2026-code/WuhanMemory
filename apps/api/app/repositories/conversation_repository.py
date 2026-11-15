@@ -28,6 +28,8 @@ class StoredMessage(BaseModel):
     asked: list[str] = []
     provider: str | None = None
     itineraryVersionId: str | None = None
+    # 板块 5B：这条回复带出的那一轮方案
+    planningRoundId: str | None = None
 
 
 class Conversation(BaseModel):
@@ -56,6 +58,7 @@ class ConversationRepository(Protocol):
         asked: list[str] | None = None,
         provider: str | None = None,
         itinerary_version_id: str | None = None,
+        planning_round_id: str | None = None,
     ) -> StoredMessage: ...
 
     def messages(self, conversation_id: str) -> list[StoredMessage]: ...
@@ -131,6 +134,7 @@ class SqliteConversationRepository:
         asked: list[str] | None = None,
         provider: str | None = None,
         itinerary_version_id: str | None = None,
+        planning_round_id: str | None = None,
     ) -> StoredMessage:
         created = _now()
         asked = asked or []
@@ -139,7 +143,7 @@ class SqliteConversationRepository:
             with conn:
                 cur = conn.execute(
                     "INSERT INTO conversation_messages (conversation_id, role, content, created_at, kind, asked, provider,"
-                    " itinerary_version_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    " itinerary_version_id, planning_round_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (
                         conversation_id,
                         role,
@@ -149,6 +153,7 @@ class SqliteConversationRepository:
                         ",".join(asked) or None,
                         provider,
                         itinerary_version_id,
+                        planning_round_id,
                     ),
                 )
                 message_id = int(cur.lastrowid or 0)
@@ -163,6 +168,7 @@ class SqliteConversationRepository:
             asked=asked,
             provider=provider,
             itineraryVersionId=itinerary_version_id,
+            planningRoundId=planning_round_id,
         )
 
     def messages(self, conversation_id: str) -> list[StoredMessage]:
@@ -183,6 +189,7 @@ class SqliteConversationRepository:
                 asked=r["asked"].split(",") if r["asked"] else [],
                 provider=r["provider"],
                 itineraryVersionId=r["itinerary_version_id"],
+                planningRoundId=r["planning_round_id"],
             )
             for r in rows
         ]

@@ -37,7 +37,7 @@
 - `app/places/PlaceParts.tsx`：纸上的条目、来源和核实日期那一行、图册。
 - `lib/map/amap-provider.ts`：高德地图 provider，实现 `packages/map-core` 的接口；`lib/map/amap-types.ts` 是用到的高德对象的类型。
 - `app/map/MapPanel.tsx`：灯箱里的地图、图钉卡片、2D/3D 拨杆；`app/map/RouteFinder.tsx`：临时的"两点之间怎么走"；`app/map/ModelPicker.tsx`：模型选择（板块 4）。
-- `app/map/ChatPaper.tsx`：对话纸、规划进度；`app/map/ItineraryCards.tsx`：行程卡；`app/map/PlannerState.tsx`：选中的模型和校验结果（右上角标注要用）；`lib/planning-client.ts`：对话和规划接口（板块 5）。
+- `app/map/ChatPaper.tsx`：对话纸、规划进度；`app/map/ItineraryCards.tsx`：行程卡；`app/map/PlanCompare.tsx`：一轮方案的对比卡（板块 5B）；`app/map/PlannerState.tsx`：选中的模型和校验结果（右上角标注要用）；`lib/planning-client.ts`：对话和规划接口（板块 5）。
 - 每个页面自己的组件和样式（CSS Modules）放在页面文件夹里，例如 `app/map/Workbench.tsx`。
 
 ## 地图交互
@@ -59,6 +59,8 @@
 - "地图上看"和图例在桌面上、不在纸上，所以文字用桌面的次要文字色。
 
 ## 对话和行程卡（板块 5）
+
+板块 5B：一次规划是一轮三份方案。右边最上面是对比卡：第几轮、用的模型、排了几份展示几份；按钮切换看哪一份（地图和下面的行程卡跟着换）；对比表（每格是后端程序写好的文字，选中的那一列用铅笔蓝底标出，表下面是带 * 的行的说明）；没展示的几份和原因。行程总卡的标签写着侧重（例如"经典必去 · 第 1 版"）。板块 5 存的旧回复只有一个版本，照旧只显示行程卡。
 
 - 对话纸：用户的话加粗，回复是纸上正文，下面标着用的模型；反问、行程、未通过、出错四种回复，未通过和出错是红褐色字。发送后显示"规划中 · N 秒"和链路真的走过的步骤（后端报一步显示一步，不预先画出没发生的步骤）。对话 id 记在浏览器里，刷新后接着显示；"新对话"清掉对话和行程。
 - 行程总卡：校验结果的印章（绿色"校验通过"、蓝灰色"有警告"、红色"未通过"），模型和真实模型名，是否修正过，按默认补的设置，错误清单，警告清单（多于 4 条时折起来）。下面一行说明"待确认"是什么意思。

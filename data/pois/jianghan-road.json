@@ -102,7 +102,8 @@
       "s2",
       "s3"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "两个来源说法不一：江汉区政府页面写前身叫「广利街」、1906 年改称歆生路；澎湃新闻写「广利巷」、1907 年。1861 年太平路、1927 年改名江汉路、2000 年步行街开街两边一致。"
   },
   "openingHours": {
     "value": {
@@ -117,7 +118,8 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "ticket": {
     "value": {
@@ -131,7 +133,8 @@
       "s4"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14"
+    "expiresAt": "2027-05-14",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "reservation": {
     "value": {
@@ -146,7 +149,8 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "payment": {
     "value": null,
@@ -177,14 +181,15 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15"
+    "expiresAt": "2027-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "recommendedDurationMinutes": {
     "value": 180,
     "verification": "confirmed",
     "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "攻略「3—4 小时」，取下限。"
+    "note": "攻略「3—4 小时」，取下限。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "bestTime": {
     "value": "16:00 之后到，先拍建筑街景，入夜看亮灯再觅食；周末与节假日人流大。",
@@ -194,7 +199,7 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -215,7 +220,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s4",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -233,9 +239,10 @@
         "description": "步行街两侧巷内。石库门门头与弄堂纵深，人少",
         "photo": null
       },
-      "verification": "confirmed",
+      "verification": "placeholder",
       "sourceId": "s2",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "引用的江汉区概况页面里没有提到江汉村和上海邨，所以这一条仍算占位，待确认。"
     }
   ],
   "food": [
@@ -248,7 +255,8 @@
       "verification": "confirmed",
       "sourceId": "s4",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -259,7 +267,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -270,7 +279,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -281,7 +291,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],

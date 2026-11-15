@@ -92,6 +92,7 @@ def generate_user_prompt(
     candidates: list[dict[str, Any]],
     distances: list[str],
     previous: PlanDraft | None,
+    emphasis: str | None = None,
 ) -> str:
     parts = [
         "【行程要求】",
@@ -101,6 +102,7 @@ def generate_user_prompt(
         f"预算：{prefs.budget or '没说'}；同行：{prefs.party or '没说'}",
         f"其他要求：{prefs.notes or '没有'}",
         f"用户最新说的话：{message}",
+        *(["", "【这份方案的侧重】", emphasis] if emphasis else []),
         "",
         "【候选景点】",
         _json(candidates),
@@ -109,7 +111,7 @@ def generate_user_prompt(
         "；".join(distances),
     ]
     if previous is not None:
-        parts += ["", "【上一版行程】用户在上一版的基础上提了新要求，按新要求调整：", previous.model_dump_json()]
+        parts += ["", "【上一版行程】这是同一侧重上一次排的，用户在它的基础上提了新要求，按新要求调整：", previous.model_dump_json()]
     return "\n".join(parts)
 
 

@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
-import type { ItineraryVersion, PoiSummary, Route } from "@wuhanmemory/shared";
+import type { ItineraryVersion, PlanningRound, PoiSummary, Route } from "@wuhanmemory/shared";
 import { NoteButton } from "@/components/ui";
-import { getVersion } from "@/lib/planning-client";
-import { ChatPaper } from "./ChatPaper";
+import { getRound, getVersion } from "@/lib/planning-client";
+import { ChatPaper, type PlanResult } from "./ChatPaper";
 import { dayColor } from "./day-colors";
 import { ItineraryCards } from "./ItineraryCards";
 import { MapPanel, type PinOverride } from "./MapPanel";
+import { PlanCompare } from "./PlanCompare";
 import { usePlannerState } from "./PlannerState";
 import { RouteFinder } from "./RouteFinder";
 import s from "./map.module.css";
@@ -17,6 +18,9 @@ type Tab = "chat" | "plan";
 
 /**
  * 地图工作台（设计规范 9.1）：左边对话纸（ChatPaper），中间灯箱里的地图（MapPanel），右边行程卡（ItineraryCards）。
+ *
+ * 板块 5B：一次规划是一轮三份方案。右边先是方案对比卡（切换看哪一份），下面是选中那份的行程卡；
+ * 地图上画选中的那一份。板块 5 存的旧回复只有一个版本，照旧显示。
  *
  * 有行程时，地图上只放这一天的景点（图钉名字前加上顺序），画出这一天每段交通的折线；
  * 多天的行程用行程卡上的"地图上看 第 N 天"切换。没通过校验的行程不画。
@@ -27,7 +31,9 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
   const { setValidation } = usePlannerState();
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
-  const [versionId, setVersionId] = useState<string | null>(null);
+  const [result, setResult] = useState<PlanResult | null>(null);
+  const [round, setRound] = useState<PlanningRound | null>(null);
+  const [picked, setPicked] = useState(0);
   const [version, setVersion] = useState<ItineraryVersion | null>(null);
   const [versionLoading, setVersionLoading] = useState(false);
   const [versionError, setVersionError] = useState<string | null>(null);
@@ -36,20 +42,47 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
   // "两点之间怎么走"（板块 3，临时）选中的那一种交通方式
   const [shownRoute, setShownRoute] = useState<Route | null>(null);
 
+  function show(v: ItineraryVersion) {
+    setVersion(v);
+    setShownDay(v.days[0]?.dayNumber ?? null);
+    setShownRoute(null);
+    setValidation(v.validation.status, v.planner.providerLabel);
+  }
+
   useEffect(() => {
-    if (!versionId) return;
+    if (!result) return;
     let closed = false;
     setVersionLoading(true);
     setVersionError(null);
-    getVersion(versionId)
-      .then((v) => {
-        if (closed) return;
-        setVersion(v);
-        setShownDay(v.days[0]?.dayNumber ?? null);
-        setShownRoute(null);
-        setValidation(v.validation.status, v.planner.providerLabel);
+    async function load(r: PlanResult): Promise<void> {
+      if ("versionId" in r) {
+        setRound(null);
+        const v = await getVersion(r.versionId);
+        if (!closed) show(v);
+        return;
+      }
+      const got = await getRound(r.roundId);
+      if (closed) return;
+      setRound(got);
+      setPicked(0);
+      if (got.versions.length) {
+        show(got.versions[0]);
+        return;
+      }
+      // 一份都没展示：取第一份存下的版本，只显示它的问题清单（和板块 5 一样，不画时间线和地图）
+      const first = got.plans.find((p) => p.versionId);
+      if (first?.versionId) {
+        const v = await getVersion(first.versionId);
+        if (!closed) show(v);
+      } else {
+        setVersion(null);
+        setValidation(null);
+      }
+    }
+    load(result)
+      .then(() => {
         // 手机上：排好了就切到行程
-        setTab("plan");
+        if (!closed) setTab("plan");
       })
       .catch((err: unknown) => {
         if (!closed) setVersionError(err instanceof Error ? err.message : String(err));
@@ -60,7 +93,13 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
     return () => {
       closed = true;
     };
-  }, [versionId, setValidation]);
+  }, [result, setValidation]);
+
+  function pick(index: number) {
+    if (!round?.versions[index]) return;
+    setPicked(index);
+    show(round.versions[index]);
+  }
 
   const ok = version && version.validation.status !== "failed" ? version : null;
   const shownDays = ok ? ok.days.filter((d) => shownDay === "all" || d.dayNumber === shownDay) : [];
@@ -101,7 +140,9 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
   }
 
   function reset() {
-    setVersionId(null);
+    setResult(null);
+    setRound(null);
+    setPicked(0);
     setVersion(null);
     setVersionError(null);
     setShownDay(null);
@@ -124,7 +165,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
       </div>
 
       <section className={`${s.col} ${s.chatCol}`} aria-label="对话">
-        <ChatPaper onVersion={setVersionId} onReset={reset} />
+        <ChatPaper onResult={setResult} onReset={reset} />
       </section>
 
       <section className={`${s.col} ${s.mapCol}`} aria-label="地图">
@@ -133,6 +174,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
 
       <section className={`${s.col} ${s.planCol}`} aria-label="行程">
         <div className={s.cards}>
+          {round && !versionLoading && <PlanCompare round={round} picked={picked} onPick={pick} />}
           <ItineraryCards
             version={version}
             loading={versionLoading}

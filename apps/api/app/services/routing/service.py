@@ -83,6 +83,14 @@ class RouteService:
             found.append(_place(poi))
         return found[0], found[1]
 
+    def has_fresh_cache(self, origin: RoutePlace, destination: RoutePlace, mode: RouteMode) -> bool:
+        """缓存里有这条路线、坐标没变、还没过期：route() 不会去问高德。"""
+        cached = self.cache.get(origin.id, destination.id, mode)
+        if cached is None:
+            return False
+        same = (cached.origin, cached.destination) == (_coord(origin.location), _coord(destination.location))
+        return same and cached.expiresAt > self.now()
+
     async def route(self, origin: RoutePlace, destination: RoutePlace, mode: RouteMode) -> RouteOut:
         now = self.now()
         o, d = _coord(origin.location), _coord(destination.location)
@@ -109,6 +117,7 @@ class RouteService:
             status="ok" if found.status == "ok" else "none",
             durationMinutes=found.durationMinutes,
             distanceMeters=found.distanceMeters,
+            walkingDistanceMeters=found.walkingDistanceMeters,
             cost=found.cost,
             summary=found.summary,
             reason=found.reason,

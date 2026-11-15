@@ -131,6 +131,7 @@ GET /api/routes/compare?from=<起点景点id>&to=<终点景点id>
 |---|---|
 | `mode` | `walk` 步行、`transit` 公交地铁、`drive` 驾车 / 打车 |
 | `status` | `ok` 有方案；`none` 高德没给方案（例如两地太近没有公交），看 `reason`；`error` 没查成，看 `error` |
+| `walkingDistanceMeters` | 要走的路（米）：步行是全程距离；公交地铁是换乘、进出站的步行（高德 transit 返回的 `walking_distance`，没有时把每段步行距离加起来）；打车是 0。板块 5B 加的，旧缓存没有时为 null，`corepack pnpm routes:prewarm` 从缓存的原始返回里补 |
 | `cost.kind` | `free` 步行；`fare` 公交地铁票价（高德估算）；`taxi` 打车费（高德估算），自驾过路费写在 `note` 里 |
 | `summary` | 公交地铁坐哪几条线，例如"地铁2号线 → 地铁4号线" |
 | `polyline` | 路线折线，GCJ-02 |
@@ -229,13 +230,14 @@ GET /api/conversations/{conversationId}
   "itineraryId": "itin_…",
   "messages": [
     { "id": 1, "role": "user", "content": "武汉两天……", "createdAt": "…", "kind": null, "provider": null, "itineraryVersionId": null },
-    { "id": 2, "role": "assistant", "content": "排好了……", "createdAt": "…", "kind": "itinerary", "provider": "qwen", "itineraryVersionId": "ver_…" }
+    { "id": 2, "role": "assistant", "content": "排了 3 份方案，展示 2 份……", "createdAt": "…", "kind": "itinerary", "provider": "qwen", "itineraryVersionId": "ver_…", "planningRoundId": "round_…" }
   ]
 }
 ```
 
 - `preferences`：到目前为止抽到的偏好，没说的是 null 或空列表。
 - `kind`（回复才有）：`question` 反问；`itinerary` 带出了行程（通过或有警告）；`failed` 修正后仍未通过；`error` 模型或程序出错。
+- `planningRoundId`（板块 5B）：这条回复带出的那一轮方案，用"获取一轮方案"取；`itineraryVersionId` 是这一轮第一份展示的方案（一份都没展示时是第一份存下的）。板块 5 存的旧回复没有 `planningRoundId`，只有一个版本。
 - 前端刷新页面后用它接着显示对话。没有这段对话时 404。
 
 ### 发送消息
@@ -269,7 +271,7 @@ GET /api/planning-jobs/{jobId}
   "stages": [
     { "id": "understanding", "label": "理解需求" },
     { "id": "selecting", "label": "从景点库挑候选" },
-    { "id": "generating", "label": "模型排行程" },
+    { "id": "generating", "label": "模型排三份方案" },
     { "id": "routing", "label": "查真实交通时间" },
     { "id": "validating", "label": "校验" },
     { "id": "repairing", "label": "把错误交给模型修正" },
@@ -281,12 +283,14 @@ GET /api/planning-jobs/{jobId}
   "reply": "排好了（第一版有错误，交给模型修正过一次）……",
   "provider": "doubao",
   "itineraryVersionId": "ver_…",
+  "planningRoundId": "round_…",
   "error": null
 }
 ```
 
 - `stages`：链路真的走过的步骤，按顺序，最后一个是正在做的（或最后做完的）。`repairing` 和第二遍的 `routing`、`validating` 只在第一轮有错误时出现；反问时只有 `understanding`。
 - `status`：`failed` 只表示任务本身出错（模型调用失败等），看 `error`，结构见"模型：出错时"。**行程没通过校验时任务是 `completed`，`kind` 是 `failed`**，`itineraryVersionId` 照样有，界面只显示问题清单。
+- 板块 5B：一次规划是一轮三份方案，`planningRoundId` 是这一轮；三份同时排，步骤只记一次（例如 `generating` 只出现一次，表示三份一起在排）。`repairing` 在任一份有错误时出现。
 - 任务只存在内存里，后端重启后查不到（404），但已经存进 SQLite 的消息和行程不丢。
 
 ### 获取行程版本
@@ -311,8 +315,47 @@ GET /api/itinerary-versions/{versionId}
 | `planner` | `{ provider, providerLabel, model, rounds, firstRoundStatus, firstRoundErrors }`：用的模型、对方返回的真实模型名、生成了几轮（2 表示修正过一次）、第一轮的结果 |
 | `draft` | 模型最后一轮的原始输出。没通过时 `days` 里可能缺了不存在的景点，`draft` 里原样留着 |
 | `dataAsOf` | 资料状态按哪一天算的 |
+| `emphasis` | 板块 5B：这份方案的侧重，`classic` 经典必去 / `relaxed` 轻松少走路 / `culture` 深度文化；之前的版本为 null |
+| `metrics` | 板块 5B：程序算的数字（景点、交通分方式、步行距离、每站门票和合计、每天几点结束、校验条数），计算规则见 `ai-planning-pipeline.md` 的"比较"；之前的版本为 null |
 
 没有这个版本时 404。
+
+### 获取一轮方案（板块 5B）
+
+```http
+GET /api/planning-rounds/{roundId}
+```
+
+```json
+{
+  "id": "round_…",
+  "conversationId": "conv_…",
+  "roundNumber": 1,
+  "provider": "qwen",
+  "providerLabel": "通义千问",
+  "defaultsUsed": ["节奏：适中（你没说，按默认）"],
+  "plans": [
+    { "emphasis": "classic", "label": "经典必去", "itineraryId": "itin_…", "versionId": "ver_…", "shown": true, "removedReason": null },
+    { "emphasis": "relaxed", "label": "轻松少走路", "itineraryId": "itin_…", "versionId": "ver_…", "shown": false,
+      "removedReason": "和「经典必去」几乎一样：用到的景点只差 1 个，每天结束时间相差不到 1 小时" },
+    { "emphasis": "culture", "label": "深度文化", "itineraryId": "itin_…", "versionId": "ver_…", "shown": true, "removedReason": null }
+  ],
+  "versions": [ "…展示的两份 ItineraryVersion…" ],
+  "comparison": {
+    "labels": ["经典必去", "深度文化"],
+    "rows": [
+      { "key": "places", "label": "用了哪些景点", "texts": ["黄鹤楼、湖北省博物馆、东湖听涛", "黄鹤楼、昙华林、湖北省博物馆"], "values": [null, null], "note": null },
+      { "key": "transportMinutes", "label": "交通时间合计", "texts": ["62 分钟", "48 分钟"], "values": [62, 48], "note": "高德查到的时间，没查到的段没算进去" },
+      { "key": "tickets", "label": "门票（每人）", "texts": ["70 元", "70 元"], "values": [70, 70], "note": "…" }
+    ]
+  }
+}
+```
+
+- `plans`：按"经典必去 → 轻松少走路 → 深度文化"的顺序。`shown` 为 false 的是没展示的，`removedReason` 写着为什么（几乎一样、没通过校验、模型没排出来）。模型没排出来的没有版本（`versionId` 为 null）。
+- `versions`：只有展示的几份，顺序和 `plans` 里 `shown` 的一致。没展示的版本也存着，用 `GET /api/itinerary-versions/{id}` 取得到。
+- `comparison`：展示的几份之间的对比表，每格是程序写好的文字（`texts`），能比大小的行另有 `values`。行的 key：`places`、`stopCount`、`transportMinutes`、`byMode`、`walkingMeters`、`tickets`、`end-day-1`…`end-day-N`、`validation`。一份都没展示时为 null。上面例子里的数字只是示意格式，不是真实结果。
+- 没有这一轮时 404。
 
 ## 以后的接口（设计草案）
 

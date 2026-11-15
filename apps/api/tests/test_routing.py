@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import copy
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -78,6 +79,28 @@ def test_parse_transit_lines_and_only_first_busline() -> None:
     assert r.durationMinutes == 40
     assert all(p.lng > 110 for p in r.polyline)  # 备选线路没画进来
     assert len(r.polyline) == 6
+
+
+def test_walking_distance_by_mode() -> None:
+    # 步行：全程都是走路；打车：不走路
+    assert parse_route("walk", WALK_OK).walkingDistanceMeters == 700
+    assert parse_route("drive", DRIVE_OK).walkingDistanceMeters == 0
+
+
+def test_transit_walking_distance_from_amap_field() -> None:
+    payload = copy.deepcopy(TRANSIT_OK)
+    payload["route"]["transits"][0]["walking_distance"] = "1535"
+    assert parse_route("transit", payload).walkingDistanceMeters == 1535
+
+
+def test_transit_walking_distance_falls_back_to_segments() -> None:
+    payload = copy.deepcopy(TRANSIT_OK)
+    segs = payload["route"]["transits"][0]["segments"]
+    segs[0]["walking"]["distance"] = "300"
+    segs[1]["walking"] = {"distance": "250"}
+    assert parse_route("transit", payload).walkingDistanceMeters == 550
+    # 两样都没有：不知道，不猜
+    assert parse_route("transit", TRANSIT_OK).walkingDistanceMeters is None
 
 
 def test_parse_transit_none() -> None:
@@ -206,6 +229,37 @@ async def test_cache_fresh_then_cached_then_expired(db_path: Path) -> None:
     clock.t = NOW + timedelta(days=1, minutes=1)
     third = await svc.route(a, b, "drive")
     assert third.cache == "fresh" and third.checkedAt == clock.t and prov.calls == 2
+
+
+async def test_new_routes_carry_walking_distance(db_path: Path) -> None:
+    svc = make_service(db_path, FakeProvider(), Clock(NOW))
+    r = await svc.route(place("a", 114.3), place("b", 114.4), "walk")
+    assert r.walkingDistanceMeters == 700
+    assert svc.cache.get("a", "b", "walk").route.walkingDistanceMeters == 700  # type: ignore[union-attr]
+
+
+def test_old_cache_rows_get_walking_distance_from_raw(db_path: Path) -> None:
+    from app.repositories.route_cache_repository import CachedRoute
+    from app.services.routing.amap import walking_distance_from_raw
+
+    cache = SqliteRouteCacheRepository(db_path)
+    raw = copy.deepcopy(TRANSIT_OK)
+    raw["route"]["transits"][0]["walking_distance"] = "820"
+    old = parse_route("transit", raw)
+    # 模拟板块 3 存的旧结果：没有 walkingDistanceMeters
+    from app.schemas.route import RouteOut
+    route = RouteOut(mode="transit", status="ok", durationMinutes=old.durationMinutes)
+    entry = CachedRoute(route=route, origin="o", destination="d", checkedAt=NOW, expiresAt=NOW + timedelta(days=7))
+    cache.put("a", "b", "transit", entry, "amap", raw)
+    cache.put("a", "c", "walk", CachedRoute(route=RouteOut(mode="walk", status="ok", distanceMeters=500),
+              origin="o", destination="d", checkedAt=NOW, expiresAt=NOW + timedelta(days=7)), "amap", WALK_OK)
+
+    assert cache.fill_walking_distances(walking_distance_from_raw) == 2
+    assert cache.get("a", "b", "transit").route.walkingDistanceMeters == 820  # type: ignore[union-attr]
+    assert cache.get("a", "c", "walk").route.walkingDistanceMeters == 700  # type: ignore[union-attr]
+    # 再跑一次没有要补的；有效期不变
+    assert cache.fill_walking_distances(walking_distance_from_raw) == 0
+    assert cache.get("a", "b", "transit").expiresAt == NOW + timedelta(days=7)  # type: ignore[union-attr]
 
 
 async def test_ttl_per_mode(db_path: Path) -> None:

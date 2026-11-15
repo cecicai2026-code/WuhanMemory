@@ -5,6 +5,7 @@
 - POST /api/conversations/{id}/messages：发一条消息，带上界面上选中的模型；返回规划任务 id。
 - GET  /api/planning-jobs/{id}：规划进行到哪一步、结果是什么。前端每秒问一次。
 - GET  /api/itinerary-versions/{id}：一个行程版本（不可变）。
+- GET  /api/planning-rounds/{id}：一轮方案（板块 5B）：展示的几份的版本、比较表，以及没展示的是哪几份、为什么。
 
 字段说明见 docs/architecture/api-contracts.md 的"对话和规划"一节。
 """
@@ -24,6 +25,7 @@ from app.core.config import settings
 from app.data_quality.rules import today_in_city
 from app.repositories.conversation_repository import ConversationRepository, SqliteConversationRepository
 from app.repositories.itinerary_repository import ItineraryRepository, SqliteItineraryRepository
+from app.repositories.planning_round_repository import PlanningRoundRepository, SqlitePlanningRoundRepository
 from app.repositories.poi_repository import SqlitePoiRepository
 from app.repositories.route_cache_repository import SqliteRouteCacheRepository
 from app.schemas.api import (
@@ -36,11 +38,12 @@ from app.schemas.api import (
     SendMessageRequest,
     SendMessageResponse,
 )
-from app.schemas.itinerary import ItineraryVersion
+from app.schemas.itinerary import ItineraryVersion, PlanningRoundOut
 from app.schemas.llm import LLMErrorOut
 from app.services.llm.errors import LLMError
 from app.services.llm.factory import get_llm_gateway
 from app.services.planning.jobs import JobStore, PlanningJob
+from app.services.planning.metrics import compare_plans
 from app.services.planning.pipeline import STAGE_LABELS, PlanningPipeline
 from app.services.routing.amap import AmapRouteProvider
 from app.services.routing.service import RouteService
@@ -68,6 +71,7 @@ async def _default_pipeline() -> AsyncIterator[PlanningPipeline]:
             routes=routes,
             itineraries=SqliteItineraryRepository(settings.database_path),
             conversations=SqliteConversationRepository(settings.database_path),
+            rounds=SqlitePlanningRoundRepository(settings.database_path),
             today=today_in_city,
         )
 
@@ -89,6 +93,11 @@ def get_itineraries() -> ItineraryRepository:
     return SqliteItineraryRepository(settings.database_path)
 
 
+def get_rounds() -> PlanningRoundRepository:
+    return SqlitePlanningRoundRepository(settings.database_path)
+
+
+Rounds = Annotated[PlanningRoundRepository, Depends(get_rounds)]
 Conversations = Annotated[ConversationRepository, Depends(get_conversations)]
 Itineraries = Annotated[ItineraryRepository, Depends(get_itineraries)]
 Jobs = Annotated[JobStore, Depends(get_job_store)]
@@ -142,6 +151,7 @@ async def _run(job: PlanningJob, content: str, factory: PipelineFactory, convers
     job.reply = outcome.reply
     job.used_provider = outcome.provider
     job.itinerary_version_id = outcome.version.id if outcome.version else None
+    job.planning_round_id = outcome.round.id if outcome.round else None
     job.status = "completed"
 
 
@@ -183,6 +193,7 @@ async def get_planning_job(job_id: str, jobs: Jobs) -> PlanningJobOut:
         reply=job.reply,
         provider=job.used_provider or job.provider,
         itineraryVersionId=job.itinerary_version_id,
+        planningRoundId=job.planning_round_id,
         error=job.error,
     )
 
@@ -193,3 +204,14 @@ async def get_itinerary_version(version_id: str, itineraries: Itineraries) -> It
     if version is None:
         raise HTTPException(status_code=404, detail=f"没有这份行程：{version_id}")
     return version
+
+
+@router.get("/planning-rounds/{round_id}", response_model=PlanningRoundOut)
+async def get_planning_round(round_id: str, rounds: Rounds, itineraries: Itineraries) -> PlanningRoundOut:
+    found = rounds.get_round(round_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail=f"没有这一轮方案：{round_id}")
+    shown = [p for p in found.plans if p.shown and p.versionId]
+    versions = [v for v in (itineraries.get_version(p.versionId) for p in shown if p.versionId) if v is not None]
+    comparison = compare_plans([p.label for p in shown], versions) if versions else None
+    return PlanningRoundOut(**found.model_dump(), versions=versions, comparison=comparison)

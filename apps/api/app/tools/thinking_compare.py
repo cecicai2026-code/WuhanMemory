@@ -174,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
     from app.repositories.conversation_repository import SqliteConversationRepository
     from app.repositories.itinerary_repository import SqliteItineraryRepository
     from app.repositories.llm_call_repository import SqliteLLMCallRepository
+    from app.repositories.planning_round_repository import SqlitePlanningRoundRepository
     from app.repositories.poi_repository import SqlitePoiRepository
     from app.repositories.route_cache_repository import SqliteRouteCacheRepository
     from app.services.llm.factory import build_gateway
@@ -208,7 +209,10 @@ def main(argv: list[str] | None = None) -> int:
                     routes=routes,
                     itineraries=SqliteItineraryRepository(scratch),
                     conversations=SqliteConversationRepository(scratch),
+                    rounds=SqlitePlanningRoundRepository(scratch),
                     today=today_in_city,
+                    # 只排一份（经典必去），和板块 5 跑过的对比结果可比，也少花 token
+                    emphases=("classic",),
                 ),
                 records,
             )

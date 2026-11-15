@@ -64,7 +64,8 @@
     "value": "武汉市武昌区司门口中华路街道解放路459号（巷口牌坊位于解放路一侧）",
     "verification": "confirmed",
     "sourceId": "s1",
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "intro": {
     "value": "被称为「汉味小吃第一巷」，主巷约 150 米，从明代延续至今。热干面、糊汤粉、三鲜豆皮、面窝在这一条巷子里都能吃到。紧邻黄鹤楼与长江大桥，适合和黄鹤楼、汉阳门码头串成半天。",
@@ -83,7 +84,8 @@
     "extraSourceIds": [
       "s3"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "区政府页面写的是「形成于明代，因毗邻户部下属的藩台衙门而得名」和嘉靖《湖广图经志》已有记载；「清代得名」「400 多年历史」页面里没有。"
   },
   "openingHours": {
     "value": {
@@ -99,7 +101,8 @@
       "s4"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "ticket": {
     "value": {
@@ -113,7 +116,8 @@
       "s3"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14"
+    "expiresAt": "2027-05-14",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "reservation": {
     "value": {
@@ -128,7 +132,8 @@
       "s4"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "payment": {
     "value": null,
@@ -153,14 +158,15 @@
       "s4"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-11-15"
+    "expiresAt": "2027-11-15",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "recommendedDurationMinutes": {
     "value": 90,
     "verification": "confirmed",
     "sourceId": "s3",
     "lastCheckedAt": "2026-11-15",
-    "note": "攻略给的「1.5—2 小时」下限，非官方数据。"
+    "note": "攻略给的「1.5—2 小时」下限，非官方数据。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "bestTime": {
     "value": "早上 7 点来「过早」，旅行团未到、不用排队；傍晚灯光亮起烟火气最足，可顺路去汉阳门码头看日落。",
@@ -170,7 +176,7 @@
       "s4"
     ],
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -181,7 +187,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s3",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -191,7 +198,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s4",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -201,7 +209,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s3",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -211,7 +220,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s4",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "food": [
@@ -224,7 +234,8 @@
       "verification": "confirmed",
       "sourceId": "s4",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -235,7 +246,8 @@
       "verification": "confirmed",
       "sourceId": "s4",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -246,7 +258,8 @@
       "verification": "confirmed",
       "sourceId": "s3",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -257,7 +270,8 @@
       "verification": "confirmed",
       "sourceId": "s3",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],

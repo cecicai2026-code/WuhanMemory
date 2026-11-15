@@ -103,7 +103,8 @@
     "extraSourceIds": [
       "s2"
     ],
-    "lastCheckedAt": "2026-11-15"
+    "lastCheckedAt": "2026-11-15",
+    "note": "总面积约 160 万平方米在百科里对上了；「全长约 7 公里」「江汉门至长江二桥」在读到的页面里没有找到，携程页打不开。"
   },
   "intro": {
     "value": "武汉的「城市会客厅」，一侧是沿江大道十几幢百年老建筑，一侧是三层观水平台。傍晚看日落、晚上看两江灯光秀，江汉门进、三阳门出是最顺的走法。秋冬芦苇荡金黄，是全年最好拍的季节。",
@@ -200,7 +201,8 @@
       "s5"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-05-14"
+    "expiresAt": "2027-05-14",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "reservation": {
     "value": {
@@ -215,7 +217,8 @@
       "s7"
     ],
     "lastCheckedAt": "2026-11-15",
-    "expiresAt": "2027-02-13"
+    "expiresAt": "2027-02-13",
+    "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "payment": {
     "value": null,
@@ -269,7 +272,7 @@
     "verification": "confirmed",
     "sourceId": "s5",
     "lastCheckedAt": "2026-11-15",
-    "note": "游客攻略里的经验，不是官方说法。"
+    "note": "游客攻略里的经验，不是官方说法。 来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
   },
   "photoSpots": [
     {
@@ -300,7 +303,8 @@
       },
       "verification": "confirmed",
       "sourceId": "s5",
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -313,7 +317,8 @@
       "extraSourceIds": [
         "s5"
       ],
-      "lastCheckedAt": "2026-11-15"
+      "lastCheckedAt": "2026-11-15",
+      "note": "湖北日报那篇报道讲的是江滩芦荻花开，没有出现「观芦栈道」这个名字；携程笔记打不开。"
     }
   ],
   "food": [
@@ -326,7 +331,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -337,7 +343,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     },
     {
       "value": {
@@ -348,7 +355,8 @@
       "verification": "confirmed",
       "sourceId": "s5",
       "lastCheckedAt": "2026-11-15",
-      "expiresAt": "2027-05-14"
+      "expiresAt": "2027-05-14",
+      "note": "来源页面 Claude 2026-11-15 打不开（携程、抖音、本地宝部分页面拒绝程序访问），这一条没有核对过原文。"
     }
   ],
   "reviews": [],

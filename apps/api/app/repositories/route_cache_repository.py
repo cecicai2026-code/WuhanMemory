@@ -7,6 +7,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from collections.abc import Callable
 from typing import Any, Protocol
 
 from app.db.sqlite import connect, init_schema
@@ -79,3 +80,28 @@ class SqliteRouteCacheRepository:
                 )
         finally:
             conn.close()
+
+    def fill_walking_distances(self, from_raw: Callable[[RouteMode, dict[str, Any]], int | None]) -> int:
+        """给板块 3、5 存的旧缓存补上"要走的路"（walkingDistanceMeters），从存着的高德原始返回里读，不发请求。
+        只改整理后的结果，原始返回和有效期不变。返回补上了几条。"""
+        conn = self._conn()
+        filled = 0
+        try:
+            rows = conn.execute("SELECT from_poi_id, to_poi_id, mode, result_json, raw_json FROM route_cache").fetchall()
+            with conn:
+                for row in rows:
+                    route = RouteOut.model_validate_json(row["result_json"])
+                    if route.status != "ok" or route.walkingDistanceMeters is not None:
+                        continue
+                    meters = from_raw(row["mode"], json.loads(row["raw_json"]))
+                    if meters is None:
+                        continue
+                    route.walkingDistanceMeters = meters
+                    conn.execute(
+                        "UPDATE route_cache SET result_json = ? WHERE from_poi_id = ? AND to_poi_id = ? AND mode = ?",
+                        (route.model_dump_json(), row["from_poi_id"], row["to_poi_id"], row["mode"]),
+                    )
+                    filled += 1
+        finally:
+            conn.close()
+        return filled

@@ -19,6 +19,7 @@ import pytest
 from app.data_quality.rules import CITY_TZ
 from app.repositories.conversation_repository import SqliteConversationRepository
 from app.repositories.itinerary_repository import SqliteItineraryRepository
+from app.repositories.planning_round_repository import SqlitePlanningRoundRepository
 from app.repositories.route_cache_repository import SqliteRouteCacheRepository
 from app.schemas.poi import PoiFile
 from app.schemas.route import GeoPointOut, RouteCost
@@ -103,7 +104,8 @@ def plan(*days: list[tuple[str, str, str]], title: str = "测试行程") -> str:
 
 class Setup:
     def __init__(self, tmp_path: Path, script: list[Any], routes: dict[tuple[str, str, str], Any] | None = None,
-                 pois: list[dict[str, Any]] | None = None):
+                 pois: list[dict[str, Any]] | None = None, emphases: tuple[str, ...] = ("classic",)):
+        # 板块 5 的测试只排一份（经典必去；测试景点没有 5A 标签，所以和板块 5 的单份规划一样）；三份的测试见 test_planning_rounds.py
         self.model = FakeProvider("fake", script=script)
         self.gateway = LLMGateway(providers={"fake": self.model}, default_provider="fake", sleep=Sleeps())
         self.routes = FakeRouteProvider(routes or {})
@@ -111,11 +113,12 @@ class Setup:
         db = tmp_path / "t.db"
         self.conversations = SqliteConversationRepository(db)
         self.itineraries = SqliteItineraryRepository(db)
+        self.rounds = SqlitePlanningRoundRepository(db)
         service = RouteService(self.poi_repo, self.routes, SqliteRouteCacheRepository(db),
                                now=lambda: datetime(2026, 11, 15, 12, 0, tzinfo=CITY_TZ))
         self.pipeline = PlanningPipeline(gateway=self.gateway, pois=self.poi_repo, routes=service,
                                          itineraries=self.itineraries, conversations=self.conversations,
-                                         today=lambda: TODAY)
+                                         rounds=self.rounds, today=lambda: TODAY, emphases=emphases)
         self.conv = self.conversations.create()
         self.stages: list[str] = []
 
@@ -267,7 +270,7 @@ async def test_still_failing_after_repair_is_not_shown_as_ok(tmp_path: Path) -> 
     out = await s.send("周一去")
     assert out.kind == "failed"
     assert out.version is not None and out.version.validation.status == "failed"
-    assert "不展示" in out.reply
+    assert "不能展示" in out.reply and "没通过校验" in out.reply
     # 没通过的也存下来，标 failed（板块 6 要比较）
     assert s.itineraries.get_version(out.version.id).validation.status == "failed"  # type: ignore[union-attr]
     assert [m.kind for m in s.conversations.messages(s.conv.id)][-1] == "failed"

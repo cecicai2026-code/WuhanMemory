@@ -74,6 +74,73 @@ class PlannerInfo(BaseModel):
     firstRoundErrors: int
 
 
+class StopTicket(BaseModel):
+    """一站的门票（每人）。日期未定时黄鹤楼夜场是"120 或 150 元"这种范围，所以有最低和最高。"""
+
+    dayNumber: int
+    poiId: str
+    name: str
+    # 都为 null 表示资料里没有票价（"不详"）
+    minCny: float | None
+    maxCny: float | None
+    # 程序写的说明，例如 "免费"、"日场全票 70 元"、"夜场成人票 120 或 150 元（日期未定）"、"不详"
+    label: str
+
+
+class DayMetrics(BaseModel):
+    dayNumber: int
+    stopCount: int
+    # 最后一站离开的时间；这天没有景点时为 null
+    end: str | None
+    transportMinutes: int
+    walkingMeters: int
+    # 步行距离不知道的段数（交通没查到，或旧缓存里没有换乘步行距离）
+    walkingUnknownLegs: int
+
+
+class PlanMetrics(BaseModel):
+    """一份方案的数字，全部由程序从行程快照算出来，不用模型说的。"""
+
+    poiIds: list[str]
+    poiNames: list[str]
+    stopCount: int
+    # 查到了的交通时间合计，以及按方式分开：walk 步行、transit 公交地铁、drive 打车
+    transportMinutes: int
+    minutesByMode: dict[str, int]
+    # 同一天相邻两站之间、没查到交通的段数（这些段的时间没算进去）
+    unknownLegs: int
+    # 步行段的距离 + 公交地铁段的换乘步行距离
+    walkingMeters: int
+    walkingUnknownLegs: int
+    # 门票：每人、成人日场全票，免费的算 0
+    tickets: list[StopTicket]
+    ticketMinCny: float
+    ticketMaxCny: float
+    # 有一站票价不详就是 false，总价要标"不完整"
+    ticketComplete: bool
+    validationStatus: Literal["passed", "warning", "failed"]
+    errorCount: int
+    warningCount: int
+    rounds: int
+    days: list[DayMetrics]
+
+
+class ComparisonRow(BaseModel):
+    """对比表的一行：每份方案一格。texts 是程序写好的显示文字，values 是用来排序或画图的数（没有时为 null）。"""
+
+    key: str
+    label: str
+    texts: list[str]
+    values: list[float | None]
+    note: str | None = None
+
+
+class PlanComparison(BaseModel):
+    # 每份方案的名字，例如 ["经典必去", "深度文化"]
+    labels: list[str]
+    rows: list[ComparisonRow]
+
+
 class ItineraryVersionData(BaseModel):
     """一个版本的内容。存进 itinerary_versions.data_json。"""
 
@@ -90,6 +157,10 @@ class ItineraryVersionData(BaseModel):
     draft: PlanDraft
     # 资料状态（过期、待确认）按哪一天算的
     dataAsOf: date
+    # 板块 5B：这份方案的侧重（classic 经典必去 / relaxed 轻松少走路 / culture 深度文化）；之前存的版本为 null
+    emphasis: str | None = None
+    # 程序算的数字，比较方案用；之前存的版本为 null
+    metrics: PlanMetrics | None = None
 
 
 class ItineraryVersion(ItineraryVersionData):
@@ -97,3 +168,41 @@ class ItineraryVersion(ItineraryVersionData):
     itineraryId: str
     versionNumber: int
     createdAt: datetime
+
+
+class RoundPlan(BaseModel):
+    """一轮里的一份方案。"""
+
+    emphasis: str
+    label: str
+    # 模型调用出错、没排出来时为 null
+    itineraryId: str | None
+    versionId: str | None
+    shown: bool
+    # 不展示的原因（几乎一样、没通过校验、模型出错），给用户看的话
+    removedReason: str | None = None
+
+
+class PlanningRoundData(BaseModel):
+    """一次规划产生一轮：同一个请求按三种侧重排的几份方案（板块 5B）。再发消息就是新的一轮，旧的保留。"""
+
+    conversationId: str
+    roundNumber: int
+    provider: str
+    providerLabel: str
+    # 按"经典必去 → 轻松少走路 → 深度文化"的顺序
+    plans: list[RoundPlan]
+    # 程序替用户补上的默认值，三份共用
+    defaultsUsed: list[str] = Field(default_factory=list)
+
+
+class PlanningRound(PlanningRoundData):
+    id: str
+    createdAt: datetime
+
+
+class PlanningRoundOut(PlanningRound):
+    """接口返回的一轮：附上展示的几份方案的版本和比较表。"""
+
+    versions: list[ItineraryVersion]
+    comparison: PlanComparison | None

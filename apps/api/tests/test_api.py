@@ -13,10 +13,11 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.api.planning import get_conversations, get_itineraries, get_job_store, get_pipeline_factory
+from app.api.planning import get_conversations, get_itineraries, get_job_store, get_pipeline_factory, get_rounds
 from app.main import app
 from app.repositories.conversation_repository import SqliteConversationRepository
 from app.repositories.itinerary_repository import SqliteItineraryRepository
+from app.repositories.planning_round_repository import SqlitePlanningRoundRepository
 from app.services.llm.errors import LLMAuthError, LLMRateLimitError
 from app.services.planning.jobs import JobStore
 from tests.test_planning_pipeline import DATED, Setup, plan, prefs
@@ -24,8 +25,8 @@ from tests.test_planning_pipeline import DATED, Setup, plan, prefs
 
 @pytest.fixture
 def api(tmp_path: Path) -> Iterator[Any]:
-    def install(script: list[Any], routes: dict | None = None, provider_name: str = "fake") -> tuple[TestClient, Setup]:
-        s = Setup(tmp_path, script, routes)
+    def install(script: list[Any], routes: dict | None = None, provider_name: str = "fake", **setup: Any) -> tuple[TestClient, Setup]:
+        s = Setup(tmp_path, script, routes, **setup)
         s.model.name = provider_name
         s.pipeline.gateway._providers = {provider_name: s.model}  # noqa: SLF001
         s.pipeline.gateway.default_provider = provider_name
@@ -38,6 +39,7 @@ def api(tmp_path: Path) -> Iterator[Any]:
         app.dependency_overrides[get_pipeline_factory] = lambda: factory
         app.dependency_overrides[get_conversations] = lambda: SqliteConversationRepository(db)
         app.dependency_overrides[get_itineraries] = lambda: SqliteItineraryRepository(db)
+        app.dependency_overrides[get_rounds] = lambda: SqlitePlanningRoundRepository(db)
         store = JobStore()
         app.dependency_overrides[get_job_store] = lambda: store
         return TestClient(app), s
@@ -144,3 +146,30 @@ def test_share_not_implemented_yet() -> None:
     client = TestClient(app)
     assert client.get("/api/share/anything").status_code == 404
 
+
+
+def test_planning_round_with_comparison(api) -> None:
+    from tests.test_planning_rounds import ALL, CLASSIC, CULTURE, POIS, WALKS
+
+    dup = plan([("a", "09:30", "11:30"), ("b", "12:00", "14:10")])  # 和经典的几乎一样
+    client, s = api([prefs(**DATED), CLASSIC, dup, CULTURE], routes=WALKS, pois=POIS, emphases=ALL)
+    conv = start(client)
+    job_id = client.post(f"/api/conversations/{conv}/messages", json={"content": "下周二去一天"}).json()["planningJobId"]
+    job = client.get(f"/api/planning-jobs/{job_id}").json()
+    round_id = job["planningRoundId"]
+    assert round_id
+
+    rnd = client.get(f"/api/planning-rounds/{round_id}").json()
+    assert [p["label"] for p in rnd["plans"]] == ["经典必去", "轻松少走路", "深度文化"]
+    assert [p["shown"] for p in rnd["plans"]] == [True, False, True]
+    assert rnd["plans"][1]["removedReason"].startswith("和「经典必去」几乎一样")
+    # 只给展示的两份版本和比较表
+    assert [v["emphasis"] for v in rnd["versions"]] == ["classic", "culture"]
+    assert rnd["comparison"]["labels"] == ["经典必去", "深度文化"]
+    rows = {r["key"]: r for r in rnd["comparison"]["rows"]}
+    assert rows["places"]["texts"] == ["测试景点a、测试景点b", "测试景点a、测试景点b"]
+    assert rows["end-day-1"]["texts"] == ["14:00", "16:30"]
+
+    convo = client.get(f"/api/conversations/{conv}").json()
+    assert convo["messages"][-1]["planningRoundId"] == round_id
+    assert client.get("/api/planning-rounds/round_nope").status_code == 404

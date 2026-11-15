@@ -759,3 +759,62 @@
     min-height: 3.6em;
   }
 }
+
+/* ---------- 一轮方案的对比（板块 5B）。在纸面上：墨色字、铅笔蓝标选中的那一列 ---------- */
+.planPick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.compareWrap {
+  margin-top: 12px;
+  overflow-x: auto;
+}
+.compare {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-label);
+  line-height: 1.45;
+}
+.compare th,
+.compare td {
+  padding: 5px 6px;
+  border-bottom: 1px dashed var(--paper-shade);
+  text-align: left;
+  vertical-align: top;
+}
+.compare thead th {
+  font-family: var(--font-label);
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink-soft);
+}
+.compare tbody th {
+  font-family: var(--font-label);
+  font-weight: 400;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.compare [data-picked="true"] {
+  background: rgba(68, 96, 122, 0.1);
+}
+.compare thead [data-picked="true"] {
+  color: var(--pencil);
+}
+.compareNotes,
+.hiddenPlans {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-label);
+  color: var(--ink-soft);
+}
+.compareNotes li,
+.hiddenPlans li {
+  margin-top: 3px;
+}
+.hiddenPlans strong {
+  color: var(--ink);
+  font-weight: 600;
+}
