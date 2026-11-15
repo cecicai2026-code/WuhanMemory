@@ -1,6 +1,6 @@
 # 部署到香港轻量服务器（一步一步）
 
-写于 2026-11-15。Cecilia 选了香港轻量服务器（`hosting-options.md` 的 D），部署的五个选择都按推荐：2G 内存以上的 Ubuntu 24.04、买域名、用只读部署密钥从 GitHub 拉代码、Caddy 负责 HTTPS 和转发、前后端各做成一个系统服务。
+写于 2026-11-15。Cecilia 选了香港轻量服务器（`hosting-options.md` 的 D），部署的五个选择都按推荐：2G 内存以上的 Ubuntu 24.04、买域名、从 GitHub 拉代码（原来选的是只读部署密钥；2026-11-15 仓库公开以后改成直接拉，见第 6 步）、Caddy 负责 HTTPS 和转发、前后端各做成一个系统服务。
 
 配置文件都在 [`infra/deploy/`](../../infra/deploy/)：`Caddyfile`、`wuhanmemory-api.service`、`wuhanmemory-web.service`、`update.sh`。
 
@@ -20,7 +20,8 @@
 
 ## 0. 准备（在你的 Mac 上）
 
-- `deploy-hk` 分支合进 main，并在 GitHub Desktop 推送 main。服务器拉的是 GitHub 上的 main。
+- `deploy-hk` 分支已合进 main（2026-11-15）。合并后先在 Mac 上跑一次构建，确认没坏：`cd ~/WuhanMemory-project2 && corepack pnpm build`。
+- 构建通过后，在 GitHub Desktop 推送 main。服务器拉的是 GitHub 上的 main。
 - 想好一个 OWNER_PASSCODE：一串不好猜、不和别的密码相同的字。
 
 ## 1. 买服务器（你在云服务商的网页上操作）
@@ -102,31 +103,11 @@ sudo chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg /etc/apt/sou
 
 Ubuntu 24.04 自带 Python 3.12，项目要求 3.11 以上，可以用（你 Mac 上是 3.13，第 8 步会在服务器上跑一遍后端测试确认）。
 
-## 6. 部署密钥：让服务器能读 GitHub 上的私有仓库
+## 6. 不用部署密钥
 
-在服务器上生成一把只给这台服务器用的密钥：
+仓库 `cecicai2026-code/WuhanMemory` 在 2026-11-15 公开了，服务器直接用 HTTPS 拉代码，不需要密钥，也不需要在 GitHub 上加 Deploy key。服务器只读：它没有能推送代码的权限。
 
-```bash
-ssh-keygen -t ed25519 -C "wuhanmemory-hk-server" -f ~/.ssh/github_deploy -N ""
-```
-
-```bash
-cat ~/.ssh/github_deploy.pub
-```
-
-把显示的那一行复制下来，在 GitHub 网页上：仓库 `cecicai2026-code/WuhanMemory` → Settings → Deploy keys → Add deploy key，标题写"香港服务器"，粘贴，**不要**勾 "Allow write access"（只读）。
-
-让 git 用这把密钥：
-
-```bash
-printf 'Host github.com\n  IdentityFile ~/.ssh/github_deploy\n  IdentitiesOnly yes\n' >> ~/.ssh/config && chmod 600 ~/.ssh/config
-```
-
-```bash
-ssh -T git@github.com
-```
-
-第一次会问是否信任 GitHub，输入 `yes`。看到 "successfully authenticated" 就对了。
+如果以后仓库又改回私有，服务器就拉不到了。那时按 GitHub 的 Deploy keys 说明加一把只读的部署密钥（不要勾 "Allow write access"），再把服务器上的地址改成 `git@github.com:cecicai2026-code/WuhanMemory.git`（`git remote set-url origin …`）。
 
 ## 7. 拉代码
 
@@ -135,7 +116,7 @@ sudo mkdir -p /opt/wuhanmemory && sudo chown wuhan:wuhan /opt/wuhanmemory
 ```
 
 ```bash
-git clone git@github.com:cecicai2026-code/WuhanMemory.git /opt/wuhanmemory && cd /opt/wuhanmemory && git log --oneline -1
+git clone https://github.com/cecicai2026-code/WuhanMemory.git /opt/wuhanmemory && cd /opt/wuhanmemory && git log --oneline -1
 ```
 
 ## 8. 装依赖、跑后端测试
