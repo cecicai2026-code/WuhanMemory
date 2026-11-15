@@ -162,6 +162,8 @@ export function StageProvider({ children }: { children: ReactNode }) {
       reasonRef.current = reason;
       if (process.env.NODE_ENV !== "production") console.warn("[stage] 退回普通版：", reason, detail ?? "");
       teardown();
+      // 这次不再自动试（换页也不试），用户点右上角"立体版"才重试
+      setWant3D(false);
       setMode("flat");
       html(null);
       curtainHere(false);
