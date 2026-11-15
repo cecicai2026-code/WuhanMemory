@@ -10,7 +10,7 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { COLORS, MONO, NOTE, SERIF, TYPE, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, rnd, reseed, sh, tex } from "../common";
+import { COLORS, MONO, NOTE, SERIF, TYPE, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, rnd, reseed, sh, tex, textureToCanvas } from "../common";
 import type { LineData, LinePrint, LineTopic } from "../data";
 import { addLights, applyShadowQuality } from "../engine";
 import type { Act, ActEnv } from "../engine";
@@ -282,7 +282,9 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     lampFollow = true,
     /** 用户上一次在场景里换景点的时间。刚换过时不让地址里的旧景点把照片拉回去 */
     localAt = -Infinity,
-    moving = false;
+    moving = false,
+    /** 转场时正飞过来的那张照片：落地以前藏着，不参加"从上方落下" */
+    arriving = -1;
   const ray = new THREE.Raycaster();
 
   function emit() {
@@ -308,8 +310,12 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     entered = c;
     emit();
     const href = `/places/${prints[sel].p.id}/${c.topic.id}`;
+    // 镜头推近以后，把这张主题卡交给转场的替身（G4：它会翻过来变成信纸）
     window.setTimeout(() => {
-      if (entered === c && env.active()) env.navigate(href);
+      if (entered !== c || !env.active()) return;
+      const r = screenRect(c.g, CARD_CORNERS);
+      const image = textureToCanvas(c.mat.map);
+      env.navigate(href, image ? { handoff: { kind: "card", id: prints[sel].p.id, topic: c.topic.id, rect: { x: r.x + 6, y: r.y + 6, w: r.w - 12, h: r.h - 12 }, image } } : undefined);
     }, 1000);
   }
 
@@ -400,7 +406,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     // 照片：选中的更大、原色、向前、夹子变红；其余罩着暗房红，轻轻摆动
     for (const p of prints) {
       const d = p.i - cur;
-      p.g.visible = Math.abs(d) < 6.2;
+      p.g.visible = Math.abs(d) < 6.2 && p.i !== arriving;
       if (!p.g.visible) continue;
       p.sv = dt === 0 ? (p.i === sel ? 1 : 0) : damp(p.sv, p.i === sel ? 1 : 0, 6, dt);
       p.hv = damp(p.hv, act?.type === "print" && act.i === p.i ? 1 : 0, 9, dt);
@@ -537,8 +543,40 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
       applyShadowQuality(lamp, level);
       lampFollow = level === 0;
     },
+    query(q: StageCommand) {
+      // 转场：选中的照片落稳以后在屏幕上的位置（相纸外框）、样子、白边比例和歪斜角度
+      if (q.type !== "arrival") return null;
+      const p = prints[sel];
+      if (!p) return null;
+      const pose = new THREE.Object3D();
+      pose.position.set(0, ROPE_Y, LINE_Z + 0.75);
+      pose.scale.setScalar(1.42);
+      scene.add(pose);
+      pose.updateMatrixWorld();
+      const r = screenRect(pose, PRINT_CORNERS);
+      scene.remove(pose);
+      // 相纸 1.5 × 1.86，照片 1.3 × 1.5，照片偏上：上边 0.11、左右 0.1、下边 0.25（按相纸宽度的比例）
+      return {
+        rect: { x: r.x + 6, y: r.y + 6, w: r.w - 12, h: r.h - 12 },
+        image: textureToCanvas(p.pm.map),
+        pad: { top: 0.11 / 1.5, side: 0.1 / 1.5, bottom: 0.25 / 1.5 },
+        rotate: 0
+      };
+    },
     command(cmd: StageCommand) {
       switch (cmd.type) {
+        case "arrive": {
+          const i = idx(String(cmd.id));
+          if (i >= 0) {
+            arriving = i;
+            prints[i].drop = 0;
+            prints[i].sv = 1;
+          }
+          break;
+        }
+        case "landed":
+          arriving = -1;
+          break;
         case "step":
           if (!entered) select(sel + (Number(cmd.dir) || 0));
           break;

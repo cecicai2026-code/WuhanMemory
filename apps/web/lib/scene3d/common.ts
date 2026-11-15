@@ -341,3 +341,23 @@ export function whenIdle(timeout = 2000): Promise<void> {
     else window.setTimeout(resolve, 200);
   });
 }
+
+/**
+ * 把贴图的整张图画到一块新画布上（正着放），给幕间转场的替身用（lib/scene3d/flight.ts）。
+ * 照片是在后台线程上下颠倒解码的（loadPhotoTexture），画的时候翻回来；裁切交给 CSS 的 object-fit。
+ */
+export function textureToCanvas(t: THREE.Texture | null | undefined, maxSide = 768): HTMLCanvasElement | null {
+  const img = t?.image as (CanvasImageSource & { width: number; height: number }) | undefined;
+  if (!t || !img || !img.width || !img.height) return null;
+  const k = Math.min(1, maxSide / Math.max(img.width, img.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * k);
+  c.height = Math.round(img.height * k);
+  const g = c.getContext("2d")!;
+  if (!t.flipY && typeof ImageBitmap !== "undefined" && img instanceof ImageBitmap) {
+    g.translate(0, c.height);
+    g.scale(1, -1);
+  }
+  g.drawImage(img, 0, 0, c.width, c.height);
+  return c;
+}

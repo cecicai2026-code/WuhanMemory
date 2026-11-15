@@ -315,3 +315,49 @@ html[data-stage="on"][data-stage-scroll] body {
 html[data-stage="on"][data-stage-scroll] [data-shell-top] {
   background: linear-gradient(180deg, rgba(7, 5, 4, 0.92), rgba(7, 5, 4, 0.6) 70%, rgba(7, 5, 4, 0));
 }
+/* 幕间转场的替身（lib/scene3d/flight.ts）：浮在黑幕上面 */
+.stage-flyer {
+  position: fixed;
+  z-index: 46;
+  display: none;
+  box-sizing: border-box;
+  perspective: 1400px;
+  pointer-events: none;
+}
+.stage-flyer[data-on] {
+  display: block;
+}
+.stage-flyer-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+.stage-flyer-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.stage-flyer-back {
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 60%, rgba(110, 83, 38, 0.16) 100%),
+    var(--paper);
+  box-shadow: 14px 22px 34px rgba(0, 0, 0, 0.55);
+}
+.stage-flyer[data-mode="print"] .stage-flyer-back {
+  display: none;
+}
+.stage-flyer-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* 照片落在晾片绳上以前，纸页上的信纸等替身翻过来再露出 */
+html[data-stage-arrival] [data-stage-paper] {
+  opacity: 0;
+}

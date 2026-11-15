@@ -12,7 +12,7 @@
  */
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { COLORS, MONO, SERIF, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, sh, tex } from "../common";
+import { COLORS, MONO, SERIF, add, contact, damp, disposeTree, ensureFonts, loadPhotoTexture, makeCanister, makeTable, materials, pad, sh, tex, textureToCanvas } from "../common";
 import { rollLabel } from "../data";
 import type { RollsData, RollsFrame } from "../data";
 import { addLights, applyShadowQuality } from "../engine";
@@ -343,10 +343,14 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
     select(i);
     entering = true;
     emit();
-    const href = `/places/${slots[i].f.id}`;
+    const s = slots[i];
+    const href = `/places/${s.f.id}`;
+    // 镜头推近以后，把看片器里的照片交给转场的替身（G4：它会飞到晾片绳上变成那张照片）
     window.setTimeout(() => {
-      if (entering && env.active()) env.navigate(href);
-    }, 1300);
+      if (!entering || !env.active()) return;
+      const image = textureToCanvas(s.photo === "done" && s.f.photoUrl ? s.frameTex : s.squareTex);
+      env.navigate(href, image ? { handoff: { kind: "print", id: s.f.id, rect: screenRect(), image } } : undefined);
+    }, 1000);
   }
 
   /* ---------- 鼠标和滚轮 ---------- */
@@ -371,16 +375,25 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
   window.addEventListener("wheel", onWheel, { passive: true });
   window.addEventListener("click", onClick);
 
-  /* ---------- 键盘聚焦时的黄铜框：围着看片器的画框 ---------- */
+  /* ---------- 看片器画框在屏幕上的位置：键盘聚焦时的黄铜框、转场的起点 ---------- */
   const corner = new THREE.Vector3();
+  /** 看片器里照片（玻璃屏）在屏幕上的位置 */
+  function screenRect() {
+    const r = projectedRect(1.0);
+    return { x: r.x, y: r.y, w: r.w, h: r.h };
+  }
   function ringRect() {
+    const r = projectedRect(1.31);
+    return { x: r.x - 6, y: r.y - 6, w: r.w + 12, h: r.h + 12 };
+  }
+  function projectedRect(half: number) {
     let x0 = Infinity,
       y0 = Infinity,
       x1 = -Infinity,
       y1 = -Infinity;
-    for (const sx of [-1.31, 1.31])
-      for (const sy of [-1.31, 1.31]) {
-        corner.set(sx, 2.42 + sy, 0.82);
+    for (const sx of [-half, half])
+      for (const sy of [-half, half]) {
+        corner.set(sx, 2.42 + sy, 0.846);
         viewer.localToWorld(corner).project(camera);
         const px = (corner.x * 0.5 + 0.5) * env.width(),
           py = (-corner.y * 0.5 + 0.5) * env.height();
@@ -389,7 +402,7 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
         x1 = Math.max(x1, px);
         y1 = Math.max(y1, py);
       }
-    return { x: x0 - 6, y: y0 - 6, w: x1 - x0 + 12, h: y1 - y0 + 12 };
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
 
   /* ---------- 每一帧 ---------- */

@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { STAGE_READY_TIMEOUT_MS, deviceAllows3D, flatForced, readPref, webglAvailable, writePref } from "@/lib/scene3d/precheck";
 import type { StageCommand, StageEngine, StageFailReason, StageRequest, StageState } from "@/lib/scene3d/types";
+import { createFlyer } from "@/lib/scene3d/flight";
+import type { Flyer, Handoff, Rect } from "@/lib/scene3d/flight";
 
 type Mode = "checking" | "loading" | "on" | "flat";
 
@@ -86,6 +88,16 @@ export function StageProvider({ children }: { children: ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const tagRef = useRef<HTMLDivElement>(null);
+  const flyerElRef = useRef<HTMLDivElement>(null);
+  const flyerRef = useRef<Flyer | null>(null);
+  /** 上一幕交出来、正等着下一幕接的物件（转场 G4） */
+  const pendingRef = useRef<{ h: Handoff; at: number } | null>(null);
+  const flyer = useCallback(() => (flyerRef.current ??= createFlyer(flyerElRef.current!)), []);
+  const dropHandoff = useCallback(() => {
+    pendingRef.current = null;
+    flyerRef.current?.cancel();
+    delete document.documentElement.dataset.stageArrival;
+  }, []);
   const engineRef = useRef<StageEngine | null>(null);
   const [store] = useState(() => new StateStore());
   const router = useRouter();
@@ -125,6 +137,9 @@ export function StageProvider({ children }: { children: ReactNode }) {
       setMode("flat");
       setHtmlStage(null);
       setCurtain(false);
+      pendingRef.current = null;
+      flyerRef.current?.cancel();
+      delete document.documentElement.dataset.stageArrival;
       document.documentElement.dataset.stageReason = reason;
     },
     [teardown]
@@ -141,6 +156,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
         setHtmlStage(null);
       }
       setCurtain(false);
+      if (pendingRef.current) dropHandoff();
       return;
     }
     if (!want3D || !req) return;
@@ -165,7 +181,12 @@ export function StageProvider({ children }: { children: ReactNode }) {
             onQuality: (level) => {
               document.documentElement.dataset.stageQuality = level > 0 ? "low" : "full";
             },
-            onNavigate: (href, curtain) => {
+            onNavigate: (href, curtain, handoff) => {
+              delete document.documentElement.dataset.stageLanded;
+              if (handoff) {
+                flyer().show(handoff);
+                pendingRef.current = { h: handoff, at: performance.now() };
+              }
               if (curtain) setCurtain(true);
               router.push(href, { scroll: false });
             },
@@ -178,6 +199,12 @@ export function StageProvider({ children }: { children: ReactNode }) {
         window.clearTimeout(timer);
         setMode("on");
         setHtmlStage("on");
+        // 上一幕交了物件过来：让替身飞到这一幕里对应的位置（照片 → 晾片幕，主题卡 → 纸页幕）
+        const p = pendingRef.current;
+        pendingRef.current = null;
+        if (p && performance.now() - p.at < 8000 && ((p.h.kind === "print" && req.kind === "line") || (p.h.kind === "card" && req.kind === "sheet"))) {
+          void arrive(p.h, engineRef.current);
+        } else if (p) dropHandoff();
         setCurtain(false);
       } catch (err) {
         if (!cancelled) fallBack(err instanceof Error && /chunk|import|fetch/i.test(err.message) ? "load-error" : "init-error", err);
@@ -187,7 +214,32 @@ export function StageProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [want3D, req, fallBack, store, router]);
+  }, [want3D, req, fallBack, store, router, flyer, dropHandoff]);
+
+  /** 替身飞到下一幕里，落地后露出真的物件 */
+  async function arrive(h: Handoff, engine: StageEngine) {
+    const f = flyer();
+    if (h.kind === "print") {
+      engine.command({ type: "arrive", id: h.id });
+      const t = engine.query({ type: "arrival" }) as { rect: Rect; image: HTMLCanvasElement | null; pad: { top: number; side: number; bottom: number }; rotate: number } | null;
+      if (!t) return dropHandoff();
+      await f.toPrint(t.rect, t.image, t.pad, t.rotate);
+      engine.command({ type: "landed" });
+      await f.done();
+      return;
+    }
+    // 主题卡 → 信纸：信纸先藏着（不播落下的动画），替身翻过来落在信纸的位置，再把信纸露出来、条目显影
+    document.documentElement.dataset.stageArrival = "card";
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const paper = [...document.querySelectorAll<HTMLElement>("[data-stage-paper]")].find((el) => !el.closest("[hidden]"));
+    if (!paper) return dropHandoff();
+    const r = paper.getBoundingClientRect();
+    const to = { x: r.left, y: r.top, w: r.width, h: Math.max(80, Math.min(r.height, window.innerHeight - r.top - 24)) };
+    await f.toSheet(to);
+    document.documentElement.dataset.stageLanded = "card";
+    delete document.documentElement.dataset.stageArrival;
+    await f.done(320);
+  }
 
   // 不用立体了（用户选了普通版、窗口变窄）：关掉引擎
   useEffect(() => {
@@ -236,6 +288,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
 
   const go = useCallback(
     (href: string, curtain = true) => {
+      delete document.documentElement.dataset.stageLanded;
       if (curtain && engineRef.current) setCurtain(true);
       router.push(href, { scroll: false });
     },
@@ -251,6 +304,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
       <div ref={tagRef} className="stage-tag" aria-hidden="true" />
       <FocusProxy active={mode === "on"} />
       <div className="stage-curtain" aria-hidden="true" />
+      <div ref={flyerElRef} className="stage-flyer" aria-hidden="true" />
       {children}
     </StageContext.Provider>
   );

@@ -1,3 +1,5 @@
+import type { Handoff } from "./flight";
+
 /**
  * 立体场景的几个接口。这个文件不引用 three.js，普通版的页面也可以 import，不会把 three.js 带进来。
  */
@@ -33,7 +35,7 @@ export interface EngineHooks {
   /** 场景的状态变了 */
   onState(state: StageState): void;
   /** 场景要网页跳到某个网址（点了一格、镜头推近之后）。curtain：跳之前落下黑幕（换到另一幕时） */
-  onNavigate(href: string, curtain: boolean): void;
+  onNavigate(href: string, curtain: boolean, handoff?: Handoff): void;
   /** 悬停在物件上时，物件下方浮出的名字（网页里的一个元素，场景每帧设它的位置） */
   tag: HTMLElement;
   /** 键盘聚焦时画在物件周围的黄铜框（网页里的一个元素，场景每帧设它的位置） */
@@ -45,6 +47,8 @@ export interface StageEngine {
   show(req: StageRequest): Promise<void>;
   /** 网页让场景做的事 */
   command(cmd: StageCommand): void;
+  /** 问场景一件事（例如转场时某个物件在屏幕上的位置），场景不知道时返回 null */
+  query(q: StageCommand): unknown;
   /** 当前页面没有立体场景：停止绘制，留着以后回来用 */
   idle(): void;
   dispose(): void;

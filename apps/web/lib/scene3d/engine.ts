@@ -12,6 +12,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { disposeShared, setMaxAnisotropy } from "./common";
+import type { Handoff } from "./flight";
 import type { CreateEngine, EngineHooks, StageCommand, StageEngine, StageKind, StageRequest, StageState } from "./types";
 
 /** 每一幕给引擎的东西 */
@@ -27,6 +28,8 @@ export interface Act {
   setQuality(level: number): void;
   /** 网页让这一幕做的事（换组、选中、进入……） */
   command?(cmd: StageCommand): void;
+  /** 网页问这一幕的事（转场时物件在屏幕上的位置等） */
+  query?(q: StageCommand): unknown;
   dispose(): void;
 }
 
@@ -43,7 +46,7 @@ export interface ActEnv {
   /** 这一幕现在是否在屏幕上（页面没有立体场景时引擎停着，滚轮等不该响应） */
   active(): boolean;
   emit(state: StageState): void;
-  navigate(href: string, opts?: { curtain?: boolean }): void;
+  navigate(href: string, opts?: { curtain?: boolean; handoff?: Handoff }): void;
   /** 悬停时物件下方的名字：传文字和屏幕坐标（名字的上沿中点），传 null 隐藏 */
   tag(t: { text: string; x: number; y: number } | null): void;
   /** 键盘聚焦时的黄铜框：传屏幕上的矩形，传 null 隐藏 */
@@ -119,7 +122,7 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     height: () => h,
     active: () => !idle && !disposed && !failed,
     emit: (st) => hooks.onState(st),
-    navigate: (href, opts) => hooks.onNavigate(href, opts?.curtain ?? true),
+    navigate: (href, opts) => hooks.onNavigate(href, opts?.curtain ?? true, opts?.handoff),
     tag: (t) => {
       const el = hooks.tag;
       if (!t) {
@@ -304,6 +307,9 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     },
     command(cmd) {
       act?.command?.(cmd);
+    },
+    query(q) {
+      return act?.query?.(q) ?? null;
     },
     idle() {
       idle = true;
