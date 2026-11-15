@@ -17,7 +17,7 @@ import {
 import { ApiUnavailableError, THEMES, getPlace, listPlaces, pad2 } from "@/lib/places";
 import type { FieldKey, PoiDetail } from "@/lib/places";
 import { SCENES } from "@/lib/scenes";
-import { ApiDown, Entry, GalleryEntry, ListEntry, ReviewsEntry, renderFood, renderPhotoSpot } from "../PlaceParts";
+import { ApiDown, Entry, FactMeta, GalleryEntry, ListEntry, ReviewsEntry, renderFood, renderPhotoSpot } from "../PlaceParts";
 import s from "../places.module.css";
 
 type Props = { params: Promise<{ id: string }> };
@@ -129,11 +129,28 @@ export default async function Page({ params }: Props) {
           已核实：实地核实或核对过来源。待确认：先用官网、旅游平台或媒体资料占位，还没核实。已过期：过了有效期，要重新核实。状态按 {formatDate(asOf)} 计算。
         </p>
 
+        {poi.operatingStatus?.value?.code === "closed-temporarily" && (
+          <div className={s.closed} role="note">
+            <p>
+              <strong>暂停开放</strong>
+              {poi.operatingStatus.value.reopenExpected &&
+                `，预计 ${formatDate(poi.operatingStatus.value.reopenExpected)} 恢复`}
+              {poi.operatingStatus.value.reopenNote && `（${poi.operatingStatus.value.reopenNote}）`}
+              。排行程时不会选这里。
+            </p>
+            {poi.operatingStatus.value.note && <p>{poi.operatingStatus.value.note}</p>}
+            <FactMeta fact={poi.operatingStatus} />
+          </div>
+        )}
+
         <div className={s.sheets}>
           {THEMES.map((theme, i) => {
             const facts = theme.fields.flatMap((f) => factsOf(poi, f.key));
             const sources = new Map<string, PoiSource>();
-            for (const f of facts) if (f.source && f.status !== "missing") sources.set(f.source.id, f.source);
+            for (const f of facts) {
+              if (f.status === "missing") continue;
+              for (const src of [f.source, ...f.extraSources]) if (src) sources.set(src.id, src);
+            }
             // 图册和评价没有逐条的核实信息；图册里有占位照片时整张纸算待确认
             const status =
               theme.id === "gallery"

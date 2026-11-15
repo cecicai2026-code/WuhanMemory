@@ -107,6 +107,7 @@ export const SOURCE_TYPE_TEXT: Record<SourceType, string> = {
   amap: "高德地图",
   media: "媒体报道",
   "travel-platform": "旅游平台",
+  ugc: "游客笔记",
   other: "其他"
 };
 

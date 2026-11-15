@@ -11,7 +11,7 @@ export type Verification = "onsite" | "confirmed" | "placeholder" | "todo";
 export type FactStatus = "verified" | "pending" | "expired" | "missing";
 export type PoiStatus = "verified" | "pending" | "expired";
 
-export type SourceType = "field-visit" | "official-site" | "official-wechat" | "official-ticketing" | "government" | "amap" | "media" | "travel-platform" | "other";
+export type SourceType = "field-visit" | "official-site" | "official-wechat" | "official-ticketing" | "government" | "amap" | "media" | "travel-platform" | "ugc" | "other";
 
 export interface PoiSource {
   id: string;
@@ -26,6 +26,8 @@ export interface PoiFact<T> {
   verification: Verification;
   status: FactStatus;
   source: PoiSource | null;
+  /** 同一条信息还参考的其他来源 */
+  extraSources: PoiSource[];
   lastCheckedAt: string | null;
   expiresAt: string | null;
   todo: string | null;
@@ -36,6 +38,14 @@ export interface Coordinates {
   lng: number;
   lat: number;
   coordSystem: "GCJ-02";
+}
+
+/** 景点现在开不开。closed-temporarily 是暂停开放，排行程时不选 */
+export interface OperatingStatus {
+  code: "open" | "closed-temporarily";
+  note: string | null;
+  reopenExpected: string | null;
+  reopenNote: string | null;
 }
 
 export interface OpeningPeriod {
@@ -100,7 +110,7 @@ export interface Review {
 export interface PoiPhoto {
   file: string;
   caption: string;
-  license: "own" | "open-license" | "official-placeholder";
+  license: "own" | "open-license" | "official-placeholder" | "third-party-placeholder";
   placeholder: boolean;
   author: string | null;
   takenAt: string | null;
@@ -128,6 +138,8 @@ export interface PoiSummary {
   status: PoiStatus;
   counts: FactCounts;
   coverPhoto: PoiPhoto | null;
+  /** 开放状态；资料里没写（正常开放）时为 null */
+  operatingStatus: PoiFact<OperatingStatus> | null;
 }
 
 export interface PoiDetail extends PoiSummary {

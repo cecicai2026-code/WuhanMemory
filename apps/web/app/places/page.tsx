@@ -89,7 +89,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
                     <PaperMark>第 {pad2(no)} 格</PaperMark>
                     <PaperTitle level={3}>{p.name}</PaperTitle>
                     <span className={s.foot}>
-                      <Soft>{p.district}</Soft>
+                      <Soft>
+                        {p.district}
+                        {p.operatingStatus?.value?.code === "closed-temporarily" && " · 暂停开放"}
+                      </Soft>
                       <Stamp status={p.status} />
                     </span>
                     {(pending > 0 || missing > 0 || expired > 0) && (

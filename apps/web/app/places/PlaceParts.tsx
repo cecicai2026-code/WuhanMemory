@@ -27,6 +27,18 @@ export function FactMeta({ fact }: { fact: PoiFact<unknown> }) {
           )}
         </span>
       )}
+      {fact.extraSources.map((e) => (
+        <span key={e.id}>
+          另见（{SOURCE_TYPE_TEXT[e.type]}）：
+          {e.url ? (
+            <a href={e.url} target="_blank" rel="noreferrer">
+              {e.title}
+            </a>
+          ) : (
+            e.title
+          )}
+        </span>
+      ))}
       {fact.lastCheckedAt && <span>核实于 {formatDate(fact.lastCheckedAt)}</span>}
       {fact.expiresAt && (
         <span className={fact.status === "expired" ? s.metaExpired : undefined}>
@@ -136,7 +148,7 @@ export function ReviewsEntry({ reviews }: { reviews: Review[] }) {
   );
 }
 
-/** 景点图册。官网占位照片标"占位"并写明图片来源 */
+/** 景点图册。占位照片（官网的，或图库、媒体的）标"占位"并写明图片来源和授权情况 */
 export function GalleryEntry({ photos }: { photos: PoiPhoto[] }) {
   return (
     <div>
@@ -170,10 +182,11 @@ export function GalleryEntry({ photos }: { photos: PoiPhoto[] }) {
                               <span>
                                 图片来源：
                                 <a href={p.sourceUrl} target="_blank" rel="noreferrer">
-                                  官方页面
+                                  {p.license === "third-party-placeholder" ? (p.author ?? "来源链接") : "官方页面"}
                                 </a>
                               </span>
                             )}
+                            {p.license === "third-party-placeholder" && p.licenseNote && <span>{p.licenseNote}</span>}
                             {p.retrievedAt && <span>下载于 {formatDate(p.retrievedAt)}</span>}
                           </>
                         ) : (
