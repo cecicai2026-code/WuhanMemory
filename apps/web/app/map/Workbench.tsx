@@ -1,20 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { BrassButton, Label, LineInput, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule } from "@/components/ui";
+import type { MapRoute } from "@wuhanmemory/map-core";
+import type { PoiSummary } from "@wuhanmemory/shared";
+import { BrassButton, LineInput, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule } from "@/components/ui";
+import { MapPanel } from "./MapPanel";
 import s from "./map.module.css";
+
+const NO_ROUTES: MapRoute[] = [];
 
 type Tab = "chat" | "plan";
 
 /**
  * 地图工作台的布局（设计规范 9.1）。板块 1A 只做布局：
- * 对话在板块 5 接入，地图在板块 3 接入，行程卡在板块 5 有数据后才出现。
+ * 对话在板块 5 接入，行程卡在板块 5 有数据后才出现。地图（板块 3）在 MapPanel 里。
  * 所以这里没有任何示例对话、示例行程或示例数字。
  *
  * 电脑上三栏并排。手机上地图在上，对话和行程收在底部面板里，
  * 用两个纸签切换，可以收起。tab 和 open 两个状态只在手机上起作用。
  */
-export function Workbench() {
+export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: string | null }) {
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
 
@@ -59,20 +64,7 @@ export function Workbench() {
       </section>
 
       <section className={`${s.col} ${s.mapCol}`} aria-label="地图">
-        <div className={s.lightbox}>
-          <div className={s.glass}>
-            <Label>灯箱</Label>
-            <p className={s.glassText}>地图还没有接入</p>
-            <p className={s.glassNote}>板块 3 在这里放高德地图：景点是图钉，路线按天分色。</p>
-          </div>
-        </div>
-        <div className={s.lever}>
-          <Label>2D / 3D 拨杆</Label>
-          <button className={s.switch} type="button" role="switch" aria-checked={false} aria-label="切换 3D 地图（板块 3 接入）" disabled>
-            <i />
-          </button>
-          <Label>板块 3 接入</Label>
-        </div>
+        <MapPanel pois={pois} poisError={poisError} routes={NO_ROUTES} />
       </section>
 
       <section className={`${s.col} ${s.planCol}`} aria-label="行程">
