@@ -161,6 +161,9 @@ class ItineraryVersionData(BaseModel):
     emphasis: str | None = None
     # 程序算的数字，比较方案用；之前存的版本为 null
     metrics: PlanMetrics | None = None
+    # 板块 6：第一版的完整校验报告和模型第一版的原始输出（修正过时和最终版不同）。之前存的版本为 null
+    firstValidation: ValidationReport | None = None
+    firstDraft: PlanDraft | None = None
 
 
 class ItineraryVersion(ItineraryVersionData):
