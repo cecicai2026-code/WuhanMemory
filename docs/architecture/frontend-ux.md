@@ -12,7 +12,7 @@
 | `/map` | 地图工作台 | 左对话纸（板块 5）、中间灯箱里的高德地图（板块 3）、右行程卡（板块 5）。右上角标注当前模型和校验结果 |
 | `/places` | 地点档案列表 | 数据来自 `GET /api/pois`；按区域筛选，筛选条件写在地址里；卡片上是景点状态章和待确认、待补充、已过期的条数 |
 | `/places/[id]` | 景点详情 | 数据来自 `GET /api/pois/{id}`；四个主题是同一页上的四张信纸，用锚点跳转；每个条目下写核实方式、来源、核实日期和有效期，过期的把过期日期加粗；条目旁不盖章，每张纸右下角盖一个章（已核实、待确认或已过期）；四张纸上面有一行说明解释这三种状态；没有的条目显示"待补充" |
-| `/compare` | 模型对比 | 空页面，板块 6 做 |
+| `/compare` | 模型对比 | 板块 6：输入请求和侧重，千问和豆包同时排；两边各自的进度；左右两张打字纸（只有一边选的景点用铅笔蓝底标出），中间评分卡（程序算的指标，表下是带 * 的行的说明），下面是差异卡；右边是历次对比（一叠纸条，点开看；地址带 `?id=`）。1068px 以下评分卡移到两张纸下面，734px 以下用两个纸签切换看一边 |
 | `/trips` | 我的行程 | 空页面，板块 7 做 |
 | `/s/[slug]` | 分享页 | 空页面，板块 7 做 |
 | `/styleguide` | 样式参考 | 色板、字体和基础组件，不在菜单里，开发时对照用 |
@@ -37,7 +37,7 @@
 - `app/places/PlaceParts.tsx`：纸上的条目、来源和核实日期那一行、图册。
 - `lib/map/amap-provider.ts`：高德地图 provider，实现 `packages/map-core` 的接口；`lib/map/amap-types.ts` 是用到的高德对象的类型。
 - `app/map/MapPanel.tsx`：灯箱里的地图、图钉卡片、2D/3D 拨杆；`app/map/RouteFinder.tsx`：临时的"两点之间怎么走"；`app/map/ModelPicker.tsx`：模型选择（板块 4）。
-- `app/map/ChatPaper.tsx`：对话纸、规划进度；`app/map/ItineraryCards.tsx`：行程卡；`app/map/PlanCompare.tsx`：一轮方案的对比卡（板块 5B）；`app/map/PlannerState.tsx`：选中的模型和校验结果（右上角标注要用）；`lib/planning-client.ts`：对话和规划接口（板块 5）。
+- `app/map/ChatPaper.tsx`：对话纸、规划进度；`app/map/ItineraryCards.tsx`：行程卡；`app/map/PlanCompare.tsx`：一轮方案的对比卡（板块 5B）；`app/map/PlannerState.tsx`：选中的模型和校验结果（右上角标注要用）；`lib/planning-client.ts`：对话和规划接口（板块 5）。`app/compare/CompareDesk.tsx`：模型对比页（板块 6），接口也在 `lib/planning-client.ts`。
 - 每个页面自己的组件和样式（CSS Modules）放在页面文件夹里，例如 `app/map/Workbench.tsx`。
 
 ## 地图交互

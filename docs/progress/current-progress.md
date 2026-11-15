@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 5B 等 Cecilia 在界面上试；板块 6 提到 1B 前面，开工讨论中）
+最后更新: 2026-11-15（板块 6 代码写完，等 Cecilia 在 /compare 上试、跑批量评测；板块 5B 等 Cecilia 在界面上试）
 
 ## 当前阶段
 
@@ -13,7 +13,7 @@
 
 做的顺序：0 → 1A → 2 → 3 → 4 → 5（含 5B）→ 6 → 1B → 7。2026-11-15 Cecilia 把板块 6 提到 1B 前面（原来是 5 → 1B → 6），理由同上：双模型对比是文书里写的，先做。分板块计划见 `docs/kickoff/claude-code-kickoff.md`。
 
-**板块 6（开工中，分支 `block-6-compare`，从 `block-5b-planning` 分出来）**：双模型并排对比和批量评测。要复用 5B 的比较计算，而 5B 还没合进 main，所以从 5B 的分支上开。开工前先和 Cecilia 讨论指标、评测请求草稿和分步计划，确认后再写代码。
+**板块 6（进行中，分支 `block-6-compare`，从 `block-5b-planning` 分出来）**：双模型并排对比和批量评测。要复用 5B 的比较计算，而 5B 还没合进 main，所以从 5B 的分支上开；合进 main 时要先合 5B。
 
 板块 1A 是在分支 `block-1a-shell` 上做的，已合进 main。
 
@@ -26,6 +26,22 @@
 **板块 5（已完成，2026-11-15 合进 main）**：AI 规划链路和行程校验。分支 `block-5-planning` 保留。合并时一起进来的还有另一个对话做的景点资料（豆包整理的资料包、开放状态、多个来源、第三方占位照片）和地点档案页的显示。
 
 **板块 5B（进行中，分支 `block-5b-planning`）**：同一个请求按三种侧重排三份方案，并且能比较。这次只做多份方案和比较两项（2026-11-15 Cecilia 定）。
+
+## 板块 6 完成情况
+
+- [x] 开工前讨论了指标（每个怎么算、哪些复用 5B）、评测请求草稿、分步计划和调用次数。Cecilia 确认 6 个选择都按推荐（2026-11-15）：页面上默认模型抽一次偏好、两边共用，批量评测的偏好手写；一次对比只排一种侧重（页面可选，默认经典必去）；两个模型同时跑，评测前先预热路线；每条请求默认跑 1 次，留 `--repeat`；模型出错的也算进通过率的分母；页面用普通 HTML 和 CSS，印章按真实结果盖，先不做打字动效，手机上切换看一边。写成 ADR 0006。
+- [x] 第 1 步：对比计算（`model_compare.py`）：每边的校验情况（"通过"指没有错误；第一版和修正后；错误类型；编造的景点和候选以外的景点分开）、调用统计、两份行程的差异、对比表（复用 5B 的 `plan_metrics`、`compare_plans`、`near_duplicate`）、批量评测汇总。14 个单元测试先写。
+- [x] 第 2 步：`PlanningPipeline.plan_single`（给定偏好、一种侧重、指定模型排一份）；版本里存第一版的完整校验报告和草稿；网关调用记录可以按任务收集（`collect_calls`），两边同时跑互不干扰。8 个测试。`/map` 的链路行为不变。
+- [x] 第 3 步：`ModelComparer`、新表 `model_comparisons`、接口 `POST /api/comparisons`、`GET /api/comparison-jobs/{id}`、`GET /api/comparisons`、`GET /api/comparisons/{id}`。10 个测试。
+- [x] 第 4 步：`/compare` 页面（输入和侧重、两边的进度、两张打字纸、评分卡、差异卡、历次对比）。前端类型检查通过。Claude 在浏览器面板打开了 Cecilia 已经启动的 `/compare`：空页面和历次对比（0 次）正常显示，控制台没有报错。结果的样子要发一次真实对比才看得到，还没看。
+- [x] 第 5 步：批量评测脚本 `corepack pnpm eval:run`，评测请求 `eval/requests.json`（10 条，Claude 起草）。`--dry-run` 跑过：10 次对比，模型调用 20 到 40 次。9 个测试。
+- [x] 第 6 步：文档：`ai-planning-pipeline.md`（双模型对比一节）、`api-contracts.md`（双模型对比）、`data-model.md`（12.2）、`llm-provider-gateway.md`（调用收集）、`frontend-ux.md`、设计规范 9.2、ADR 0006。
+- [x] 后端测试 362 个通过，都不调用真实接口。
+- [ ] Cecilia 确认 `eval/requests.json` 的 10 条请求（可以直接改文件）。
+- [ ] Cecilia 运行路线预热 `corepack pnpm routes:prewarm`（5B 也要做的那一步），让两边查交通都走缓存。
+- [ ] Cecilia 在 `/compare` 上发一次真实对比（3 到 5 次模型调用），截图；Claude 看页面。
+- [ ] Cecilia 运行 `corepack pnpm eval:run`（20 到 40 次模型调用），结果 `eval/results/<日期>.csv` 和 `.md` 提交进 git。
+- [ ] Claude 根据真实结果用五六句话讲清楚"两个模型是怎么对比的、结果说明了什么"；`pnpm build`；合进 main（先合 5B）。
 
 ## 板块 5B 完成情况
 

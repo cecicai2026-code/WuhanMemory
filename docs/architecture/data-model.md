@@ -406,8 +406,24 @@ CREATE TABLE planning_rounds (
 - 代码：`apps/api/app/repositories/planning_round_repository.py`。
 - 代码：`apps/api/app/repositories/conversation_repository.py`、`itinerary_repository.py`。
 
+### 12.2 双模型对比（板块 6）
+
+```sql
+CREATE TABLE model_comparisons (
+    id              TEXT PRIMARY KEY,
+    created_at      TEXT NOT NULL,
+    eval_request_id TEXT,              -- 批量评测时是请求的 id（例如 r01），页面上发起的为空
+    data_json       TEXT NOT NULL      -- 整次对比（ModelComparisonData）
+);
+```
+
+- 一次对比：请求原文、两边共用的偏好（`preferencesSource` 是 `extracted` 或 `given`，抽偏好的模型和那次调用的统计）、侧重、两边各自的结果（模型名、版本 id 或出错说明、校验情况 `quality`、5B 的数字 `plan`、调用统计 `calls`、整体耗时）、两份的差异 `diff`、对比表 `table`。结构见 `apps/api/app/schemas/comparison.py`。
+- 两份行程各是一个行程版本（`itineraries` 的 `conversation_id` 为空，不属于任何对话）。对比存下后不再修改。
+- 版本的 `data_json` 里多了 `firstValidation`（第一版的完整校验报告）和 `firstDraft`（修正过时模型的第一版输出，没修正过为 null）。板块 6 之后存的版本都有（`/map` 的也有）；之前存的为 null。
+- 代码：`apps/api/app/repositories/model_comparison_repository.py`。
+
 ## 13. 以后的表
 
-分享页（板块 7）、对比结果（板块 6）也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件。
+分享页（板块 7）也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件。
 
 2026-07 按 PostgreSQL + PostGIS 写的旧草案已经删掉，可以在 git 历史和 `infra/migrations/0001_initial_schema.sql` 里查到。
