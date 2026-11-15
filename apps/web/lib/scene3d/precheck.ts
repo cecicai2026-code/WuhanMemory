@@ -14,12 +14,12 @@
 /** 普通版 / 立体版的选择记在浏览器里，用这个键 */
 export const STAGE_PREF_KEY = "wm-stage";
 
-/** 有立体场景的网址。每做好一幕加一条（第 0 步时还没有） */
-export const STAGE_PATHS: string[] = [];
+/** 有立体场景的网址（正则）。每做好一幕加一条 */
+export const STAGE_PATHS: string[] = ["^/places/?$"];
 
 /** 这个网址有没有立体场景 */
 export function pathHasStage(pathname: string): boolean {
-  return STAGE_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  return STAGE_PATHS.some((p) => new RegExp(p).test(pathname));
 }
 
 export type StagePref = "flat" | "3d" | null;
@@ -71,7 +71,7 @@ export function webglAvailable(): boolean {
 /** <head> 里的脚本。不能 import，所以把上面几条规则原样写成一段字符串 */
 export const PRECHECK_SCRIPT = `(function(){try{
 var paths=${JSON.stringify(STAGE_PATHS)},p=location.pathname,hit=false;
-for(var i=0;i<paths.length;i++){if(p===paths[i]||p.indexOf(paths[i]+'/')===0)hit=true;}
+for(var i=0;i<paths.length;i++){if(new RegExp(paths[i]).test(p))hit=true;}
 if(!hit)return;
 if(new URLSearchParams(location.search).get('flat')==='1')return;
 var pref=null;try{pref=localStorage.getItem(${JSON.stringify(STAGE_PREF_KEY)});}catch(e){}

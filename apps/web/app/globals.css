@@ -201,3 +201,52 @@ html[data-stage="on"] [data-shell-bottom] {
   bottom: 0;
   background: none;
 }
+/* 键盘聚焦到场景里的物件时，物件周围的黄铜框（第 7 节）。位置由场景每帧设 */
+.stage-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  border: 2px solid var(--brass-bright);
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-micro);
+}
+html:not([data-stage="on"]) .stage-ring {
+  display: none;
+}
+/* 立体模式下，正文里标了 data-stage-show 的部分（例如区域筛选）照样显示，位置由各页面自己定 */
+html[data-stage="on"] [data-shell-main]:has([data-stage-show]) {
+  position: static;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  overflow: visible;
+  white-space: normal;
+}
+html[data-stage="on"] [data-shell-main]:has([data-stage-show]) > :not([data-stage-show]) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* 右上角"普通版 / 立体版"的切换：和菜单按钮同样的标注字 */
+.stage-toggle {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  transition: color var(--t-micro);
+}
+.stage-toggle:hover {
+  color: var(--paper);
+}

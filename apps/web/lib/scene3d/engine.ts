@@ -12,7 +12,7 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { disposeShared, setMaxAnisotropy } from "./common";
-import type { CreateEngine, EngineHooks, StageEngine, StageKind, StageRequest } from "./types";
+import type { CreateEngine, EngineHooks, StageCommand, StageEngine, StageKind, StageRequest, StageState } from "./types";
 
 /** 每一幕给引擎的东西 */
 export interface Act {
@@ -25,6 +25,8 @@ export interface Act {
   step(dt: number): void;
   resize(w: number, h: number): void;
   setQuality(level: number): void;
+  /** 网页让这一幕做的事（换组、选中、进入……） */
+  command?(cmd: StageCommand): void;
   dispose(): void;
 }
 
@@ -38,12 +40,20 @@ export interface ActEnv {
   environment: THREE.Texture;
   width(): number;
   height(): number;
+  /** 这一幕现在是否在屏幕上（页面没有立体场景时引擎停着，滚轮等不该响应） */
+  active(): boolean;
+  emit(state: StageState): void;
+  navigate(href: string): void;
+  /** 键盘聚焦时的黄铜框：传屏幕上的矩形，传 null 隐藏 */
+  ring(rect: { x: number; y: number; w: number; h: number } | null): void;
 }
 
 export type ActFactory = (env: ActEnv, req: StageRequest) => Act;
 
 /** 每一幕的代码分开打包，用到哪一幕才下载哪一幕 */
-const ACTS: Partial<Record<StageKind, () => Promise<ActFactory>>> = {};
+const ACTS: Partial<Record<StageKind, () => Promise<ActFactory>>> = {
+  rolls: () => import("./acts/rolls").then((m) => m.createRolls)
+};
 
 /** 舞台：主灯（暖白、上方偏左）和暗房红的补光。每一幕的灯位不同，参数照样片 */
 export function addLights(
@@ -102,13 +112,28 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     quality: 0,
     environment,
     width: () => w,
-    height: () => h
+    height: () => h,
+    active: () => !idle && !disposed && !failed,
+    emit: (st) => hooks.onState(st),
+    navigate: (href) => hooks.onNavigate(href),
+    ring: (r) => {
+      const el = hooks.ring;
+      if (!r) {
+        el.style.opacity = "0";
+        return;
+      }
+      el.style.opacity = "1";
+      el.style.transform = `translate(${r.x}px, ${r.y}px)`;
+      el.style.width = `${r.w}px`;
+      el.style.height = `${r.h}px`;
+    }
   };
 
   let act: Act | null = null;
   let actKind: StageKind | null = null;
   let disposed = false;
   let failed = false;
+  let idle = false;
 
   const fail: EngineHooks["onFail"] = (reason, detail) => {
     if (failed || disposed) return;
@@ -185,7 +210,7 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     const dt = Math.min((now - last) / 1000, 0.05);
     const rawDt = (now - last) / 1000;
     last = now;
-    if (!act || failed) return;
+    if (!act || failed || idle) return;
     try {
       act.step(dt);
       renderer.render(act.scene, act.camera);
@@ -202,7 +227,11 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     async show(req) {
       if (disposed) return;
       // 同一幕换数据：交给这一幕自己处理（换景点、换主题）
-      if (act && actKind === req.kind && act.update(req)) return;
+      if (act && actKind === req.kind && act.update(req)) {
+        if (idle) resetMeasure(2000);
+        idle = false;
+        return;
+      }
       const load = ACTS[req.kind];
       if (!load) throw new Error(`没有这一幕：${req.kind}`);
       const factory = await load();
@@ -218,11 +247,19 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
       act?.dispose();
       act = next;
       actKind = req.kind;
+      idle = false;
       // 先在屏幕外画一帧，让贴图传到显卡，再算准备好了
       renderer.compile(act.scene, act.camera);
       act.step(0);
       renderer.render(act.scene, act.camera);
       resetMeasure(2000);
+    },
+    command(cmd) {
+      act?.command?.(cmd);
+    },
+    idle() {
+      idle = true;
+      env.ring(null);
     },
     dispose() {
       if (disposed) return;
