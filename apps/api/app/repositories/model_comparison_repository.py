@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
+from app.services.planning.emphasis import EMPHASES
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Protocol
@@ -25,7 +26,8 @@ def summary_of(c: ModelComparison) -> ModelComparisonSummary:
         id=c.id,
         createdAt=c.createdAt,
         request=c.request,
-        emphasisLabel=c.emphasisLabel,
+        # 侧重名按当前请求的语言（中英双语）；认不出的侧重用存下来的名字
+        emphasisLabel=EMPHASES[c.emphasis].label if c.emphasis in EMPHASES else c.emphasisLabel,
         evalRequestId=c.evalRequestId,
         sides=[
             SideBrief(

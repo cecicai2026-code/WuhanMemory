@@ -42,7 +42,8 @@ export interface AmapProviderOptions {
   serviceHost: string;
   /** 图钉的样式类名，由页面的 CSS 模块提供 */
   classes: { pin: string; pinHead: string; pinLabel: string };
-  /** 网站的语言（中英双语）：底图地名、图钉的读屏说明、出错提示跟着它 */
+  /** 网站的语言（中英双语）：图钉的读屏说明、出错提示跟着它。
+   * 底图上的地名一直是中文：2026-11-15 在浏览器里试过，高德 JS API 2.0 的 lang: "en" 不起作用（默认样式和深色样式都一样） */
   lang: Lang;
 }
 
@@ -71,12 +72,6 @@ export class AmapProvider implements MapProvider {
     return makeT(this.opts.lang);
   }
 
-  /** 换语言：底图地名换成英文或中文（高德的 setLang），图钉的读屏说明下次 setPins 时跟上 */
-  setLang(lang: Lang): void {
-    this.opts.lang = lang;
-    this.map?.setLang(lang === "en" ? "en" : "zh_cn");
-  }
-
   async mount(container: HTMLElement, options: MapInitOptions): Promise<void> {
     if (!this.opts.jsKey) throw new AmapLoadError(this.t("没有配置高德 JS key（apps/web/.env.local 里的 NEXT_PUBLIC_AMAP_JS_KEY）。", "No AMap JS key is set (NEXT_PUBLIC_AMAP_JS_KEY in apps/web/.env.local)."));
     // 必须在加载高德脚本之前设置
@@ -98,7 +93,6 @@ export class AmapProvider implements MapProvider {
       viewMode: "3D",
       pitch: options.mode === "3d" ? PITCH_3D : 0,
       mapStyle: MAP_STYLE,
-      lang: this.opts.lang === "en" ? "en" : "zh_cn",
       pitchEnable: options.mode === "3d",
       rotateEnable: options.mode === "3d",
     });

@@ -89,7 +89,7 @@ function cardTexture(k: number, topic: LineTopic, en: boolean) {
     let size = 104;
     g.font = `600 ${size}px ${SERIF}`;
     // 英文的主题名比两三个汉字长，放不下就缩小
-    while (g.measureText(topic.name).width > w - 90 && size > 40) g.font = `600 ${(size -= 4)}px ${SERIF}`;
+    while (g.measureText(topic.name).width > w - 160 && size > 40) g.font = `600 ${(size -= 4)}px ${SERIF}`;
     g.textAlign = "center";
     g.fillText(topic.name, w / 2, 262);
     // 这张纸的状态，和普通版信纸右下角的章一致

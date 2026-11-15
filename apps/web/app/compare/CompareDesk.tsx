@@ -15,7 +15,7 @@ import type {
 import { BrassButton, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule, Soft, Stamp } from "@/components/ui";
 import { ApiError, getCompareJob, getComparison, listComparisons, startComparison } from "@/lib/planning-client";
 import { useLang } from "@/components/i18n/LangProvider";
-import { makeT, modelName, type Lang, type T } from "@/lib/i18n";
+import { interestName, makeT, modelName, type Lang, type T } from "@/lib/i18n";
 import s from "./compare.module.css";
 
 type Both = { zh: string; en: string };
@@ -37,7 +37,7 @@ const BUDGET = { low: { zh: "预算少", en: "low budget" }, medium: { zh: "预�
 const MODE = { walk: { zh: "步行", en: "Walk" }, transit: { zh: "公交地铁", en: "Bus/metro" }, drive: { zh: "打车", en: "Taxi" } } as const;
 const b = (x: Both, t: T) => t(x.zh, x.en);
 
-function prefsText(p: TravelerPreferences, t: T): string {
+function prefsText(p: TravelerPreferences, t: T, lang: Lang): string {
   const sep = t("、", ", ");
   const parts: string[] = [];
   if (p.days) parts.push(t(`${p.days} 天`, `${p.days} days`));
@@ -46,7 +46,7 @@ function prefsText(p: TravelerPreferences, t: T): string {
   if (p.party) parts.push(b(PARTY[p.party], t));
   if (p.transport) parts.push(b(TRANSPORT[p.transport], t));
   if (p.budget) parts.push(b(BUDGET[p.budget], t));
-  if (p.interests.length) parts.push(t(`兴趣：${p.interests.join(sep)}`, `interests: ${p.interests.join(sep)}`));
+  if (p.interests.length) parts.push(t(`兴趣：${p.interests.join(sep)}`, `interests: ${p.interests.map((i) => interestName(i, lang)).join(sep)}`));
   if (p.mustVisit.length) parts.push(t(`必去：${p.mustVisit.join(sep)}`, `must see: ${p.mustVisit.join(sep)}`));
   if (p.avoid.length) parts.push(t(`不去：${p.avoid.join(sep)}`, `skip: ${p.avoid.join(sep)}`));
   if (p.notes) parts.push(t(`其他：${p.notes}`, `other: ${p.notes}`));
@@ -433,7 +433,7 @@ export function CompareDesk() {
             <div className={s.summary}>
               <p className={s.summaryReq}>{t(`「${cmp.request}」`, `“${cmp.request}”`)}</p>
               <p className={s.summaryMeta}>
-                {cmp.emphasisLabel} · {prefsText(cmp.preferences, t)}
+                {cmp.emphasisLabel} · {prefsText(cmp.preferences, t, lang)}
                 {cmp.preferencesSource === "extracted"
                   ? t(` · 偏好由 ${cmp.extractor} 抽一次、两边共用`, ` · preferences extracted once by ${cmp.extractor ? modelName(cmp.extractor, lang) : ""}, shared by both`)
                   : t(" · 偏好是手写给定的", " · preferences written by hand")}

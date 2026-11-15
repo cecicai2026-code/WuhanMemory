@@ -37,7 +37,15 @@ interface Props {
  * 点图钉在上方出现一张索引卡（2026-11-15 Cecilia 选的气泡方式），能跳到地点档案；
  * 旁边的拨杆切换 2D / 3D，手机上默认 2D。
  */
-export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
+/**
+ * 换语言时整个地图重建（key 换了）：图钉的读屏说明和出错提示是建地图时按语言写的。
+ * 底图上的地名一直是中文（高德 JS API 2.0 不支持英文底图，见 lib/map/amap-provider.ts）。
+ */
+export function MapPanel(props: Props) {
+  return <MapPanelInner key={useLang()} {...props} />;
+}
+
+function MapPanelInner({ pois, poisError, routes, pins = null }: Props) {
   const boxRef = useRef<HTMLDivElement>(null);
   const providerRef = useRef<AmapProvider | null>(null);
   const [load, setLoad] = useState<LoadState>({ kind: "loading", slow: false });
@@ -46,9 +54,6 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
   const [cardHost, setCardHost] = useState<HTMLDivElement | null>(null);
   const lang = useLang();
   const t = makeT(lang);
-  // 地图只建一次；建的时候用当时的语言，之后换语言由下面的 effect 调 setLang
-  const langRef = useRef(lang);
-  langRef.current = lang;
 
   // 加载地图，只做一次
   useEffect(() => {
@@ -63,7 +68,7 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
       // 安全密钥代理：浏览器连网站自己的 /_AMapService，网站转给后端加上安全密钥
       serviceHost: `${window.location.origin}/_AMapService`,
       classes: { pin: s.pin, pinHead: s.pinHead, pinLabel: s.pinLabel },
-      lang: langRef.current,
+      lang,
     });
     let cancelled = false;
     const slowTimer = window.setTimeout(() => {
@@ -104,11 +109,6 @@ export function MapPanel({ pois, poisError, routes, pins = null }: Props) {
   useEffect(() => {
     if (load.kind === "ready") providerRef.current?.setMode(mode);
   }, [load, mode]);
-
-  // 换语言：底图地名跟着换；图钉由上面的 effect 重放（pois 换成了新语言的名字）
-  useEffect(() => {
-    if (load.kind === "ready") providerRef.current?.setLang(lang);
-  }, [load, lang]);
 
   // 路线：画上去，并把镜头移到正好框住这条路线
   useEffect(() => {

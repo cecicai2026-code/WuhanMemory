@@ -19,6 +19,7 @@ from functools import lru_cache
 from typing import Annotated
 
 import httpx
+from app.services.planning.emphasis import EMPHASES
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
 from app.core.config import settings
@@ -220,6 +221,10 @@ async def get_planning_round(round_id: str, rounds: Rounds, itineraries: Itinera
     found = rounds.get_round(round_id)
     if found is None:
         raise HTTPException(status_code=404, detail=L(f"没有这一轮方案：{round_id}", f"No such planning round: {round_id}"))
+    # 侧重名按当前请求的语言（中英双语），旧记录存的是当时的语言
+    found = found.model_copy(
+        update={"plans": [p.model_copy(update={"label": EMPHASES[p.emphasis].label}) if p.emphasis in EMPHASES else p for p in found.plans]}
+    )
     shown = [p for p in found.plans if p.shown and p.versionId]
     versions = [v for v in (itineraries.get_version(p.versionId) for p in shown if p.versionId) if v is not None]
     comparison = compare_plans([p.label for p in shown], versions) if versions else None

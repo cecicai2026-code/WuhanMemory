@@ -58,5 +58,22 @@ export function browserLang(): Lang {
   return document.documentElement.lang === "en" ? "en" : "zh";
 }
 
+/** 偏好里的兴趣是固定的中文代号（后端 interests.py 的 INTERESTS），显示时换成英文 */
+const INTEREST_EN: Record<string, string> = {
+  历史文化: "history & culture",
+  美食: "food",
+  自然风光: "nature",
+  城市漫步: "city walks",
+  老建筑: "old architecture",
+  博物馆: "museums",
+  夜景: "night views",
+  拍照: "photography",
+  寺庙: "temples",
+  大学校园: "university campuses",
+};
+export function interestName(code: string, lang: Lang): string {
+  return lang === "en" ? (INTEREST_EN[code] ?? code) : code;
+}
+
 /** 请求后端时带的语言头。后端按它写提示语、校验说明，规划时让模型用这种语言写理由 */
 export const LANG_HEADER = "X-Lang";
