@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import type { MapMode, MapRoute } from "@wuhanmemory/map-core";
+import { boundsOf, type MapMode, type MapRoute } from "@wuhanmemory/map-core";
 import type { PoiSummary } from "@wuhanmemory/shared";
 import { Label, Paper, PaperMark, PaperTitle, Soft, Stamp, TextLink } from "@/components/ui";
 import { AmapProvider } from "@/lib/map/amap-provider";
@@ -83,8 +83,13 @@ export function MapPanel({ pois, poisError, routes }: Props) {
     if (load.kind === "ready") providerRef.current?.setMode(mode);
   }, [load, mode]);
 
+  // 路线：画上去，并把镜头移到正好框住这条路线
   useEffect(() => {
-    if (load.kind === "ready") providerRef.current?.setRoutes(routes);
+    const provider = providerRef.current;
+    if (load.kind !== "ready" || !provider) return;
+    provider.setRoutes(routes);
+    const bounds = boundsOf(routes.flatMap((r) => r.lines.flatMap((l) => l.path)));
+    if (bounds) provider.focusBounds(bounds);
   }, [load, routes]);
 
   // 卡片：选中图钉时打开，取消选中时关上

@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { MapRoute } from "@wuhanmemory/map-core";
-import type { PoiSummary } from "@wuhanmemory/shared";
+import type { PoiSummary, Route } from "@wuhanmemory/shared";
 import { BrassButton, LineInput, NoteButton, Paper, PaperMark, PaperTitle, PencilNote, Rule } from "@/components/ui";
 import { MapPanel } from "./MapPanel";
+import { RouteFinder } from "./RouteFinder";
 import s from "./map.module.css";
-
-const NO_ROUTES: MapRoute[] = [];
 
 type Tab = "chat" | "plan";
 
@@ -22,6 +21,12 @@ type Tab = "chat" | "plan";
 export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: string | null }) {
   const [tab, setTab] = useState<Tab>("chat");
   const [open, setOpen] = useState(true);
+  // "两点之间怎么走"选中的那一种交通方式，画在地图上
+  const [shownRoute, setShownRoute] = useState<Route | null>(null);
+  const routes = useMemo<MapRoute[]>(
+    () => (shownRoute ? [{ id: shownRoute.mode, dayNumber: null, lines: [{ mode: shownRoute.mode, path: shownRoute.polyline }] }] : []),
+    [shownRoute],
+  );
 
   function choose(next: Tab) {
     setTab(next);
@@ -64,11 +69,12 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
       </section>
 
       <section className={`${s.col} ${s.mapCol}`} aria-label="地图">
-        <MapPanel pois={pois} poisError={poisError} routes={NO_ROUTES} />
+        <MapPanel pois={pois} poisError={poisError} routes={routes} />
       </section>
 
       <section className={`${s.col} ${s.planCol}`} aria-label="行程">
         <div className={s.cards}>
+          <RouteFinder pois={pois} shown={shownRoute?.mode ?? null} onShow={setShownRoute} />
           <Paper kind="card" tilt={1}>
             <PaperMark>索引卡 · 行程</PaperMark>
             <PaperTitle level={3}>还没有行程</PaperTitle>
