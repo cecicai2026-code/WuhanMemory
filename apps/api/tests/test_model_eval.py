@@ -29,7 +29,7 @@ from app.tools.model_eval import (
 from tests.test_plan_single import GOOD, TwoModels
 from tests.test_planning_pipeline import plan
 
-CLASH = plan([("a", "09:30", "11:30"), ("b", "11:35", "14:00")])  # 空档 5 分钟，走路要 12 分钟
+LATE = plan([("a", "09:30", "11:30"), ("b", "12:00", "17:30")])  # b 停留 330 分钟，程序推下来 17:00 关门后才离开
 FACTS = DataFacts(pois=3, open_pois=3, facts=30, onsite=0, confirmed=20, placeholder=6, todo=4, expired=0)
 
 
@@ -69,7 +69,7 @@ def test_call_plan() -> None:
 
 async def test_run_writes_csv_and_summary(tmp_path: Path) -> None:
     # r01：千问一次通过，豆包第一版有错、修正后通过；r02：千问通过，豆包模型出错
-    s = TwoModels(tmp_path, [GOOD, GOOD], [CLASH, GOOD, LLMAuthError("测试：额度")])
+    s = TwoModels(tmp_path, [GOOD, GOOD], [LATE, GOOD, LLMAuthError("测试：额度")])
     repo = SqliteModelComparisonRepository(tmp_path / "t.db")
     lines: list[str] = []
     runs = await run_eval(ModelComparer(s.pipeline, repo), [req("r01"), req("r02")], 1, out=lines.append)
@@ -80,7 +80,7 @@ async def test_run_writes_csv_and_summary(tmp_path: Path) -> None:
     assert len(rows) == 4 and list(rows[0].keys()) == CSV_COLUMNS
     doubao_r01 = next(r for r in rows if r["request_id"] == "r01" and r["provider"] == "doubao")
     assert doubao_r01["first_passed"] == "0" and doubao_r01["repaired"] == "1" and doubao_r01["final_passed"] == "1"
-    assert "transport-too-short" in doubao_r01["first_error_codes"]
+    assert doubao_r01["first_error_codes"] == "after-closex1"
     doubao_r02 = next(r for r in rows if r["request_id"] == "r02" and r["provider"] == "doubao")
     assert "额度" in doubao_r02["error"] and doubao_r02["first_passed"] == ""
 
@@ -89,7 +89,7 @@ async def test_run_writes_csv_and_summary(tmp_path: Path) -> None:
     assert "| 首次通过率（第一版没有错误） | 100%（2/2） | 0%（0/2） |" in md
     assert "| 修正后通过率 | 100%（2/2） | 50%（1/2） |" in md
     assert "| 模型出错（没排出来） | 0 | 1 |" in md
-    assert "交通时间不够（transport-too-short）1 次" in md
+    assert "关门后才离开（after-close）1 次" in md
     assert "请求只有 2 条" in md and "景点库只有 3 个景点" in md and "占位 6" in md
     assert "不下\"哪个模型更好\"的结论" in md
 

@@ -9,7 +9,9 @@ import json
 from datetime import date
 from typing import Any
 
-from app.schemas.planning import PlanDraft, TravelerPreferences, TripFrame
+from pydantic import BaseModel
+
+from app.schemas.planning import PlanDraft, PlanOutline, TravelerPreferences, TripFrame
 from app.services.planning.interests import INTERESTS
 from app.services.planning.preferences import PACE_LABELS
 from app.services.planning.validate import DAY_EARLIEST, DAY_LATEST, DAY_LIMIT_MINUTES, TRANSPORT_SLACK_MINUTES, fmt
@@ -58,18 +60,18 @@ GENERATE_SYSTEM = f"""你是武汉旅行规划助手的"排行程"环节。根�
 - 只能用候选清单里的景点，用它的 id 引用（poiId）。不能编造清单以外的地方，也不要写餐馆、酒店。
 - 每个景点整份行程里只出现一次。标了 mustVisit 的一定要排进去。
 - 天数必须正好等于要求的天数，dayNumber 从 1 开始。
-- 时间用 24 小时制 HH:MM。arrive 是到达时间，leave 是离开时间。
-- 每天最早 {fmt(DAY_EARLIEST)} 到达第一站，最晚 {fmt(DAY_LATEST)} 离开最后一站。
-- 每天从第一站到达到最后一站离开的总时长不超过：轻松 {DAY_LIMIT_MINUTES['relaxed'] // 60} 小时，适中 {DAY_LIMIT_MINUTES['moderate'] // 60} 小时，紧凑 {DAY_LIMIT_MINUTES['intensive'] // 60} 小时。
-- 到达和离开都要在开放时间内，到达不能晚于最晚入场时间（lastEntry），不要排在闭馆日（closedWeekdays，1 是周一，7 是周日）。开放时间写"未知"的景点可以排，但尽量放在白天。
-- 相邻两站之间要留出交通时间：程序会用高德查真实的交通时间来校验，空档短于真实时间就算错。【两站之间的真实交通】里是程序会选的交通方式和高德查到的分钟数，校验用的就是这些：空档至少留"表里的分钟数 + {TRANSPORT_SLACK_MINUTES} 分钟"。表里写"没查到真实时间"的只有直线距离，实际路程比直线长，地铁还要换乘和步行进出站，宁可多留。
-- 停留时间参考 recommendedDurationMinutes，"未知"的按景点类型估计。
-- 同一天尽量排在同一片区域（武昌、汉口、汉阳），少来回跨江。
+- 你不写到达、离开的钟点。每天写一个出发时间 start（HH:MM，24 小时制，就是到达第一站的时间），每站写停留分钟数 stayMinutes。
+- 钟点由程序推：后一站到达 = 前一站离开 + 【两站之间的真实交通】里的分钟数 + {TRANSPORT_SLACK_MINUTES} 分钟，往后取整到 5 分钟；到得比开门早就等到开门；离开 = 到达 + stayMinutes。排之前自己按这个推一遍，保证下面几条：
+  - 每天最早 {fmt(DAY_EARLIEST)} 出发，最晚 {fmt(DAY_LATEST)} 离开最后一站；
+  - 每天从第一站到达到最后一站离开的总时长不超过：轻松 {DAY_LIMIT_MINUTES['relaxed'] // 60} 小时，适中 {DAY_LIMIT_MINUTES['moderate'] // 60} 小时，紧凑 {DAY_LIMIT_MINUTES['intensive'] // 60} 小时（交通和等待都算在里面）；
+  - 每站在最晚入场时间（lastEntry）之前到达、关门之前离开；不要排在闭馆日（closedWeekdays，1 是周一，7 是周日）。开放时间写"未知"的景点可以排，但尽量放在白天。
+- 用【两站之间的真实交通】决定顺序和一天放几站：同一天尽量排在同一片区域（武昌、汉口、汉阳），少来回跨江，路上时间长的一天就少放几站。
+- stayMinutes 参考 recommendedDurationMinutes，"未知"的按景点类型估计。
 - reason 用一两句中文说明为什么这样排（顺路、对得上哪个兴趣、什么时段去合适），不要写开放时间、票价、交通时间这些事实，这些由程序从景点库和高德取。
 - 不写交通方式，程序会自己选。
 
 输出格式：
-{{"title": "武汉两日：老城历史与江边", "days": [{{"dayNumber": 1, "theme": "一句话主题", "stops": [{{"poiId": "候选里的 id", "arrive": "09:30", "leave": "11:30", "reason": "为什么这样排"}}]}}]}}"""
+{{"title": "武汉两日：老城历史与江边", "days": [{{"dayNumber": 1, "theme": "一句话主题", "start": "09:30", "stops": [{{"poiId": "候选里的 id", "stayMinutes": 120, "reason": "为什么这样排"}}]}}]}}"""
 
 
 def _trip_lines(frame: TripFrame) -> list[str]:
@@ -91,7 +93,7 @@ def generate_user_prompt(
     transport_label: str,
     candidates: list[dict[str, Any]],
     transit: list[str],
-    previous: PlanDraft | None,
+    previous: BaseModel | None,
     emphasis: str | None = None,
 ) -> str:
     parts = [
@@ -121,24 +123,36 @@ REPAIR_SYSTEM = (
     GENERATE_SYSTEM
     + f"""
 
-现在是修正环节：程序校验了你上一次排的行程，发现了下面列出的错误。只改有错误的地方，其余安排尽量保持不变。
-程序查到的真实交通时间也给你了：相邻两站之间的空档要不少于"真实交通时间 + {TRANSPORT_SLACK_MINUTES} 分钟"，只留正好等于真实时间的空档会被警告"余量不够"。
+现在是修正环节：程序按你上一次给的出发时间、顺序和停留时长推出了钟点，校验发现了下面列出的错误。
+只改有错误的地方，其余安排尽量保持不变。你能改的是：出发时间 start、站点的顺序、停留时长 stayMinutes、换掉或去掉某一站、把某站挪到别的天。钟点照样由程序重新推。
 输出修正后的完整行程，格式和上面一样。"""
 )
 
 
-def repair_user_prompt(*, generate_prompt: str, draft: PlanDraft, errors: list[str], legs: list[str]) -> str:
+def _scheduled_lines(draft: PlanDraft) -> list[str]:
+    out = []
+    for day in draft.days:
+        out.append(f"第 {day.dayNumber} 天：" + "；".join(f"{s.poiId} {s.arrive}–{s.leave}" for s in day.stops))
+    return out
+
+
+def repair_user_prompt(
+    *, generate_prompt: str, outline: PlanOutline, scheduled: PlanDraft, errors: list[str], legs: list[str]
+) -> str:
     return "\n".join(
         [
             generate_prompt,
             "",
             "【你上一次排的行程】",
-            draft.model_dump_json(),
+            outline.model_dump_json(),
+            "",
+            "【程序推出来的钟点】",
+            *_scheduled_lines(scheduled),
             "",
             "【校验发现的错误】",
             *[f"- {e}" for e in errors],
             "",
-            "【程序查到的真实交通时间】",
+            "【这几段用的真实交通时间】",
             *([f"- {leg}" for leg in legs] or ["- 没有"]),
         ]
     )

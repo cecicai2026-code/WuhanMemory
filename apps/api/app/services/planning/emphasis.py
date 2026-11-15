@@ -56,7 +56,7 @@ EMPHASES: dict[str, Emphasis] = {
         prompt=(
             f"这份方案的侧重是「轻松少走路」：每天最多 {RELAXED_MAX_STOPS} 站；每天 {fmt(RELAXED_LATEST_END)} 之前离开最后一站；"
             f"同一天的景点要挨得近，站与站之间步行加起来不超过 {RELAXED_WALK_METERS // 1000} 公里（程序会用高德查，含地铁换乘和进出站的步行）；"
-            "宁可少去一个地方，也要每站多待一会儿、中间留出休息的空档。"
+            "宁可少去一个地方，也要每站多待一会儿（stayMinutes 给足）。"
         ),
     ),
     "culture": Emphasis(

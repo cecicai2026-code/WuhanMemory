@@ -72,13 +72,17 @@ async def test_passes_first_time_and_saves_first_report(tmp_path: Path) -> None:
 
 
 async def test_repaired_keeps_first_draft_and_errors(tmp_path: Path) -> None:
-    clash = plan([("a", "09:30", "11:30"), ("b", "11:35", "14:00")])  # 空档 5 分钟，走路要 12 分钟
-    s = TwoModels(tmp_path, [clash, GOOD], [])
+    late = plan([("a", "09:30", "11:30"), ("b", "12:00", "17:30")])  # b 停留 330 分钟，程序推下来 17:00 关门后才离开
+    s = TwoModels(tmp_path, [late, GOOD], [])
     out, calls = await s.run("qwen")
     v = out.version
     assert v is not None and v.planner.rounds == 2
-    assert v.firstValidation is not None and "transport-too-short" in [i.code for i in v.firstValidation.errors]
-    assert v.firstDraft is not None and v.firstDraft.days[0].stops[1].arrive == "11:35"
+    assert v.firstValidation is not None and "after-close" in [i.code for i in v.firstValidation.errors]
+    # 程序推的钟点：11:30 离开 a，走 12 分钟 + 10 分钟，取整到 11:55
+    assert v.firstDraft is not None and (v.firstDraft.days[0].stops[1].arrive, v.firstDraft.days[0].stops[1].leave) == ("11:55", "17:25")
+    # 模型给的原样存着
+    assert v.firstOutline is not None and v.firstOutline.days[0].stops[1].stayMinutes == 330
+    assert v.outline is not None and v.outline.days[0].stops[1].stayMinutes == 120
     assert v.validation.errors == []
     assert [c.task for c in calls] == ["generate_itinerary", "repair_itinerary"]
 
@@ -92,8 +96,8 @@ async def test_model_error_is_returned_not_raised(tmp_path: Path) -> None:
 
 
 async def test_repair_error_keeps_first_round(tmp_path: Path) -> None:
-    clash = plan([("a", "09:30", "11:30"), ("b", "11:35", "14:00")])
-    s = TwoModels(tmp_path, [clash, LLMAuthError("测试：修正出错")], [])
+    late = plan([("a", "09:30", "11:30"), ("b", "12:00", "17:30")])
+    s = TwoModels(tmp_path, [late, LLMAuthError("测试：修正出错")], [])
     out, _ = await s.run("qwen")
     assert out.version is not None and out.version.validation.status == "failed"
     assert out.repair_error is not None and "修正出错" in out.repair_error

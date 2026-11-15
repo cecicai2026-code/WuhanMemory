@@ -32,7 +32,7 @@ def maker(tmp_path: Path, scripts: dict[str, list[list[Any]]]):
 
 async def test_runs_each_prompt_in_both_modes_and_alternates(tmp_path: Path) -> None:
     good = [prefs(**DATED), plan([("a", "09:30", "11:30"), ("b", "12:00", "14:00")])]
-    bad_then_good = [prefs(**DATED), plan([("a", "09:30", "11:30"), ("b", "11:35", "14:00")]), plan([("a", "09:30", "11:30"), ("b", "12:00", "14:00")])]
+    bad_then_good = [prefs(**DATED), plan([("a", "09:30", "11:30"), ("b", "12:00", "17:30")]), plan([("a", "09:30", "11:30"), ("b", "12:00", "14:00")])]
     make, used = maker(tmp_path, {"enabled": [good, good], "disabled": [bad_then_good, good]})
     lines: list[str] = []
 

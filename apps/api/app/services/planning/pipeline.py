@@ -33,7 +33,9 @@ from app.schemas.itinerary import (
     RoundPlan,
     StopFacts,
 )
-from app.schemas.planning import PlanDraft, TravelerPreferences, TripFrame, ValidationReport
+from pydantic import BaseModel
+
+from app.schemas.planning import PlanDraft, PlanOutline, TravelerPreferences, TripFrame, ValidationReport
 from app.schemas.poi import Fact, PoiFile
 from app.schemas.poi_api import SourceOut
 from app.services.llm.errors import LLMError
@@ -42,6 +44,7 @@ from app.services.planning import prompts
 from app.services.planning.candidates import Candidates, candidate_brief, select_candidates
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
+from app.services.planning.schedule import schedule
 from app.services.planning.preferences import TRANSPORT_LABELS, Frame, frame_for, merge, question_for
 from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
@@ -90,6 +93,8 @@ class SingleOutcome:
 
 @dataclass
 class _Round:
+    # 模型给的（出发时间、顺序、停留时长）和程序推出钟点后的行程（板块 6C）
+    outline: PlanOutline
     draft: PlanDraft
     legs: list[ItineraryLeg]
     report: ValidationReport
@@ -213,7 +218,7 @@ class PlanningPipeline:
                 raise g
         if len(errors) == len(plans):
             raise errors[0]
-        drafts: dict[int, tuple[PlanDraft, str | None]] = {}
+        drafts: dict[int, tuple[PlanOutline, str | None]] = {}
         for i, (plan, g) in enumerate(zip(plans, generated)):
             if isinstance(g, LLMError):
                 plan.removed = f"模型没排出来：{g.message}"
@@ -236,7 +241,7 @@ class PlanningPipeline:
                 *(self._repair(p, provider_name) for p in to_repair),
                 return_exceptions=True,
             )
-            fixed: dict[int, tuple[PlanDraft, str | None]] = {}
+            fixed: dict[int, tuple[PlanOutline, str | None]] = {}
             for p, r in zip(to_repair, repaired):
                 if isinstance(r, BaseException):
                     if not isinstance(r, LLMError):
@@ -392,7 +397,7 @@ class PlanningPipeline:
             task="generate_itinerary",
             system_prompt=prompts.GENERATE_SYSTEM,
             user_prompt=plan.prompt,
-            schema=PlanDraft,
+            schema=PlanOutline,
             provider=provider,
             # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
             retry_on_timeout=False,
@@ -405,25 +410,29 @@ class PlanningPipeline:
             system_prompt=prompts.REPAIR_SYSTEM,
             user_prompt=prompts.repair_user_prompt(
                 generate_prompt=p.prompt,
-                draft=p.first.draft,
+                outline=p.first.outline,
+                scheduled=p.first.draft,
                 errors=[i.message for i in p.first.report.errors],
                 legs=_leg_lines(p.first.legs, p.candidates),
             ),
-            schema=PlanDraft,
+            schema=PlanOutline,
             provider=provider,
             retry_on_timeout=False,
         )
 
     # ---------- 小步骤 ----------
 
-    def _previous_draft(self, previous: PlanningRound | None, emphasis: str) -> PlanDraft | None:
+    def _previous_draft(self, previous: PlanningRound | None, emphasis: str) -> BaseModel | None:
         if previous is None:
             return None
         plan = next((p for p in previous.plans if p.emphasis == emphasis and p.versionId), None)
         if plan is None or plan.versionId is None:
             return None
         version = self.itineraries.get_version(plan.versionId)
-        return version.draft if version else None
+        if version is None:
+            return None
+        # 板块 6C 之后存的版本有模型给的 outline；之前的只有带钟点的 draft
+        return version.outline or version.draft
 
     def _itinerary_for(self, previous: PlanningRound | None, emphasis: str, conversation_id: str) -> str:
         """同一侧重沿用上一轮的行程（新的一轮是它的下一个版本）；没有就新建。"""
@@ -436,7 +445,7 @@ class PlanningPipeline:
     async def _check_all(
         self,
         plans: list[_Plan],
-        drafts: dict[int, tuple[PlanDraft, str | None]],
+        drafts: dict[int, tuple[PlanOutline, str | None]],
         today: date,
         stage: Callable[[Stage], Awaitable[None]],
         into: Literal["first", "final"] = "first",
@@ -444,18 +453,20 @@ class PlanningPipeline:
         # 交通一份一份查：高德请求本来就排队一个一个发，三份用到的路线大多相同，缓存里有的不再查
         await stage("routing")
         legs: dict[int, list[ItineraryLeg]] = {}
-        for i, (draft, _) in drafts.items():
-            legs[i] = await self._route(plans[i], draft)
+        for i, (outline, _) in drafts.items():
+            legs[i] = await self._route(plans[i], outline)
         await stage("validating")
-        for i, (draft, model) in drafts.items():
+        for i, (outline, model) in drafts.items():
             plan = plans[i]
             leg_map = {(leg.fromPoiId, leg.toPoiId): leg.route for leg in legs[i]}
+            # 板块 6C：钟点由程序按真实交通推出来，再照常校验
+            draft, timing = schedule(outline, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame)
             report = validate_itinerary(draft, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame, today=today)
             extra = check_emphasis(plan.emphasis, draft, candidates=plan.candidates, legs=leg_map, frame=plan.trip.frame)
-            result = _Round(draft=draft, legs=legs[i], report=merge_issues(report, extra), model=model)
+            result = _Round(outline=outline, draft=draft, legs=legs[i], report=merge_issues(report, [*timing, *extra]), model=model)
             setattr(plan, into, result)
 
-    async def _route(self, plan: _Plan, draft: PlanDraft) -> list[ItineraryLeg]:
+    async def _route(self, plan: _Plan, draft: PlanOutline | PlanDraft) -> list[ItineraryLeg]:
         out: list[ItineraryLeg] = []
         pois = plan.candidates.pois
         for day in draft.days:
@@ -512,6 +523,8 @@ class PlanningPipeline:
             emphasis=p.emphasis.id,
             firstValidation=first.report,
             firstDraft=first.draft if final is not first else None,
+            outline=final.outline,
+            firstOutline=first.outline if final is not first else None,
         )
         data.metrics = plan_metrics(data)
         return data
@@ -527,7 +540,7 @@ def _defaults(trip: Frame, base: Candidates) -> list[str]:
 
 
 def _generate_prompt(
-    plan: _Plan, message: str, prefs: TravelerPreferences, previous: PlanDraft | None, transit: list[str]
+    plan: _Plan, message: str, prefs: TravelerPreferences, previous: BaseModel | None, transit: list[str]
 ) -> str:
     return prompts.generate_user_prompt(
         message=message,
