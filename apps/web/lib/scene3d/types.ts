@@ -32,8 +32,10 @@ export interface EngineHooks {
   debugFps: boolean;
   /** 场景的状态变了 */
   onState(state: StageState): void;
-  /** 场景要网页跳到某个网址（点了一格、镜头推近之后） */
-  onNavigate(href: string): void;
+  /** 场景要网页跳到某个网址（点了一格、镜头推近之后）。curtain：跳之前落下黑幕（换到另一幕时） */
+  onNavigate(href: string, curtain: boolean): void;
+  /** 悬停在物件上时，物件下方浮出的名字（网页里的一个元素，场景每帧设它的位置） */
+  tag: HTMLElement;
   /** 键盘聚焦时画在物件周围的黄铜框（网页里的一个元素，场景每帧设它的位置） */
   ring: HTMLElement;
 }

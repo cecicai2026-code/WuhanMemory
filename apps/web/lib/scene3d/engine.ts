@@ -43,7 +43,9 @@ export interface ActEnv {
   /** 这一幕现在是否在屏幕上（页面没有立体场景时引擎停着，滚轮等不该响应） */
   active(): boolean;
   emit(state: StageState): void;
-  navigate(href: string): void;
+  navigate(href: string, opts?: { curtain?: boolean }): void;
+  /** 悬停时物件下方的名字：传文字和屏幕坐标（名字的上沿中点），传 null 隐藏 */
+  tag(t: { text: string; x: number; y: number } | null): void;
   /** 键盘聚焦时的黄铜框：传屏幕上的矩形，传 null 隐藏 */
   ring(rect: { x: number; y: number; w: number; h: number } | null): void;
 }
@@ -52,7 +54,8 @@ export type ActFactory = (env: ActEnv, req: StageRequest) => Act;
 
 /** 每一幕的代码分开打包，用到哪一幕才下载哪一幕 */
 const ACTS: Partial<Record<StageKind, () => Promise<ActFactory>>> = {
-  rolls: () => import("./acts/rolls").then((m) => m.createRolls)
+  rolls: () => import("./acts/rolls").then((m) => m.createRolls),
+  line: () => import("./acts/line").then((m) => m.createLine)
 };
 
 /** 舞台：主灯（暖白、上方偏左）和暗房红的补光。每一幕的灯位不同，参数照样片 */
@@ -115,7 +118,17 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     height: () => h,
     active: () => !idle && !disposed && !failed,
     emit: (st) => hooks.onState(st),
-    navigate: (href) => hooks.onNavigate(href),
+    navigate: (href, opts) => hooks.onNavigate(href, opts?.curtain ?? true),
+    tag: (t) => {
+      const el = hooks.tag;
+      if (!t) {
+        el.style.opacity = "0";
+        return;
+      }
+      if (el.textContent !== t.text) el.textContent = t.text;
+      el.style.opacity = "1";
+      el.style.transform = `translate(${t.x}px, ${t.y}px) translateX(-50%)`;
+    },
     ring: (r) => {
       const el = hooks.ring;
       if (!r) {
@@ -188,7 +201,7 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     if (env.quality === 0 && fps < 40) {
       env.quality = 1;
       renderer.setPixelRatio(1);
-      act?.setQuality(1);
+      cache.forEach((a) => a.setQuality(1));
       hooks.onQuality?.(1);
       downgradedAt = now;
       resetMeasure(500);
@@ -223,20 +236,60 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
   }
   raf = requestAnimationFrame(frame);
 
+  // 开发时的调试入口（和样片的 __advance 一样）：页面在后台时浏览器停了动画，用它手动推进若干秒再截图
+  if (process.env.NODE_ENV !== "production") {
+    (window as unknown as { __stage?: unknown }).__stage = {
+      advance(seconds: number) {
+        if (!act) return;
+        for (let i = 0; i < seconds * 60; i++) act.step(1 / 60);
+        renderer.render(act.scene, act.camera);
+      }
+    };
+  }
+
+  /** 每种幕留一个，回到上一幕时不用重新布置（三幕来回切、以后的转场都要用） */
+  const cache = new Map<StageKind, Act>();
+
+  function switchTo(next: Act, kind: StageKind) {
+    if (act !== next) {
+      env.ring(null);
+      env.tag(null);
+      act = next;
+      actKind = kind;
+      next.resize(w, h);
+      next.setQuality(env.quality);
+      // 先画一帧，让贴图传到显卡，再算准备好了
+      renderer.compile(next.scene, next.camera);
+      next.step(0);
+      renderer.render(next.scene, next.camera);
+    }
+    idle = false;
+    resetMeasure(2000);
+  }
+
   return {
     async show(req) {
       if (disposed) return;
-      // 同一幕换数据：交给这一幕自己处理（换景点、换主题）
-      if (act && actKind === req.kind && act.update(req)) {
-        if (idle) resetMeasure(2000);
-        idle = false;
+      // 这一幕已经布置过：交给它自己处理新数据（换景点、换主题），处理不了就重建
+      const cached = cache.get(req.kind);
+      if (cached && cached.update(req)) {
+        switchTo(cached, req.kind);
         return;
+      }
+      if (cached) {
+        if (act === cached) act = null;
+        cached.dispose();
+        cache.delete(req.kind);
       }
       const load = ACTS[req.kind];
       if (!load) throw new Error(`没有这一幕：${req.kind}`);
       const factory = await load();
       if (disposed) return;
-      const next = factory(env, req);
+      let self: Act | null = null;
+      // 每一幕只在自己显示的时候响应滚轮、点击
+      const actEnv: ActEnv = { ...env, active: () => act === self && self !== null && !idle && !disposed && !failed };
+      const next = factory(actEnv, req);
+      self = next;
       next.setQuality(env.quality);
       next.resize(w, h);
       await next.ready;
@@ -244,15 +297,8 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
         next.dispose();
         return;
       }
-      act?.dispose();
-      act = next;
-      actKind = req.kind;
-      idle = false;
-      // 先在屏幕外画一帧，让贴图传到显卡，再算准备好了
-      renderer.compile(act.scene, act.camera);
-      act.step(0);
-      renderer.render(act.scene, act.camera);
-      resetMeasure(2000);
+      cache.set(req.kind, next);
+      switchTo(next, req.kind);
     },
     command(cmd) {
       act?.command?.(cmd);
@@ -260,6 +306,7 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
     idle() {
       idle = true;
       env.ring(null);
+      env.tag(null);
     },
     dispose() {
       if (disposed) return;
@@ -270,7 +317,8 @@ export const createEngine: CreateEngine = (container: HTMLElement, hooks: Engine
       document.documentElement.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
       renderer.domElement.removeEventListener("webglcontextlost", onLost);
-      act?.dispose();
+      cache.forEach((a) => a.dispose());
+      cache.clear();
       act = null;
       meter?.remove();
       environment.dispose();

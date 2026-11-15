@@ -30,6 +30,8 @@ interface StageContextValue {
   release(key: string): void;
   /** 让场景做事（换组、选中、进入） */
   command(cmd: StageCommand): void;
+  /** 网页自己要换幕时用：先落黑幕再跳（例如"回到胶卷"） */
+  go(href: string, curtain?: boolean): void;
   /** 场景最新的状态，配合 useStageState 用 */
   store: StateStore;
 }
@@ -64,6 +66,12 @@ export function useStage() {
   return useContext(StageContext);
 }
 
+/** 幕与幕之间的黑幕：场景让网页跳转时落下，下一幕准备好后揭开 */
+function setCurtain(on: boolean) {
+  if (on) document.documentElement.dataset.stageCurtain = "on";
+  else delete document.documentElement.dataset.stageCurtain;
+}
+
 function setHtmlStage(v: "pending" | "on" | null) {
   const d = document.documentElement;
   if (v) d.setAttribute("data-stage", v);
@@ -77,6 +85,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
   const [req, setReq] = useState<StageRequest | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const tagRef = useRef<HTMLDivElement>(null);
   const engineRef = useRef<StageEngine | null>(null);
   const [store] = useState(() => new StateStore());
   const router = useRouter();
@@ -115,6 +124,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
       teardown();
       setMode("flat");
       setHtmlStage(null);
+      setCurtain(false);
       document.documentElement.dataset.stageReason = reason;
     },
     [teardown]
@@ -130,6 +140,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
         setMode("flat");
         setHtmlStage(null);
       }
+      setCurtain(false);
       return;
     }
     if (!want3D || !req) return;
@@ -154,7 +165,11 @@ export function StageProvider({ children }: { children: ReactNode }) {
             onQuality: (level) => {
               document.documentElement.dataset.stageQuality = level > 0 ? "low" : "full";
             },
-            onNavigate: (href) => router.push(href, { scroll: false }),
+            onNavigate: (href, curtain) => {
+              if (curtain) setCurtain(true);
+              router.push(href, { scroll: false });
+            },
+            tag: tagRef.current!,
             ring: ringRef.current!
           });
         }
@@ -163,6 +178,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
         window.clearTimeout(timer);
         setMode("on");
         setHtmlStage("on");
+        setCurtain(false);
       } catch (err) {
         if (!cancelled) fallBack(err instanceof Error && /chunk|import|fetch/i.test(err.message) ? "load-error" : "init-error", err);
       }
@@ -183,6 +199,7 @@ export function StageProvider({ children }: { children: ReactNode }) {
     () => () => {
       teardown();
       document.documentElement.removeAttribute("data-stage");
+      setCurtain(false);
     },
     [teardown]
   );
@@ -202,22 +219,38 @@ export function StageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const request = useCallback((r: StageRequest) => {
+    window.clearTimeout(releaseTimer.current);
     // 同一幕、同一份数据时不重复布置；数据变了（例如地址里的 ?at= 变了）交给这一幕自己更新
     setReq((prev) => (prev && prev.kind === r.kind && prev.key === r.key && prev.data === r.data ? prev : r));
   }, []);
 
+  // 页面换了以后，新页面的数据要从服务器取，中间会显示一下"加载中"。这时先别停引擎，
+  // 等 1.5 秒：新页面也有立体场景，就直接换过去，不会闪一下普通版
+  const releaseTimer = useRef(0);
   const release = useCallback((key: string) => {
-    setReq((prev) => (prev && prev.key === key ? null : prev));
+    window.clearTimeout(releaseTimer.current);
+    releaseTimer.current = window.setTimeout(() => setReq((prev) => (prev && prev.key === key ? null : prev)), 1500);
   }, []);
 
   const command = useCallback((cmd: StageCommand) => engineRef.current?.command(cmd), []);
 
-  const value = useMemo(() => ({ mode, canOffer3D, choose, request, release, command, store }), [mode, canOffer3D, choose, request, release, command, store]);
+  const go = useCallback(
+    (href: string, curtain = true) => {
+      if (curtain && engineRef.current) setCurtain(true);
+      router.push(href, { scroll: false });
+    },
+    [router]
+  );
+
+  const value = useMemo(() => ({ mode, canOffer3D, choose, request, release, command, go, store }), [mode, canOffer3D, choose, request, release, command, go, store]);
 
   return (
     <StageContext.Provider value={value}>
       <div ref={containerRef} className="stage-canvas" aria-hidden="true" />
       <div ref={ringRef} className="stage-ring" aria-hidden="true" />
+      <div ref={tagRef} className="stage-tag" aria-hidden="true" />
+      <FocusProxy active={mode === "on"} />
+      <div className="stage-curtain" aria-hidden="true" />
       {children}
     </StageContext.Provider>
   );
@@ -242,5 +275,38 @@ export function StageToggle({ className = "stage-toggle" }: { className?: string
     <button type="button" className={className} onClick={() => stage.choose(on ? "flat" : "3d")} aria-label={on ? "切换到普通版" : "切换到立体版"}>
       {on ? "普通版" : "立体版"}
     </button>
+  );
+}
+
+/**
+ * 立体模式下普通版的正文是隐藏的，键盘焦点停在里面时看不见停在哪。
+ * 这一条在画面下方写出焦点所在的链接或按钮（例如"来源：湖北省博物馆官网"），场景里对应的物件另有黄铜框。
+ */
+function FocusProxy({ active }: { active: boolean }) {
+  const [text, setText] = useState<string | null>(null);
+  useEffect(() => {
+    if (!active) {
+      setText(null);
+      return;
+    }
+    const onIn = (e: FocusEvent) => {
+      const t = e.target as HTMLElement | null;
+      const main = t?.closest?.("[data-shell-main]");
+      if (!t || !main || t.closest("[data-stage-show]")) return setText(null);
+      const label = (t.getAttribute("aria-label") ?? t.textContent ?? "").replace(/\s+/g, " ").trim();
+      setText(label ? (label.length > 48 ? `${label.slice(0, 48)}……` : label) : null);
+    };
+    const onOut = () => setText(null);
+    document.addEventListener("focusin", onIn);
+    document.addEventListener("focusout", onOut);
+    return () => {
+      document.removeEventListener("focusin", onIn);
+      document.removeEventListener("focusout", onOut);
+    };
+  }, [active]);
+  return (
+    <div className="stage-focus" aria-hidden="true" data-on={text ? "" : undefined}>
+      {text ? `焦点 · ${text} · 回车打开` : null}
+    </div>
   );
 }
