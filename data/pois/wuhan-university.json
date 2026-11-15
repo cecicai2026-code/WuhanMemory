@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "id": "wuhan-university",
+  "name": "武汉大学",
+  "district": "武昌区",
+  "category": "campus",
+  "tags": [],
+  "sources": [
+    {
+      "id": "whu-intro",
+      "type": "official-site",
+      "title": "武汉大学官网：学校简介",
+      "url": "https://www.whu.edu.cn/xxgk/xxjj.htm",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "thepaper-2026",
+      "type": "media",
+      "title": "澎湃新闻：公众进入武汉大学已无需预约，带上身份证即可进校（2026-05-13）",
+      "url": "https://www.thepaper.cn/newsDetail_forward_33174524",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "bendibao-2012",
+      "type": "other",
+      "title": "本地宝：武汉旅游景点介绍：武汉大学（2012-09-20）",
+      "url": "https://m.bendibao.com/show426511_6.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "ctrip-travels-whu-2022",
+      "type": "travel-platform",
+      "title": "携程游记：武汉大学樱花，黄鹤楼，美食全览（2022-07-05）",
+      "url": "https://gs.ctrip.com/html5/you/travels/145/4028013.html",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.364514,
+      "lat": 30.536243,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：武汉大学（珞珈山街道八一路299号），B001B0IZY1。校园很大，这个点不一定在校门，游客从哪个门进待确认。"
+  },
+  "address": {
+    "value": "湖北省武汉市武昌区八一路 299 号",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "intro": {
+    "value": "教育部直属的重点综合性大学。它是学校，不是旅游景点，入校参观要按学校的规定。",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "学校溯源于 1893 年湖广总督张之洞奏请创办的自强学堂，1928 年定名为国立武汉大学。2000 年与武汉水利电力大学、武汉测绘科技大学、湖北医科大学合并，组建新的武汉大学。",
+    "verification": "placeholder",
+    "sourceId": "whu-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 2026-05 澎湃新闻说工作日也能进校，但没写几点；之前 2024 年的规定是周末节假日 8:30–17:30"
+  },
+  "ticket": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 官网没有写参观收费"
+  },
+  "reservation": {
+    "value": {
+      "required": false,
+      "how": null,
+      "advanceDays": null,
+      "note": "带身份证即可进校，工作日也可以进。樱花季另有规定，每年单独公布。"
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "报道说当时学校官网还没发布新规定，预约入口仍然保留。"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": {
+      "metro": [],
+      "note": "游客从珞珈门（正门）或弘毅门进校。"
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-2026",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": "樱花季在每年 3 月下旬到 4 月上旬，这时人最多。",
+    "verification": "placeholder",
+    "sourceId": "bendibao-2012",
+    "lastCheckedAt": "2026-11-15",
+    "note": "来自 2012 年的文章。"
+  },
+  "photoSpots": [
+    {
+      "value": {
+        "title": "樱花大道",
+        "description": "东区樱花宿舍旁约 200 米长的樱花大道，有 1000 多株樱花。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "bendibao-2012",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2012 年的文章。"
+    },
+    {
+      "value": {
+        "title": "樱花城堡、樱顶、珞珈广场",
+        "description": "游记列出的校内主要赏樱地点，和樱花大道一起。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-whu-2022",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2022 年的用户游记。"
+    },
+    {
+      "value": {
+        "title": "老斋舍前的樱花大道",
+        "description": "游记说老斋舍前的樱花大道是拍樱花的好位置。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-whu-2022",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2022 年的用户游记。"
+    }
+  ],
+  "food": [],
+  "reviews": [],
+  "photos": [
+    {
+      "file": "whu-early-buildings.jpg",
+      "caption": "武汉大学早期建筑群的黑白老照片：山坡上一组中式大屋顶建筑。",
+      "license": "official-placeholder",
+      "sourceUrl": "https://www.whu.edu.cn/whsh.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/54/73/A6315EF383FED4CC8FEEB518F79_E7C8A6F9_EE5E.jpg（页面\"早期建筑群\"一段下的配图，没有图注）"
+    },
+    {
+      "file": "whu-snow-aerial.jpg",
+      "caption": "雪后的武汉大学校园鸟瞰，屋顶积雪，远处是湖面。",
+      "license": "official-placeholder",
+      "author": "曹海钢",
+      "sourceUrl": "https://www.whu.edu.cn/xxgk/ljyx/a2026n/jan.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/__local/C/AB/30/325957A7184D3C3506FD8A918A7_21E74B5B_214F1D.jpg（官网\"珞珈映像\"2026 年 1 月，标题\"岁末大寒至，静候春归来\"）"
+    },
+    {
+      "file": "whu-campus-aerial.jpg",
+      "caption": "秋天的武汉大学校园鸟瞰，树林中间是绿色屋顶的老建筑。",
+      "license": "official-placeholder",
+      "sourceUrl": "https://www.whu.edu.cn/xxgk/xxjj.htm",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.whu.edu.cn/new2024/images/ar1.jpg（学校简介页的配图，没有图注）"
+    }
+  ]
+}

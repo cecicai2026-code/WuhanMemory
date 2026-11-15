@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "id": "tanhualin",
+  "name": "昙华林",
+  "district": "武昌区",
+  "category": "street",
+  "tags": [],
+  "sources": [
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "qunar-thl",
+      "type": "travel-platform",
+      "title": "去哪儿：昙华林攻略（页面没有日期，点评到 2019 年）",
+      "url": "https://touch.travel.qunar.com/poi/5740265",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "xinhua-2026",
+      "type": "media",
+      "title": "新华网：武汉昙华林：古城根脉里的文化焕新（2026-09-15）",
+      "url": "https://www.news.cn/local/20260915/01f720051f9a44649a6e615427fff07e/c.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "maigoo-thl",
+      "type": "other",
+      "title": "买购网：昙华林词条（页面没有日期）",
+      "url": "https://www.maigoo.com/citiao/225159.html",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.308791,
+      "lat": 30.55194,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：昙华林（粮道街道胭脂路仁济医院西侧），B001B1H7IS。"
+  },
+  "address": {
+    "value": "武汉市武昌区胭脂路",
+    "verification": "placeholder",
+    "sourceId": "qunar-thl",
+    "lastCheckedAt": "2026-11-15",
+    "note": "买购网写\"粮道街\"\"花园山附近\"。高德写\"粮道街道胭脂路仁济医院西侧\"。"
+  },
+  "intro": {
+    "value": "武昌古城里的历史文化街区，汇集了 50 多栋历史文化建筑。2005 年以来按\"最小干预\"的原则保护修缮。",
+    "verification": "placeholder",
+    "sourceId": "xinhua-2026",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "明洪武四年（1371 年）武昌城扩建后逐渐形成的老街。1861 年汉口开埠后，这一带渐渐华洋杂处；1871 年美国圣公会在这里创办文华书院。",
+    "verification": "placeholder",
+    "sourceId": "maigoo-thl",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "openingHours": {
+    "value": {
+      "allDay": true,
+      "periods": [],
+      "closedWeekdays": [],
+      "note": "不少老建筑不对外开放。"
+    },
+    "verification": "placeholder",
+    "sourceId": "qunar-thl",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "maigoo-thl",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "去哪儿页面显示\"门票 8 元起\"的预订价，没说是什么票。"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": {
+      "metro": [
+        {
+          "station": "螃蟹岬站",
+          "line": "7 号线",
+          "exit": "E",
+          "walkMinutes": null
+        }
+      ],
+      "note": "出站步行约 927 米。"
+    },
+    "verification": "placeholder",
+    "sourceId": "qunar-thl",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "买购网和去哪儿的用户点评写的是 2 号线螃蟹岬站 A 出口。"
+  },
+  "recommendedDurationMinutes": {
+    "value": 180,
+    "verification": "placeholder",
+    "sourceId": "maigoo-thl",
+    "lastCheckedAt": "2026-11-15",
+    "note": "买购网写 3–4 小时；去哪儿用户点评写 2–3 小时。"
+  },
+  "bestTime": {
+    "value": "3–5 月和 9–11 月气候最适宜。",
+    "verification": "placeholder",
+    "sourceId": "maigoo-thl",
+    "lastCheckedAt": "2026-11-15",
+    "note": "去哪儿用户点评说上午很多店还没开门。"
+  },
+  "photoSpots": [
+    {
+      "value": {
+        "title": "涂鸦墙",
+        "description": "街上有特色涂鸦墙。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "qunar-thl",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2015 年的用户点评。"
+    }
+  ],
+  "food": [
+    {
+      "value": {
+        "name": "徐刀刀（鲜花饼、铜锣烧）",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "qunar-thl",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2019 年的用户点评。"
+    },
+    {
+      "value": {
+        "name": "三鲜豆皮（布瓦昙花门口斜对面）",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "qunar-thl",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2017 年的用户点评。"
+    },
+    {
+      "value": {
+        "name": "赵师傅油饼包烧麦",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "qunar-thl",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "来自 2018 年的用户点评。"
+    }
+  ],
+  "reviews": [],
+  "photos": []
+}

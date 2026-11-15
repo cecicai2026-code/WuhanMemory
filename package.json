@@ -5,12 +5,14 @@
   "scripts": {
     "dev": "corepack pnpm --filter @wuhanmemory/web dev",
     "dev:web": "corepack pnpm --filter @wuhanmemory/web dev",
-    "dev:api": "cd apps/api && python3 -m uvicorn app.main:app --reload --port 8000",
+    "dev:api": "cd apps/api && .venv/bin/python -m uvicorn app.main:app --reload --port 8000",
     "build": "corepack pnpm --filter @wuhanmemory/shared build && corepack pnpm --filter @wuhanmemory/map-core build && corepack pnpm --filter @wuhanmemory/web build",
     "lint": "corepack pnpm --filter @wuhanmemory/shared lint && corepack pnpm --filter @wuhanmemory/map-core lint && corepack pnpm --filter @wuhanmemory/web lint",
     "typecheck": "corepack pnpm --filter @wuhanmemory/shared typecheck && corepack pnpm --filter @wuhanmemory/map-core typecheck && corepack pnpm --filter @wuhanmemory/web typecheck",
     "test": "corepack pnpm typecheck",
-    "test:api": "cd apps/api && python3 -m pytest",
+    "test:api": "cd apps/api && .venv/bin/python -m pytest",
+    "check:data": "cd apps/api && .venv/bin/python -m app.data_quality",
+    "amap:lookup": "cd apps/api && .venv/bin/python -m app.tools.amap_lookup",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {

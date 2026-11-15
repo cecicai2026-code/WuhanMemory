@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "id": "hankou-river-beach",
+  "name": "汉口江滩",
+  "district": "江岸区",
+  "category": "riverside",
+  "tags": [],
+  "sources": [
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "dahepiao-hkjt",
+      "type": "travel-platform",
+      "title": "大河票务网：汉口江滩门票、开放时间、游玩攻略（2022-07-22 发布）",
+      "url": "https://www.dahepiao.com/lvyounews1/20220722286191.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "thepaper-free-2024",
+      "type": "media",
+      "title": "澎湃号·湃客：第一次到武汉游玩，10 个免费又好玩景点（2024-01-24，自媒体投稿）",
+      "url": "https://thepaper.cn/newsDetail_forward_26123772",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.319404,
+      "lat": 30.610162,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：汉口江滩（江滩大道1号），B0FFGCIG85。汉口江滩沿江有好几公里长，这个点在江滩大道 1 号附近，要不要换成某个入口待确认。"
+  },
+  "address": {
+    "value": "武汉市江岸区江滩大道 1 号",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-hkjt",
+    "lastCheckedAt": "2026-11-15",
+    "note": "同一页面另一处写的是\"江岸区沿江大道\"。"
+  },
+  "intro": {
+    "value": "长江边的江滩公园。夏天可以去新建的观江亲水平台踩水，还有铺着细沙的儿童友好公园。",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-hkjt",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+  },
+  "openingHours": {
+    "value": {
+      "allDay": true,
+      "periods": [],
+      "closedWeekdays": [],
+      "note": "具体以现场为准。"
+    },
+    "verification": "placeholder",
+    "sourceId": "dahepiao-hkjt",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "来源是 2022 年的文章。"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "thepaper-free-2024",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": "太阳落山前到江边吹晚风；晚上有灯光秀。",
+    "verification": "placeholder",
+    "sourceId": "thepaper-free-2024",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "photoSpots": [],
+  "food": [
+    {
+      "value": {
+        "name": "永无岛咖啡",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "dahepiao-hkjt",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "文章写它距三阳广场 1.6 公里，不是距江滩的距离；2022 年的文章。"
+    }
+  ],
+  "reviews": [],
+  "photos": []
+}

@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "id": "east-lake-tingtao",
+  "name": "东湖听涛景区",
+  "district": "武昌区",
+  "category": "park",
+  "tags": [],
+  "sources": [
+    {
+      "id": "donghu-map",
+      "type": "government",
+      "title": "武汉东湖生态旅游风景区管委会：东湖最新漫游地图（2026-01-22 发布）",
+      "url": "https://www.whdonghu.gov.cn/ztzl_6323/wlzl/202601/t20260122_2716447.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "dahepiao-tt-2022",
+      "type": "travel-platform",
+      "title": "大河票务网：东湖听涛景区开放时间+门票（2022-09-13 发布）",
+      "url": "https://www.dahepiao.com/lvyounews1/20220913296487.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "dahepiao-xyg-2025",
+      "type": "travel-platform",
+      "title": "大河票务网：2025 武汉行吟阁门票（2025-08-04）",
+      "url": "https://www.dahepiao.com/lvyounews1/20250804524159.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "qunar-donghu",
+      "type": "travel-platform",
+      "title": "去哪儿：东湖生态旅游风景区攻略（页面没有日期）",
+      "url": "https://touch.travel.qunar.com/poi/702578",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.376688,
+      "lat": 30.564713,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：东湖听涛景区（东湖路特1号东湖生态旅游风景区西北角），B001B1ASJQ。"
+  },
+  "address": {
+    "value": "武汉市武昌区黄鹂路 88 号",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-tt-2022",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德写的是\"东湖路特 1 号东湖生态旅游风景区西北角\"。"
+  },
+  "intro": {
+    "value": "东湖风景区里的一片景区，碧潭观鱼、长天楼、苍柏园、行吟阁、小梅岭、天圜美术馆都在这里。",
+    "verification": "placeholder",
+    "sourceId": "donghu-map",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "听涛是东湖风景区最早建成开放的景区，以纪念屈原为主题；景区里的长天楼 1956 年修建。",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-tt-2022",
+    "lastCheckedAt": "2026-11-15",
+    "note": "大河票务网 2025 年的文章写行吟阁始建于 1955 年。"
+  },
+  "openingHours": {
+    "value": {
+      "allDay": false,
+      "periods": [
+        {
+          "months": [
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+          ],
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "09:00",
+          "close": "17:00",
+          "lastEntry": null
+        }
+      ],
+      "closedWeekdays": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "dahepiao-tt-2022",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "原文是\"04/08–12/31 09:00–17:00\"，1 月到 4 月初没写。行吟阁另有 2025 年的文章写全年 9:00–15:00。"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "donghu-map",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "来源页面是 2026-01-22 发布的漫游地图，景区内是否有收费项目待确认。"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": {
+      "metro": [],
+      "note": "公交 14、108、402、534、537、578、605、777、810 路可以到。从湖北省博物馆沿黄鹂路往东走约 10 分钟。"
+    },
+    "verification": "placeholder",
+    "sourceId": "qunar-donghu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "步行时间来自 2015 年的用户点评。"
+  },
+  "recommendedDurationMinutes": {
+    "value": 90,
+    "verification": "placeholder",
+    "sourceId": "qunar-donghu",
+    "lastCheckedAt": "2026-11-15",
+    "note": "来自 2015 年的用户点评：骑车转完听涛 1–2 小时，坐观光车 30–50 分钟。"
+  },
+  "bestTime": {
+    "value": "四季都适合：春天赏景，夏天避暑。",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-tt-2022",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "photoSpots": [
+    {
+      "value": {
+        "title": "行吟阁前的屈原铜像",
+        "description": "阁前一尊 3.6 米高的屈原铜像。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "dahepiao-xyg-2025",
+      "lastCheckedAt": "2026-11-15"
+    },
+    {
+      "value": {
+        "title": "行吟阁二、三层窗口",
+        "description": "从窗口能看到湖面和听涛轩。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "dahepiao-xyg-2025",
+      "lastCheckedAt": "2026-11-15"
+    }
+  ],
+  "food": [
+    {
+      "value": {
+        "name": "长天楼",
+        "walkMinutes": null,
+        "note": null
+      },
+      "verification": "placeholder",
+      "sourceId": "dahepiao-tt-2022",
+      "lastCheckedAt": "2026-11-15",
+      "expiresAt": "2027-05-14",
+      "note": "文章写整栋楼可同时容纳上千人吃饭喝茶，没写菜品；2022 年的文章。"
+    }
+  ],
+  "reviews": [],
+  "photos": []
+}

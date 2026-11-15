@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "id": "lihuangpi-road",
+  "name": "黎黄陂路",
+  "district": "江岸区",
+  "category": "street",
+  "tags": [],
+  "sources": [
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "wingon",
+      "type": "travel-platform",
+      "title": "永安旅游：黎黄陂路参观攻略 2026（页面没有日期）",
+      "url": "https://www.wingontravel.com/discovery/scenic-lihuangpi-rd-18087019",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "ctrip-travels-lhp-2020",
+      "type": "travel-platform",
+      "title": "携程游记：武汉最美旅拍地之黎黄陂路（2020-11-06）",
+      "url": "https://gs.ctrip.com/html5/you/travels/145/3980959.html",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.299353,
+      "lat": 30.587731,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：黎黄陂路（江岸区），B0FFH4XR78。选的是黎黄陂路这条路本身的点，不是游客中心。"
+  },
+  "address": {
+    "value": "湖北省武汉市江岸区黎黄陂路",
+    "verification": "placeholder",
+    "sourceId": "wingon",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "intro": {
+    "value": "一条六百多米长的老街，一头连着沿江大道，一头接中山大道，沿街和周边保存着十几处欧式老建筑。",
+    "verification": "placeholder",
+    "sourceId": "wingon",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "街上有俄国巡捕房旧址、美国海军青年会旧址、万国医院旧址、巴公房子等老建筑，门前有介绍历史沿革的铭牌。",
+    "verification": "placeholder",
+    "sourceId": "wingon",
+    "lastCheckedAt": "2026-11-15",
+    "note": "来源没有写这些建筑的年代。2020 年的一篇携程游记写黎黄陂路建于 1900 年、全长 604 米、保留约 17 处老建筑。"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+  },
+  "ticket": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方票价"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方交通指引"
+  },
+  "recommendedDurationMinutes": {
+    "value": 60,
+    "verification": "placeholder",
+    "sourceId": "wingon",
+    "lastCheckedAt": "2026-11-15",
+    "note": "永安旅游写建议游玩 1–3 小时。"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [
+    {
+      "value": {
+        "title": "珞珈山街口的红砖老房子",
+        "description": "珞珈山街和黎黄陂路交界处，正对着一排红砖老房子。",
+        "photo": null
+      },
+      "verification": "placeholder",
+      "sourceId": "ctrip-travels-lhp-2020",
+      "lastCheckedAt": "2026-11-15",
+      "note": "来自 2020 年的用户游记。"
+    }
+  ],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}

@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "id": "broken-location-todo",
+  "name": "测试景点",
+  "district": "测试区",
+  "category": "museum",
+  "tags": [
+    "测试"
+  ],
+  "sources": [
+    {
+      "id": "visit",
+      "type": "field-visit",
+      "title": "测试走访",
+      "accessedAt": "2026-10-01"
+    },
+    {
+      "id": "official",
+      "type": "official-site",
+      "title": "测试官网",
+      "url": "https://example.com/official",
+      "accessedAt": "2026-11-10"
+    }
+  ],
+  "location": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia)"
+  },
+  "address": {
+    "value": "测试地址",
+    "verification": "onsite",
+    "sourceId": "visit",
+    "lastCheckedAt": "2026-10-01"
+  },
+  "intro": {
+    "value": "测试简介",
+    "verification": "placeholder",
+    "sourceId": "official",
+    "lastCheckedAt": "2026-11-10"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 测试"
+  },
+  "openingHours": {
+    "value": {
+      "periods": [
+        {
+          "weekdays": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "09:00",
+          "close": "17:00",
+          "lastEntry": "16:00"
+        }
+      ],
+      "closedWeekdays": [
+        1
+      ]
+    },
+    "verification": "placeholder",
+    "sourceId": "official",
+    "lastCheckedAt": "2026-11-10",
+    "expiresAt": "2027-02-08"
+  },
+  "ticket": {
+    "value": {
+      "free": true
+    },
+    "verification": "onsite",
+    "sourceId": "visit",
+    "lastCheckedAt": "2026-10-01",
+    "expiresAt": "2027-03-30"
+  },
+  "reservation": {
+    "value": {
+      "required": true,
+      "how": "测试小程序",
+      "advanceDays": 1
+    },
+    "verification": "placeholder",
+    "sourceId": "official",
+    "lastCheckedAt": "2026-11-10",
+    "expiresAt": "2027-02-08"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 测试"
+  },
+  "transport": {
+    "value": {
+      "metro": [
+        {
+          "station": "测试站",
+          "line": "测试线",
+          "exit": "A",
+          "walkMinutes": 5
+        }
+      ]
+    },
+    "verification": "onsite",
+    "sourceId": "visit",
+    "lastCheckedAt": "2026-10-01",
+    "expiresAt": "2027-10-01"
+  },
+  "recommendedDurationMinutes": {
+    "value": 120,
+    "verification": "onsite",
+    "sourceId": "visit",
+    "lastCheckedAt": "2026-10-01"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 测试"
+  },
+  "photoSpots": [
+    {
+      "value": {
+        "title": "测试机位",
+        "description": "测试说明",
+        "photo": "sample.jpg"
+      },
+      "verification": "onsite",
+      "sourceId": "visit",
+      "lastCheckedAt": "2026-10-01"
+    }
+  ],
+  "food": [],
+  "reviews": [
+    {
+      "author": "测试作者",
+      "relation": "self",
+      "visitedAt": "2026-10-01",
+      "text": "测试评价"
+    }
+  ],
+  "photos": [
+    {
+      "file": "sample.jpg",
+      "caption": "测试照片",
+      "license": "own",
+      "author": "测试作者",
+      "takenAt": "2026-10-01"
+    }
+  ]
+}

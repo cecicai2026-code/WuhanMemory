@@ -1,7 +1,12 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# 仓库根目录：apps/api/app/core/config.py 往上四层
+REPO_ROOT = Path(__file__).resolve().parents[4]
+API_ROOT = Path(__file__).resolve().parents[2]
 
 
 class Settings(BaseSettings):
@@ -24,6 +29,23 @@ class Settings(BaseSettings):
 
     llm_request_timeout_seconds: int = 60
     llm_max_retries: int = 2
+
+    # 高德 Web 服务 key，只在后端用（地点搜索、路线规划）
+    amap_web_service_key: str | None = None
+    amap_base_url: str = "https://restapi.amap.com"
+
+    # 景点资料（data/pois/*.json）和照片所在的目录，见 ADR 0003
+    data_dir: Path = REPO_ROOT / "data"
+    # SQLite 数据库文件。相对路径按 apps/api 算
+    database_url: str = "sqlite:///./wuhanmemory.db"
+
+    @property
+    def database_path(self) -> Path:
+        prefix = "sqlite:///"
+        if not self.database_url.startswith(prefix):
+            raise ValueError(f"DATABASE_URL 只支持 sqlite:///，现在是 {self.database_url}")
+        path = Path(self.database_url[len(prefix):])
+        return path if path.is_absolute() else API_ROOT / path
 
 
 @lru_cache

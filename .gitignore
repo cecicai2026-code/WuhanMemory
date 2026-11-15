@@ -25,3 +25,9 @@ __pycache__/
 *.db
 *.db-journal
 *.sqlite3
+
+# 官网占位照片有版权，不提交，只在景点 JSON 里记来源（设计规范第 12 节）
+data/photos-placeholder/
+
+# 高德地点搜索的原始结果，核对后写进景点资料，本身不提交
+data/amap-lookup/

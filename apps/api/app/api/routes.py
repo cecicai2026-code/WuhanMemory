@@ -1,8 +1,13 @@
+"""对话、规划和分享接口。
+
+2026-11-15（板块 2）删掉了 mock 行程：这些接口原来不管请求什么都返回同一份编出来的
+武汉三日游。真正的规划链路在板块 5 做，分享页在板块 7 做；在那之前如实返回"还没有"。
+"""
+
 from uuid import uuid4
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
-from app.core.config import settings
 from app.schemas.api import (
     ConversationResponse,
     CreateConversationRequest,
@@ -13,8 +18,6 @@ from app.schemas.api import (
     ShareResponse,
 )
 from app.schemas.itinerary import ItineraryVersion
-from app.services.llm.gateway import llm_gateway
-from app.services.planning.mock_planner import load_mock_itinerary
 
 router = APIRouter(prefix="/api")
 
@@ -25,51 +28,25 @@ async def create_conversation(request: CreateConversationRequest) -> Conversatio
 
 
 @router.post("/conversations/{conversation_id}/messages", response_model=PlanningJobResponse)
-async def send_message(
-    conversation_id: str,
-    request: SendMessageRequest,
-) -> PlanningJobResponse:
-    await llm_gateway.complete_json(
-        system_prompt="Extract travel planning preferences as JSON.",
-        user_prompt=request.content,
-        schema={"type": "object", "required": ["city", "intent"]},
-    )
-    return PlanningJobResponse(
-        messageId=f"msg_{uuid4().hex}",
-        planningJobId=f"job_{uuid4().hex}",
-        itineraryVersionId="mock-wuhan-3-days",
-        status="completed",
-    )
+async def send_message(conversation_id: str, request: SendMessageRequest) -> PlanningJobResponse:
+    raise HTTPException(status_code=501, detail="行程规划还没有实现（板块 5）")
 
 
 @router.get("/planning-jobs/{job_id}", response_model=PlanningJobStatus)
 async def get_planning_job(job_id: str) -> PlanningJobStatus:
-    return PlanningJobStatus(
-        jobId=job_id,
-        status="completed",
-        stage="mock_itinerary_ready",
-        progress=1.0,
-    )
+    raise HTTPException(status_code=404, detail=f"没有这个规划任务：{job_id}")
 
 
 @router.get("/itinerary-versions/{version_id}", response_model=ItineraryVersion)
 async def get_itinerary_version(version_id: str) -> ItineraryVersion:
-    return load_mock_itinerary()
+    raise HTTPException(status_code=404, detail=f"没有这份行程：{version_id}")
 
 
 @router.post("/itinerary-versions/{version_id}/share", response_model=ShareResponse)
-async def publish_share_page(
-    version_id: str,
-    request: PublishShareRequest,
-) -> ShareResponse:
-    slug = "wuhan-3-days-mock"
-    return ShareResponse(
-        shareId=f"share_{uuid4().hex}",
-        slug=slug,
-        url=f"{settings.public_app_url}/s/{slug}",
-    )
+async def publish_share_page(version_id: str, request: PublishShareRequest) -> ShareResponse:
+    raise HTTPException(status_code=404, detail=f"没有这份行程：{version_id}")
 
 
 @router.get("/share/{slug}", response_model=ItineraryVersion)
 async def get_share_page(slug: str) -> ItineraryVersion:
-    return load_mock_itinerary()
+    raise HTTPException(status_code=404, detail=f"没有这个分享页：{slug}")

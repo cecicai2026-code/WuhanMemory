@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15
+最后更新: 2026-11-15（板块 2 收尾中）
 
 ## 当前阶段
 
@@ -15,13 +15,48 @@
 
 板块 1A 是在分支 `block-1a-shell` 上做的，已合进 main。
 
+**板块 2（收尾中，分支 `block-2-poi-data`）**：景点数据格式、数据检查脚本、SQLite 导入和接口、地点档案接真实接口都已完成；10 个景点的资料全部是占位，Cecilia 2026-11-15 逐条回答了收尾问题。剩下：Cecilia 启动前后端看页面、运行 `pnpm build`，然后合进 main。
+
+## 板块 2 完成情况
+
+- [x] 数据格式由 Cecilia 确认（2026-11-15）：每条信息带 `verification`（实地核实 / 核对过来源 / 官网占位 / TODO）、`sourceId`、`lastCheckedAt`，会变的信息还要 `expiresAt`；过期上限：开放时间和预约 90 天，票价、支付、周边美食 180 天，交通 365 天。详见 `docs/architecture/data-model.md`。
+- [x] 填写模板 `docs/data/poi-fill-template.md`。
+- [x] 数据检查脚本 `corepack pnpm check:data`，错误和警告两级；测试里 12 份故意放错的数据全部能查出来。
+- [x] SQLite 导入（只导入没有错误的景点）、repository 层、`GET /api/pois`、`GET /api/pois/{id}`。
+- [x] 删除后端的 mock 行程数据；行程、规划、分享接口在板块 5、7 之前如实返回 404 或 501。
+- [x] `/places`、`/places/[id]` 接到真实接口：每个条目显示核实方式、来源、核实日期、有效期；每张纸右下角盖一个章（已核实、待确认或已过期）。
+- [x] 后端测试 44 个通过；前端 `typecheck` 通过。
+- [x] 文档：`data-model.md` 重写，`api-contracts.md`、`frontend-ux.md`、设计规范第 12 节已更新。
+- [x] 坐标用高德地点搜索脚本查（Cecilia 选的），`corepack pnpm amap:lookup`。9 个景点已填坐标，标"待确认"；武汉大学那次请求超出了高德每秒请求数限制，脚本已加限速和重试，等 Cecilia 重跑。
+- [x] 10 个景点的资料文件：只用官方来源（景点官网、区政府和景区管委会网站），21 条官网占位，89 条 TODO(Cecilia)。黄鹤楼、户部巷、昙华林、汉口江滩、古德寺、黎黄陂路没找到官方来源。
+- [x] 官网占位照片（Cecilia 同意下载）：武汉大学 3 张、江汉路 1 张，放在不进 git 的 `data/photos-placeholder/`。湖北省博物馆官网的图片有防盗链，没下载。
+- [x] 武汉大学的坐标（重跑高德脚本后补上）。
+- [x] Cecilia 决定（2026-11-15）：官方来源找不到时，旅游平台和媒体的资料也可以用来占位。新增来源类型 `media`、`travel-platform`，网页上写明来源类型。补了两轮后：占位 95 条，TODO 36 条。携程景点页拒绝程序访问，没用上。
+- [x] Cecilia 回答（2026-11-15）：10 个景点一个都没去过，资料继续用占位；10 个都保留；先不加新景点。
+- [x] Cecilia 确认（2026-11-15）：古德寺保持现状，备注里写着"高德标着暂停开放，待确认"；汉口江滩的点先不换，板块 3 接上地图后在地图上看了再定。
+- [x] 实地核实这一步这次跳过，因为 Cecilia 还没去过这些景点。剩下的 36 条 TODO（支付方式 10 个都没有、街区要不要预约、几个景点的游玩时长和周边美食）等以后实地去了再补，见下面"以后实地去了怎么补"。
+- [x] 10 个景点全部通过检查（2026-11-15，错误 0、警告 0）。
+- [x] 去掉过期条目的红褐色竖线和红字（违反设计规范 8.3：红褐色只用于页码小字和"已过期"章）。
+- [x] Claude 自己加的几处界面，Cecilia 逐条决定（2026-11-15）：条目旁的小章去掉，每张纸只盖一个章；详情页顶部说明保留，"待确认"改成"先用官网、旅游平台或媒体资料占位，还没核实"；卡片上的计数保留；预约和支付分成两条（概览里"是否需要预约"，游玩建议里"支付方式"）。设计规范 8.3、12 节已补上。
+- [x] Claude 在浏览器面板里看了页面（电脑、平板、手机三种宽度，Cecilia 同意，只看）。发现并修好一个 bug：一条资料都没有的纸（例如湖北省博物馆的周边美食）盖了"已核实"章，卡片计数也没算空着的拍照机位和周边美食。后端测试 51 个通过。
+- [x] Cecilia 运行 `pnpm build`，通过（2026-11-15）。
+- [ ] 合进 main。
+
+## 以后实地去了怎么补
+
+1. 照片放进 `data/photos/<景点id>/`，例如 `data/photos/hubei-museum/`。文件名只用英文小写、数字和短横线，例如 `entrance-01.jpg`、`night-view-02.jpg`。这个文件夹会提交到 git，所以只放自己拍的照片。
+2. 把去过的景点、日期，以及看到的开放时间、票价、支付方式、要不要预约告诉 Claude。Claude 在资料里加一条来源（类型 `field-visit`，写明日期），把对应条目改成"实地核实"，照片记进 `photos`，换掉官网占位照片。
+3. 运行 `corepack pnpm check:data`，通过后重启后端，网页上这几条就变成"已核实"。
+
+景点 id：`east-lake-tingtao` 东湖听涛、`gude-temple` 古德寺、`hankou-river-beach` 汉口江滩、`hubei-museum` 湖北省博物馆、`hubu-alley` 户部巷、`jianghan-road` 江汉路步行街、`lihuangpi-road` 黎黄陂路、`tanhualin` 昙华林、`wuhan-university` 武汉大学、`yellow-crane-tower` 黄鹤楼。
+
 ## 板块 1A 完成情况
 
 - [x] 颜色变量、字体（自托管）、基础组件、外壳（四角标注和菜单）、样式参考页 `/styleguide`。
 - [x] 临时首页（标题和四个入口），`/compare`、`/trips`、`/s/[slug]` 的空页面。
 - [x] 删除旧的浅色 mock 界面、假地图和前端的 mock 接口调用。
 - [x] `/map` 的布局：对话纸、灯箱（地图占位）、行程卡；手机上是底部面板。
-- [x] `/places` 列表：示例清单 10 个景点，只有名字和区，按区域筛选。
+- [x] `/places` 列表：示例清单 10 个景点，只有名字和区，按区域筛选（板块 2 已换成真实接口）。
 - [x] `/places/[id]` 详情：四个主题四张信纸，条目全部显示"待补充"。
 - [x] `typecheck` 通过。
 - [x] Cecilia 运行 `pnpm build`，通过。
@@ -30,11 +65,23 @@
 
 ## 怎么看网站
 
+地点档案要用后端的数据，所以前后端都要启动，各开一个终端窗口：
+
+```bash
+cd ~/WuhanMemory-project2 && corepack pnpm dev:api
+```
+
 ```bash
 cd ~/WuhanMemory-project2 && corepack pnpm dev
 ```
 
 然后打开 `http://localhost:3000/`。各页面网址见 `docs/architecture/frontend-ux.md`。
+
+检查景点资料：
+
+```bash
+cd ~/WuhanMemory-project2 && corepack pnpm check:data
+```
 
 ## 板块 0 完成情况
 
@@ -57,22 +104,17 @@ cd ~/WuhanMemory-project2 && corepack pnpm dev
 - `apps/api/app/main.py`、`core/config.py`、`schemas/itinerary.py`、`packages/shared/src/index.ts`：入口、配置和行程数据结构（景点字段要扩充）。
 - monorepo 工程结构。
 
-待重写或删除（后端的 mock，板块 2 和板块 5 处理）:
+板块 2 新增（后端）:
 
-- `packages/shared/data/wuhan-three-day-itinerary.json`、`packages/shared/src/mock.ts`（内容是编的 mock 数据；后端测试还在读它，所以 1A 没删）。
-- `apps/api/app/api/routes.py`、`services/planning/mock_planner.py`（全部返回同一份 mock）。
-- `apps/api/tests/test_api.py`（断言的是 mock 内容）。
-
-前端里的示例数据:
-
-- `apps/web/lib/places.ts` 里的 10 个景点只有名字和所在区，来自旧骨架，没有核实过。板块 2 换成真实数据。
+- `app/schemas/poi.py`（景点文件格式）、`app/data_quality/`（规则和检查）、`app/db/`（SQLite 和导入）、`app/repositories/`（repository 层）、`app/api/pois.py`（景点接口）、`app/services/poi_view.py`（算状态）。
+- 编出来的 mock 行程数据、`mock_planner.py` 已删除（板块 2）。`routes.py` 里的对话、规划、行程、分享接口在板块 5、7 重写。
+- `app/schemas/itinerary.py` 里的 `MapPoi` 还是旧字段，板块 5 改成引用景点数据。
 
 保留但暂不使用: `infra/docker/docker-compose.yml`、`infra/migrations/0001_initial_schema.sql`。
 
 ## 已知问题
 
-- `apps/api/app/core/config.py` 还没有高德和数据库的配置字段，板块 2、3 添加。
-- `docs/architecture/data-model.md` 里的表结构仍是 PostgreSQL 草案，板块 2 重写。
+- 10 个景点的资料全部是占位（官网、旅游平台、媒体），很多来源是 2012 到 2022 年的旧页面；网站公开前要实地核实，官网占位照片要换掉。
 - `docs/architecture/frontend-ux.md` 的页面结构和代码结构已按 1A 更新；地图交互、对话体验等章节还是早期设想，板块 3、5 实现时再核对。
 - `apps/web/package.json` 里的 `lucide-react` 现在没有用到，要不要卸载等 Cecilia 决定。
 - 首页四张入口卡和各空页面上的文案是 Claude 写的草稿，等 Cecilia 定稿。
@@ -111,7 +153,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 2（景点数据和数据质量规则）。开工时新建分支，先由 Claude 列出步骤、Cecilia 确认后再写代码。
+板块 2 剩下的：Cecilia 启动前后端看页面、运行 `pnpm build`，Claude 看页面改问题，然后 Cecilia 同意后合进 main。之后是板块 3（高德地图和路线）。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 

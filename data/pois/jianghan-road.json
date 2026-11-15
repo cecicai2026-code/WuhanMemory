@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "id": "jianghan-road",
+  "name": "江汉路步行街",
+  "district": "江汉区",
+  "category": "street",
+  "tags": [],
+  "sources": [
+    {
+      "id": "jianghan-gk",
+      "type": "government",
+      "title": "武汉市江汉区人民政府：江汉概况",
+      "url": "https://www.jianghan.gov.cn/mljh/jbgk/201802/t20180201_11565.shtml",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "ctrip-travels-2023",
+      "type": "travel-platform",
+      "title": "携程游记：武汉旅游攻略-汉口篇（2023-11-15）",
+      "url": "https://gs.ctrip.com/html5/you/travels/145/4118501.html",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.288045,
+      "lat": 30.58364,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：江汉路步行街（江汉路步行街与铭新街交叉口东20米），B001B0J07F。"
+  },
+  "address": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到写明地址的官方页面"
+  },
+  "intro": {
+    "value": "有一百多年历史的商业老街，沿街老建筑多，被称作\"武汉二十世纪建筑博物馆\"。2021 年 7 月被商务部评为\"全国示范步行街\"。",
+    "verification": "placeholder",
+    "sourceId": "jianghan-gk",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方的历史介绍"
+  },
+  "openingHours": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方开放时间"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "ctrip-travels-2023",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14",
+    "note": "来自用户游记。"
+  },
+  "reservation": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 没有找到官方预约规则"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": {
+      "metro": [
+        {
+          "station": "江汉路站",
+          "line": "2 号线",
+          "exit": null,
+          "walkMinutes": null
+        }
+      ],
+      "note": null
+    },
+    "verification": "placeholder",
+    "sourceId": "ctrip-travels-2023",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15",
+    "note": "来自用户游记。"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": [
+    {
+      "file": "jianghan-road-street.jpg",
+      "caption": "江汉路步行街：街两边是带钟楼的老建筑，街上人很多。",
+      "license": "official-placeholder",
+      "sourceUrl": "https://www.jianghan.gov.cn/mljh/jhfm/201802/t20180220_11571.shtml",
+      "retrievedAt": "2026-11-15",
+      "licenseNote": "官网照片，只作占位，网站公开前必须换掉。图片地址：https://www.jianghan.gov.cn/mljh/jhfm/201802/W020200708646136225420.jpg（江汉区政府\"逛吃逛吃\"页面，介绍江汉路步行街那一段下的配图，没有图注）"
+    }
+  ]
+}

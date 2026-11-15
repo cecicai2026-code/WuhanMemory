@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "id": "hubei-museum",
+  "name": "湖北省博物馆",
+  "district": "武昌区",
+  "category": "museum",
+  "tags": [],
+  "sources": [
+    {
+      "id": "hbww-fuwu",
+      "type": "official-site",
+      "title": "湖北省博物馆官网：服务（开馆信息、参观指南）",
+      "url": "http://www.hbww.org.cn/fuwu/index.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "hbww-intro",
+      "type": "official-site",
+      "title": "湖北省博物馆官网：博物馆简介",
+      "url": "http://www.hbww.org.cn/gyjj/p/7900.html",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "amap-search",
+      "type": "amap",
+      "title": "高德开放平台 地点搜索（关键字搜索 /v3/place/text）",
+      "url": "https://lbs.amap.com/api/webservice/guide/api/search",
+      "accessedAt": "2026-11-15"
+    },
+    {
+      "id": "dahepiao-hbm",
+      "type": "travel-platform",
+      "title": "大河票务网：2025 湖北省博物馆展品介绍+参观时间（2025-11-04）",
+      "url": "https://www.dahepiao.com/lvyounews1/20251104536323.html",
+      "accessedAt": "2026-11-15"
+    }
+  ],
+  "location": {
+    "value": {
+      "lng": 114.365446,
+      "lat": 30.561506,
+      "coordSystem": "GCJ-02"
+    },
+    "verification": "placeholder",
+    "sourceId": "amap-search",
+    "lastCheckedAt": "2026-11-15",
+    "note": "高德地点：湖北省博物馆（东湖路160号），B001B0JYXS。"
+  },
+  "address": {
+    "value": "湖北省武汉市武昌区东湖路 160 号",
+    "verification": "placeholder",
+    "sourceId": "dahepiao-hbm",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "intro": {
+    "value": "馆内藏品近 48 万件（套），一级文物 1096 件（套）。随州出土的曾侯乙编钟是镇馆之宝，入选了《世界记忆国际名录》。博物馆免费开放，参观要实名预约。",
+    "verification": "placeholder",
+    "sourceId": "hbww-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "history": {
+    "value": "1953 年成立湖北省博物馆筹备处，往前可以追溯到 1928 年的湖北省立公共科学实验馆。",
+    "verification": "placeholder",
+    "sourceId": "hbww-intro",
+    "lastCheckedAt": "2026-11-15"
+  },
+  "openingHours": {
+    "value": {
+      "allDay": false,
+      "periods": [
+        {
+          "weekdays": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "open": "09:00",
+          "close": "17:00",
+          "lastEntry": "16:00"
+        }
+      ],
+      "closedWeekdays": [
+        1
+      ],
+      "note": "周一闭馆，国家法定节假日除外。"
+    },
+    "verification": "placeholder",
+    "sourceId": "hbww-fuwu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "官网写暑期（8 月 31 日前）开放时间改为 8:30–17:30，暑期从哪天开始没写，没有录进时段。"
+  },
+  "ticket": {
+    "value": {
+      "free": true,
+      "items": [],
+      "note": "免费，也不收预约费。编钟演出、全息剧、讲解、语音导览和停车另收费。"
+    },
+    "verification": "placeholder",
+    "sourceId": "hbww-fuwu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-05-14"
+  },
+  "reservation": {
+    "value": {
+      "required": true,
+      "how": "官网、官方微信公众号、美团 APP、湖北文旅之声、鄂汇办 APP，实名预约",
+      "advanceDays": null,
+      "note": "当天的票要在有余票时 16:00 前预约。现役军人、消防救援人员、残疾人、65 岁以上老年人不用预约，刷身份证原件入馆。"
+    },
+    "verification": "placeholder",
+    "sourceId": "hbww-fuwu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-02-13",
+    "note": "官网\"最多可提前 5 天\"和暑期规定写在同一句里，平时能提前几天待确认。"
+  },
+  "payment": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 支付方式要实地确认"
+  },
+  "transport": {
+    "value": {
+      "metro": [
+        {
+          "station": "省博湖北日报站",
+          "line": "8 号线",
+          "exit": "A",
+          "walkMinutes": null
+        }
+      ],
+      "note": "官网也写了黄鹂路人行通道出口；公交 402、411 路到东湖路省博物馆站。"
+    },
+    "verification": "placeholder",
+    "sourceId": "hbww-fuwu",
+    "lastCheckedAt": "2026-11-15",
+    "expiresAt": "2027-11-15"
+  },
+  "recommendedDurationMinutes": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "bestTime": {
+    "value": null,
+    "verification": "todo",
+    "todo": "TODO(Cecilia): 按你的游玩经验填"
+  },
+  "photoSpots": [],
+  "food": [],
+  "reviews": [],
+  "photos": []
+}
