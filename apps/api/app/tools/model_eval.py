@@ -285,6 +285,8 @@ def render_summary(runs: Sequence[EvalRun], *, run_date: date, repeat: int, fact
         "没有让一个模型给另一个打分。",
         "- 请求由 Cecilia 和 Claude 一起写，覆盖面有限；日期写死在 2026 年 11、12 月，闭馆日按资料里的星期算，没有节假日日历。",
         "- 交通时间用的是 SQLite 里的高德缓存（查询时间各不相同），两个模型用的是同一份缓存。",
+        "- 不同时间跑的结果之间，链路可能改过（例如板块 6C 起钟点由程序推，\"交通时间不够\"不会再出现），"
+        "比较之前先看 `docs/progress/current-progress.md` 里那段时间改了什么。",
         "",
         "这份汇总不下\"哪个模型更好\"的结论。",
         "",

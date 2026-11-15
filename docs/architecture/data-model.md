@@ -420,6 +420,7 @@ CREATE TABLE model_comparisons (
 - 一次对比：请求原文、两边共用的偏好（`preferencesSource` 是 `extracted` 或 `given`，抽偏好的模型和那次调用的统计）、侧重、两边各自的结果（模型名、版本 id 或出错说明、校验情况 `quality`、5B 的数字 `plan`、调用统计 `calls`、整体耗时）、两份的差异 `diff`、对比表 `table`。结构见 `apps/api/app/schemas/comparison.py`。
 - 两份行程各是一个行程版本（`itineraries` 的 `conversation_id` 为空，不属于任何对话）。对比存下后不再修改。
 - 版本的 `data_json` 里多了 `firstValidation`（第一版的完整校验报告）和 `firstDraft`（修正过时模型的第一版输出，没修正过为 null）。板块 6 之后存的版本都有（`/map` 的也有）；之前存的为 null。
+- 板块 6C：版本里再多 `outline`（模型给的行程：每天出发时间、站点顺序、停留时长）和 `firstOutline`（修正过时模型的第一版，没修正过为 null）。`draft` 和 `firstDraft` 从这时起是程序推出钟点后的行程。之前存的版本没有 `outline`。
 - 代码：`apps/api/app/repositories/model_comparison_repository.py`。
 
 ## 13. 以后的表
