@@ -48,7 +48,10 @@
   - 次数的默认值（5 和 50）是 Claude 定的，Cecilia 可以在 `.env` 里改。路线接口和高德代理没有限次数。
 - [x] 第 7 步：r07 选做法 A（点名必去优先）：用户点名了必去时，经典必去只要求用户点名的；没排进去的 5A 是警告 `emphasis-5a-skipped`。提示词同步改了。4 个测试先写，后端测试 406 个通过。ADR 0005 追加更新，`ai-planning-pipeline.md` 的侧重表已改。之前的评测结果文件保留原样；要不要重跑评测由 Cecilia 定。
   - 改的时候发现：除了经典必去里的 5A，"用户点名必去"本身没有校验规则（轻松、深度文化两份漏了用户点名的景点不会报错）。这次没改，等 Cecilia 定要不要加。
-- [ ] 第 8 到 11 步：README、项目说明（先给提纲）、上线办法比较、演示步骤清单。
+- [x] 第 8 步：重写 `README.md`（只写已做的功能，没做的列在"计划中"；评测数字取自 `eval/results/`，写明三次之间链路改过）。截图清单在 `docs/screenshots/README.md`，截图还没截。
+- [x] 第 10 步：上线办法比较 `docs/operations/hosting-options.md`（六种办法，附出处）。Claude 推荐香港轻量服务器，同时准备录屏备用。等 Cecilia 选。不管选哪种，上线前都要先改代码：浏览器只连网站一个地址（前端把 `/api`、`/_AMapService`、`/media` 转给后端）。
+- [x] 第 11 步：演示录屏步骤清单 `docs/demo-script.md`。
+- [ ] 第 9 步：项目说明 `docs/project-statement.md`：提纲已给 Cecilia，等确认，还要 `WuHan-Memory` 老仓库的链接来核对 2026-06-28。
 - [ ] Cecilia 运行 `pnpm build`。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
