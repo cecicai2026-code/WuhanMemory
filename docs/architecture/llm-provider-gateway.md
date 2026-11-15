@@ -82,7 +82,7 @@ result.record    # 这次调用的记录
 
 错误码对照表按两家官方错误码文档写（2026-11-15 查阅），网址在 `providers.py` 开头。千问那页很长，后半部分是按摘要对的。
 
-2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。Cecilia 决定豆包保持模型默认（开着思考），板块 5 有了规划提示词后用 `corepack pnpm plan:thinking` 再比一次（`apps/api/app/tools/thinking_compare.py`：三条规划请求，开和关各跑一遍完整链路）。
+2026-11-15 用真实调用确认过的：千问 `qwen-plus` 和豆包 `doubao-seed-2-1-pro-260915` 都接受 JSON 输出模式；豆包这个模型接受 `thinking: disabled`；豆包默认开着思考。板块 4 时 Cecilia 决定豆包保持模型默认（开着思考）。**2026-11-15（板块 5）改成关掉**（`.env` 和 `.env.example` 里 `DOUBAO_THINKING=disabled`）：在 `/map` 上用真实的规划请求试，豆包开着思考时"排行程"这一步三次请求都没在 60 秒内回答，等了 3 分钟后报超时；同一条请求千问 9.8 秒。对比脚本 `corepack pnpm plan:thinking`（三条规划请求，开和关各跑一遍完整链路）留着，以后想再比可以跑。
 
 还没在真实接口上见过的：对方说"不支持 `response_format`"时的报错原文。现在的判断依据是 400 的说明里提到这个参数。
 

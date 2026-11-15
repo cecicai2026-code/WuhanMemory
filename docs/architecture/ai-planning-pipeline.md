@@ -166,7 +166,7 @@ sequenceDiagram
 
 ## 模型
 
-界面上选的模型跟着每条消息发给后端，链路里的每一次模型调用都用它（`provider` 参数）。版本里记 `planner.provider`、`planner.model`（对方返回的真实模型名）。豆包深度思考开和关的效果用 `corepack pnpm plan:thinking` 比较（真实调用），由 Cecilia 决定。
+界面上选的模型跟着每条消息发给后端，链路里的每一次模型调用都用它（`provider` 参数）。版本里记 `planner.provider`、`planner.model`（对方返回的真实模型名）。豆包的深度思考 2026-11-15 由 Cecilia 决定关掉：开着时"排行程"每次都超过 60 秒的超时。开和关的效果可以用 `corepack pnpm plan:thinking` 比较（真实调用）。
 
 ## 测试
 
