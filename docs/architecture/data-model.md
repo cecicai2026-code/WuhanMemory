@@ -377,7 +377,7 @@ CREATE TABLE itinerary_versions (
 ```
 
 - 一段对话对应一份行程；每条带出行程的回复是这份行程的一个新版本。
-- **版本只能新增，不能修改**：repository 没有 update 方法。分享页（板块 7）绑定版本。
+- **版本只能新增，不能修改**：repository 没有 update 方法。分享页（板块 7）绑定版本，见第 13 节。
 - `data_json` 是快照：生成时的景点资料（连同核实状态）、交通、校验结果、模型、模型最后一轮的原始输出。以后景点资料改了，旧版本不变。字段见 `api-contracts.md` 的"获取行程版本"。
 - 模型、校验结果、错误和警告条数、修正轮数单独存成列，板块 6 按模型统计时不用解析 JSON。
 - 没通过校验的版本也存，`validation_status` 是 `failed`。
@@ -423,8 +423,24 @@ CREATE TABLE model_comparisons (
 - 板块 6C：版本里再多 `outline`（模型给的行程：每天出发时间、站点顺序、停留时长）和 `firstOutline`（修正过时模型的第一版，没修正过为 null）。`draft` 和 `firstDraft` 从这时起是程序推出钟点后的行程。之前存的版本没有 `outline`。
 - 代码：`apps/api/app/repositories/model_comparison_repository.py`。
 
-## 13. 以后的表
+## 13. 分享链接（板块 7）
 
-分享页（板块 7）也存进 SQLite，表结构在用到的板块里定，定下来后写进本文件。
+```sql
+CREATE TABLE share_links (
+    slug        TEXT PRIMARY KEY,      -- 8 位随机小写字母和数字（去掉 0 o 1 l i）
+    version_id  TEXT NOT NULL REFERENCES itinerary_versions(id) ON DELETE CASCADE,
+    created_at  TEXT NOT NULL,
+    revoked_at  TEXT                   -- 撤回的时间；没撤回为空
+);
+-- 同一个版本只能有一个没撤回的链接
+CREATE UNIQUE INDEX share_links_active_idx ON share_links (version_id) WHERE revoked_at IS NULL;
+```
+
+- 链接指向一个行程版本。版本是不可变的快照（第 12 节），所以分享页不复制数据，原行程以后加了新版本也不影响分享页。
+- 撤回只填 `revoked_at`，不删行：撤回过的链接打开时能说"已经撤回"，而不是"没有这个链接"。撤回后再分享同一个版本，建一个新链接。
+- 没通过校验的版本不能分享，这条规则在接口里查（`app/api/shares.py`），表上不管。
+- 代码：`apps/api/app/repositories/share_link_repository.py`。
+
+## 14. 以后的表
 
 2026-07 按 PostgreSQL + PostGIS 写的旧草案已经删掉，可以在 git 历史和 `infra/migrations/0001_initial_schema.sql` 里查到。
