@@ -27,9 +27,20 @@ def _ok(route: RouteOut) -> bool:
     return route.status == "ok" and route.durationMinutes is not None
 
 
-async def choose_leg(service: RouteService, from_id: str, to_id: str, preference: TransportPreference) -> ItineraryLeg:
+async def choose_leg(
+    service: RouteService,
+    from_id: str,
+    to_id: str,
+    preference: TransportPreference,
+    *,
+    walk_max: int | None = None,
+) -> ItineraryLeg:
+    """walk_max：步行超过多少分钟就改坐车，不给就按上面的规则（板块 5B 的"轻松少走路"给 10 分钟）。"""
     origin, destination = service.places(from_id, to_id)
-    limit = WALK_MAX_MINUTES_WALKER if preference == "walk" else WALK_MAX_MINUTES
+    if walk_max is not None:
+        limit = walk_max
+    else:
+        limit = WALK_MAX_MINUTES_WALKER if preference == "walk" else WALK_MAX_MINUTES
 
     walk = await service.route(origin, destination, "walk")
     if _ok(walk) and walk.durationMinutes is not None and walk.durationMinutes <= limit:
