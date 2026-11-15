@@ -12,8 +12,10 @@ export interface RollsFrame {
   district: string;
   /** 格号：在全部景点里的序号（从 1 开始），筛选后也不变，和普通版一致 */
   no: number;
-  /** 封面照片的地址；公开模式或没有照片时是 null，胶片格显示空白底片 */
+  /** 封面照片的缩略图地址（800 宽）；公开模式或没有照片时是 null，胶片格显示空白底片 */
   photoUrl: string | null;
+  /** 原图地址：缩略图取不到时（例如后端还没装 Pillow）退回用它 */
+  photoFull: string | null;
   /** 占位照片的出处，不是占位照片时是 null */
   credit: string | null;
   closed: boolean;
@@ -37,7 +39,8 @@ export function rollsFrame(p: PoiSummary, no: number): RollsFrame {
     name: p.name,
     district: p.district,
     no,
-    photoUrl: p.coverPhoto?.url ?? null,
+    photoUrl: p.coverPhoto?.url ? (p.coverPhoto.thumbUrl ?? p.coverPhoto.url) : null,
+    photoFull: p.coverPhoto?.url ?? null,
     credit: p.coverPhoto?.url ? photoCredit(p.coverPhoto) : null,
     closed: isClosed(p),
     counts: countsText(p.counts)

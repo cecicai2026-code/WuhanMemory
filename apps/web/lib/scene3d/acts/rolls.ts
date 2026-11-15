@@ -272,7 +272,7 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
   function loadPhoto(s: Slot): Promise<void> {
     if (s.photo !== "none" || !s.f.photoUrl) return Promise.resolve();
     s.photo = "loading";
-    return loadPhotoTexture(s.f.photoUrl, env.renderer).then(
+    return loadPhotoTexture(s.f.photoUrl, env.renderer, { fallbackUrl: s.f.photoFull }).then(
       (t) => {
         coverCrop(t, FW / FH);
         const sq = t.clone(); // 和 t 共用同一份图，显卡上只有一份

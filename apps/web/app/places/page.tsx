@@ -87,7 +87,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
             {shown.map((p, i) => {
               const no = all.indexOf(p) + 1;
               const cover = p.coverPhoto;
-              const src = photoUrl(cover?.url ?? null);
+              // 卡片上的照片不大，用 800 宽的缩略图（板块 1B）
+              const src = photoUrl(cover?.url ? (cover.thumbUrl ?? cover.url) : null);
               return (
                 <li key={p.id}>
                   <Paper kind="card" href={`/places/${p.id}`} tilt={TILT[i % TILT.length]} className={s.card}>

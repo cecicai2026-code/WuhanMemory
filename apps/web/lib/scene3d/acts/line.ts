@@ -178,7 +178,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   function loadPhoto(pr: Print): Promise<void> {
     if (pr.photo !== "none" || !pr.p.photoUrl) return Promise.resolve();
     pr.photo = "loading";
-    return loadPhotoTexture(pr.p.photoUrl, env.renderer).then(
+    return loadPhotoTexture(pr.p.photoUrl, env.renderer, { fallbackUrl: pr.p.photoFull }).then(
       (t) => {
         coverCrop(t, PH_W / PH_H);
         owned.push(t);

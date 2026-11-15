@@ -159,7 +159,8 @@ export function GalleryEntry({ photos }: { photos: PoiPhoto[] }) {
         ) : (
           <ul className={s.gallery}>
             {photos.map((p) => {
-              const src = photoUrl(p.url);
+              // 纸上的照片不大，用 800 宽的缩略图（板块 1B）
+              const src = photoUrl(p.url ? (p.thumbUrl ?? p.url) : null);
               return (
                 <li key={p.file}>
                   <figure className={s.photo}>

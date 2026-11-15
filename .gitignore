@@ -31,3 +31,6 @@ data/photos-placeholder/
 
 # 高德地点搜索的原始结果，核对后写进景点资料，本身不提交
 data/amap-lookup/
+
+# 照片缩略图的缓存（板块 1B，后端按需生成，可以随时删）
+data/thumbs/

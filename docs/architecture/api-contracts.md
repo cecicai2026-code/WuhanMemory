@@ -83,7 +83,7 @@ Response（`PoiDetailResponse`）：`{ "asOf": "...", "poi": PoiDetail }`。`Poi
 - `operatingStatus`：也是上面这种结构，`value` 是 `{ code, note, reopenExpected, reopenNote }`；资料里没写（正常开放）时为 `null`。列表接口的每个景点也带这一项；
 - `photoSpots`、`food`：上面这种结构的数组；
 - `reviews`：署名评价；
-- `photos`：照片，多了 `placeholder` 和 `url`（相对于后端地址，例如 `/media/photos/<id>/a.jpg`；占位照片不在本机时为 `null`）。
+- `photos`：照片，多了 `placeholder`、`url`（相对于后端地址，例如 `/media/photos/<id>/a.jpg`；占位照片不在本机时为 `null`）和 `thumbUrl`（800 宽的缩略图，见下面；`url` 为 `null` 时也是 `null`，板块 1B 加的）。
 
 没有这个景点时返回 404：`{ "detail": "没有这个景点：<id>" }`。
 
@@ -92,7 +92,10 @@ Response（`PoiDetailResponse`）：`{ "asOf": "...", "poi": PoiDetail }`。`Poi
 ```http
 GET /media/photos/{id}/{file}
 GET /media/photos-placeholder/{id}/{file}
+GET /media/thumbs/{width}/{photos|photos-placeholder}/{id}/{file}
 ```
+
+照片缩略图（板块 1B，2026-11-15）：`width` 只能是 480 或 800；只缩小不放大，统一给 JPEG（质量 80），手机照片按拍摄方向转正。第一次被要时用 Pillow 生成，存在 `data/thumbs/`（不进 git，可以随时删），以后直接给缓存，原图比缓存新时重新生成；浏览器缓存一天。参数不对、原图不存在或不是图片、后端没装 Pillow 时返回 404（网页的立体场景这时退回取原图）。公开模式下 `photos-placeholder` 的缩略图也是 404。代码在 `app/services/thumbnails.py`、`app/api/media.py`，测试 `tests/test_thumbnails.py`。
 
 ### 路线：三种交通方式对比
 

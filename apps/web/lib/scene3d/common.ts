@@ -302,11 +302,17 @@ export function disposeShared() {
  * 取到就先传到显卡（initTexture），不在画面切换的那一帧里现解码、现上传，免得卡一下。
  * 浏览器不支持这些参数时退回普通的 TextureLoader。超时或取不到时抛错，调用的地方继续用空白底片。
  */
-export async function loadPhotoTexture(url: string, renderer: THREE.WebGLRenderer, { maxWidth = 1024, timeoutMs = 4000 } = {}): Promise<THREE.Texture> {
+export async function loadPhotoTexture(
+  url: string,
+  renderer: THREE.WebGLRenderer,
+  { maxWidth = 1024, timeoutMs = 4000, fallbackUrl = null as string | null } = {}
+): Promise<THREE.Texture> {
   const work = (async () => {
     let t: THREE.Texture;
     try {
-      const res = await fetch(url);
+      // 先取缩略图，取不到（例如后端还没装 Pillow）再取原图
+      let res = await fetch(url);
+      if (!res.ok && fallbackUrl && fallbackUrl !== url) res = await fetch(fallbackUrl);
       if (!res.ok) throw new Error(`照片取不到：${res.status}`);
       const blob = await res.blob();
       const bmp = await createImageBitmap(blob, { resizeWidth: maxWidth, resizeQuality: "high", imageOrientation: "flipY", premultiplyAlpha: "none" });

@@ -11,6 +11,7 @@ from typing import Any
 
 from app.data_quality.rules import REQUIRED_FACTS
 from app.schemas.poi import PLACEHOLDER_LICENSES, Fact, Photo, PoiFile
+from app.services.thumbnails import thumb_url
 from app.schemas.poi_api import (
     FactCounts,
     FactOut,
@@ -78,7 +79,8 @@ class PoiPresenter:
             url = f"{PLACEHOLDER_PHOTOS_URL}/{poi_id}/{p.file}" if exists else None
         else:
             url = f"{PHOTOS_URL}/{poi_id}/{p.file}"
-        return PhotoOut(**p.model_dump(), placeholder=placeholder, url=url)
+        thumb = thumb_url("photos-placeholder" if placeholder else "photos", poi_id, p.file) if url else None
+        return PhotoOut(**p.model_dump(), placeholder=placeholder, url=url, thumbUrl=thumb)
 
     def _cover(self, poi: PoiFile) -> PhotoOut | None:
         photos = [self.photo(poi.id, p) for p in self._photos(poi)]

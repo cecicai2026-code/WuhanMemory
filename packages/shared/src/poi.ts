@@ -119,6 +119,8 @@ export interface PoiPhoto {
   licenseNote: string | null;
   /** 相对于后端地址；占位照片不在本机时为 null */
   url: string | null;
+  /** 800 宽的缩略图（板块 1B），列表、图册、立体场景用它；没有 url 时也是 null */
+  thumbUrl: string | null;
 }
 
 export interface FactCounts {
