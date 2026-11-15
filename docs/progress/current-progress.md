@@ -51,6 +51,7 @@
   - 装 Pillow 时 pip 报证书验证失败：Cecilia 的 Python 是 python.org 的安装包，没带根证书文件。用 `pip install --use-deprecated=legacy-certs "pillow>=11"`（pip 自带的证书包，照样验证证书）装上了。一劳永逸的办法是双击"应用程序 → Python 3.13 → Install Certificates.command"。
   - Claude 的浏览器面板在后台时帧率很低，曾被误判成"太卡"退回普通版；改成两帧之间隔 0.25 秒以上不算。
 - [x] 帧率：Cecilia 在自己 Mac 的 Chrome 里看了首页和三幕（`?debug=fps`），都是 60 帧（2026-11-15）。
+- [x] Cecilia 在 `block-1b-scenes` 最新代码上运行 `pnpm build`，通过（2026-11-15）。
 - [ ] "减弱动态效果"打开后是否直接显示普通版：还没回结果。
 - [ ] Cecilia 看过、同意后合进 main。
 
