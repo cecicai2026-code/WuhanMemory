@@ -10,6 +10,8 @@ import type {
   PlanningJob,
   PlanningRound,
   SendMessageResponse,
+  ShareLink,
+  TripConversation,
 } from "@wuhanmemory/shared";
 
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -93,3 +95,19 @@ export function getComparison(id: string): Promise<ModelComparison> {
 export function listComparisons(): Promise<ModelComparisonSummary[]> {
   return call("/api/comparisons");
 }
+
+// ---------- 分享和我的行程（板块 7），字段说明见 api-contracts.md 的"分享"和"我的行程"两节 ----------
+
+/** 给一个版本生成分享链接；已经有没撤回的链接时给回那一个。没通过校验的版本后端会拒绝（409）。 */
+export function publishShare(versionId: string): Promise<ShareLink> {
+  return call(`/api/itinerary-versions/${encodeURIComponent(versionId)}/share`, { method: "POST" });
+}
+
+export function revokeShare(slug: string): Promise<ShareLink> {
+  return call(`/api/share/${encodeURIComponent(slug)}`, { method: "DELETE" });
+}
+
+export function listTrips(): Promise<TripConversation[]> {
+  return call("/api/trips");
+}
+

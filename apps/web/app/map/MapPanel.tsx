@@ -6,6 +6,7 @@ import { boundsOf, type MapMode, type MapRoute } from "@wuhanmemory/map-core";
 import type { PoiSummary } from "@wuhanmemory/shared";
 import { Label, Paper, PaperMark, PaperTitle, Soft, Stamp, TextLink } from "@/components/ui";
 import { AmapProvider } from "@/lib/map/amap-provider";
+import type { PinOverride } from "@/lib/itinerary-map";
 import s from "./map.module.css";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -19,12 +20,6 @@ const SLOW_MS = 15000;
 
 type LoadState = { kind: "loading"; slow: boolean } | { kind: "ready" } | { kind: "error"; message: string };
 
-/** 有行程时只放这一天的景点，名字前加顺序 */
-export interface PinOverride {
-  id: string;
-  name: string;
-  location: PoiSummary["location"];
-}
 
 interface Props {
   pois: PoiSummary[];
