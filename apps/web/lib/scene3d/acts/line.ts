@@ -281,11 +281,12 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
     wheelLock = 0,
     lampFollow = true,
     /** 用户上一次在场景里换景点的时间。刚换过时不让地址里的旧景点把照片拉回去 */
-    localAt = -Infinity;
+    localAt = -Infinity,
+    moving = false;
   const ray = new THREE.Raycaster();
 
   function emit() {
-    env.emit({ kind: "line", sel, id: prints[sel]?.p.id ?? null, n: N, entering: !!entered, card: entered?.k ?? (hovered?.type === "card" ? hovered.k : focus?.type === "card" ? focus.k : -1) });
+    env.emit({ kind: "line", sel, id: prints[sel]?.p.id ?? null, n: N, entering: !!entered, moving, card: entered?.k ?? (hovered?.type === "card" ? hovered.k : focus?.type === "card" ? focus.k : -1) });
   }
   function loadAround() {
     for (const p of prints) if (Math.abs(p.i - sel) <= 3) void loadPhoto(p);
@@ -380,6 +381,12 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
   function step(dt: number) {
     t += dt;
     cur = dt === 0 ? sel : damp(cur, sel, 4.5, dt);
+    // 照片滑到位了没有：网页等滑完再换地址（换页面那一下主线程要忙几十毫秒，放在滑动中间会卡一下）
+    const nowMoving = Math.abs(cur - sel) > 0.05;
+    if (nowMoving !== moving) {
+      moving = nowMoving;
+      emit();
+    }
     pick();
     env.renderer.domElement.style.cursor = hovered ? "pointer" : "default";
     const hoverKey = hovered ? `${hovered.type}${"i" in hovered ? hovered.i : "k" in hovered ? hovered.k : ""}` : "";
@@ -510,7 +517,7 @@ export function createLine(env: ActEnv, req0: StageRequest): Act {
       entered = null;
       focus = null;
       // 地址里的景点：刚在场景里换过（地址还没跟上）时不理它，其余情况（前进后退、从别的幕回来）照它
-      if (fromOtherAct || performance.now() - localAt > 1200) select(Math.max(0, idx(d.sel)), false);
+      if (fromOtherAct || performance.now() - localAt > 2500) select(Math.max(0, idx(d.sel)), false);
       redrawCards();
       if (fromOtherAct) {
         cur = sel;

@@ -38,13 +38,15 @@ export function LineStage({ data }: { data: LineData }) {
   const current = data.prints.find((p) => p.id === data.sel);
   const n = data.prints.length;
 
-  // 场景里换了景点：停稳后改地址，取新景点的资料
+  // 场景里换了景点：等照片滑到位、再停 200 毫秒（连点、连滚时只取最后一个），才改地址、取新景点的资料。
+  // 换页面时主线程要忙几十毫秒，放在照片滑动的中间会看到卡一下，放在停稳以后就看不出来
   const selId = on ? (st.id as string | null) : null;
+  const moving = on && Boolean(st.moving);
   useEffect(() => {
-    if (!stage || !selId || selId === data.sel || entering) return;
-    const t = window.setTimeout(() => stage.go(`/places/${encodeURIComponent(selId)}`, false), 350);
+    if (!stage || !selId || selId === data.sel || entering || moving) return;
+    const t = window.setTimeout(() => stage.go(`/places/${encodeURIComponent(selId)}`, false), 200);
     return () => window.clearTimeout(t);
-  }, [stage, selId, data.sel, entering]);
+  }, [stage, selId, data.sel, entering, moving]);
 
   // 键盘和普通版链接
   useEffect(() => {
