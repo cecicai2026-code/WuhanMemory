@@ -77,6 +77,18 @@ class PlanOutcome:
 
 
 @dataclass
+class SingleOutcome:
+    """plan_single 的结果：排出来了有 version；模型排行程时出错只有 error。"""
+
+    provider: str
+    version: ItineraryVersion | None = None
+    error: str | None = None
+    # 修正时模型出错（版本照样存，按没通过处理）
+    repair_error: str | None = None
+    defaults: list[str] = field(default_factory=list)
+
+
+@dataclass
 class _Round:
     draft: PlanDraft
     legs: list[ItineraryLeg]
@@ -173,11 +185,7 @@ class PlanningPipeline:
         trip = frame_for(prefs)
         library = self.pois.list_pois()
         base = select_candidates(library, prefs)
-        defaults = list(trip.defaults_used)
-        if base.not_in_library:
-            defaults.append(f"你提到的{'、'.join(base.not_in_library)}不在景点库里，没有安排")
-        if base.closed_requested:
-            defaults.append(f"你提到的{'、'.join(base.closed_requested)}现在暂停开放，没有安排")
+        defaults = _defaults(trip, base)
 
         previous_rounds = self.rounds.list_rounds(conversation_id)
         previous = previous_rounds[-1] if previous_rounds else None
@@ -194,29 +202,9 @@ class PlanningPipeline:
         # ④ 三份同时生成
         await stage("generating")
         for plan in plans:
-            plan.prompt = prompts.generate_user_prompt(
-                message=message,
-                prefs=prefs,
-                frame=plan.trip.frame,
-                transport_label=TRANSPORT_LABELS[trip.transport],
-                candidates=candidate_brief(plan.candidates, prefs),
-                distances=distance_table(plan.candidates),
-                previous=self._previous_draft(previous, plan.emphasis.id),
-                emphasis=plan.emphasis.prompt,
-            )
+            plan.prompt = _generate_prompt(plan, message, prefs, self._previous_draft(previous, plan.emphasis.id))
         generated = await asyncio.gather(
-            *(
-                self.gateway.complete_json(
-                    task="generate_itinerary",
-                    system_prompt=prompts.GENERATE_SYSTEM,
-                    user_prompt=plan.prompt,
-                    schema=PlanDraft,
-                    provider=provider_name,
-                    # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
-                    retry_on_timeout=False,
-                )
-                for plan in plans
-            ),
+            *(self._generate(plan, provider_name) for plan in plans),
             return_exceptions=True,
         )
         errors = [g for g in generated if isinstance(g, BaseException)]
@@ -245,22 +233,7 @@ class PlanningPipeline:
         if to_repair:
             await stage("repairing")
             repaired = await asyncio.gather(
-                *(
-                    self.gateway.complete_json(
-                        task="repair_itinerary",
-                        system_prompt=prompts.REPAIR_SYSTEM,
-                        user_prompt=prompts.repair_user_prompt(
-                            generate_prompt=p.prompt,
-                            draft=p.first.draft,  # type: ignore[union-attr]
-                            errors=[i.message for i in p.first.report.errors],  # type: ignore[union-attr]
-                            legs=_leg_lines(p.first.legs, p.candidates),  # type: ignore[union-attr]
-                        ),
-                        schema=PlanDraft,
-                        provider=provider_name,
-                        retry_on_timeout=False,
-                    )
-                    for p in to_repair
-                ),
+                *(self._repair(p, provider_name) for p in to_repair),
                 return_exceptions=True,
             )
             fixed: dict[int, tuple[PlanDraft, str | None]] = {}
@@ -329,6 +302,100 @@ class PlanningPipeline:
             planning_round_id=saved_round.id,
         )
         return PlanOutcome(kind=kind, reply=reply, provider=provider_name, version=first, round=saved_round, versions=versions)
+
+    async def plan_single(
+        self,
+        *,
+        message: str,
+        prefs: TravelerPreferences,
+        emphasis: str,
+        provider: str,
+        on_stage: OnStage | None = None,
+    ) -> SingleOutcome:
+        """板块 6：拿给定的偏好，按一种侧重、用指定的模型排一份。不抽偏好、不反问、不进对话。
+
+        和 handle 里的每一份走同样的步骤：筛候选 → 生成 → 查交通 → 校验（含侧重规则）→ 有错误修正一次 → 保存版本。
+        双模型对比时两边各调用一次，偏好、候选、侧重都一样，只有 provider 不同。
+        模型出错不抛出，写在 SingleOutcome.error 里（另一边照常排）。
+        """
+
+        async def stage(name: Stage) -> None:
+            if on_stage is not None:
+                result = on_stage(name)
+                if result is not None:
+                    await result
+
+        if prefs.days is None:
+            raise ValueError("偏好里没有天数")
+        if prefs.startDate is None and not prefs.dateUndecided:
+            prefs = prefs.model_copy(update={"dateUndecided": True})
+        today = self.today()
+        labels = {p.id: p.label for p in self.gateway.providers()}
+
+        await stage("selecting")
+        trip = frame_for(prefs)
+        library = self.pois.list_pois()
+        base = select_candidates(library, prefs)
+        defaults = _defaults(trip, base)
+        e = EMPHASES[emphasis]
+        plan = _Plan(
+            emphasis=e,
+            candidates=candidates_for(e, base, library),
+            trip=Frame(frame=emphasis_frame(e, trip.frame), transport=trip.transport, defaults_used=defaults),
+            walk_max=walk_limit(e),
+        )
+        plan.prompt = _generate_prompt(plan, message, prefs, None)
+
+        await stage("generating")
+        try:
+            g = await self._generate(plan, provider)
+        except LLMError as exc:
+            return SingleOutcome(provider=provider, error=f"排行程时模型出错：{exc.message}", defaults=defaults)
+        await self._check_all([plan], {0: (g.parsed, g.model)}, today, stage)  # type: ignore[dict-item]
+        plan.final = plan.first
+
+        repair_error: str | None = None
+        if plan.first is not None and plan.first.report.status == "failed":
+            await stage("repairing")
+            try:
+                r = await self._repair(plan, provider)
+            except LLMError as exc:
+                # 修正没回来：保留第一版，按没通过处理（和 handle 一样）
+                repair_error = f"修正时模型出错：{exc.message}"
+            else:
+                await self._check_all([plan], {0: (r.parsed, r.model)}, today, stage, into="final")  # type: ignore[dict-item]
+
+        await stage("saving")
+        data = self._version_data(plan, prefs, defaults, provider, labels, today)
+        version = self.itineraries.add_version(self.itineraries.create_itinerary(None), data)
+        return SingleOutcome(provider=provider, version=version, defaults=defaults, repair_error=repair_error)
+
+    async def _generate(self, plan: _Plan, provider: str):  # type: ignore[no-untyped-def]
+        return await self.gateway.complete_json(
+            task="generate_itinerary",
+            system_prompt=prompts.GENERATE_SYSTEM,
+            user_prompt=plan.prompt,
+            schema=PlanDraft,
+            provider=provider,
+            # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
+            retry_on_timeout=False,
+        )
+
+    async def _repair(self, p: _Plan, provider: str):  # type: ignore[no-untyped-def]
+        assert p.first is not None
+        return await self.gateway.complete_json(
+            task="repair_itinerary",
+            system_prompt=prompts.REPAIR_SYSTEM,
+            user_prompt=prompts.repair_user_prompt(
+                generate_prompt=p.prompt,
+                draft=p.first.draft,
+                errors=[i.message for i in p.first.report.errors],
+                legs=_leg_lines(p.first.legs, p.candidates),
+            ),
+            schema=PlanDraft,
+            provider=provider,
+            retry_on_timeout=False,
+        )
 
     # ---------- 小步骤 ----------
 
@@ -426,9 +493,33 @@ class PlanningPipeline:
             draft=final.draft,
             dataAsOf=today,
             emphasis=p.emphasis.id,
+            firstValidation=first.report,
+            firstDraft=first.draft if final is not first else None,
         )
         data.metrics = plan_metrics(data)
         return data
+
+
+def _defaults(trip: Frame, base: Candidates) -> list[str]:
+    defaults = list(trip.defaults_used)
+    if base.not_in_library:
+        defaults.append(f"你提到的{'、'.join(base.not_in_library)}不在景点库里，没有安排")
+    if base.closed_requested:
+        defaults.append(f"你提到的{'、'.join(base.closed_requested)}现在暂停开放，没有安排")
+    return defaults
+
+
+def _generate_prompt(plan: _Plan, message: str, prefs: TravelerPreferences, previous: PlanDraft | None) -> str:
+    return prompts.generate_user_prompt(
+        message=message,
+        prefs=prefs,
+        frame=plan.trip.frame,
+        transport_label=TRANSPORT_LABELS[plan.trip.transport],
+        candidates=candidate_brief(plan.candidates, prefs),
+        distances=distance_table(plan.candidates),
+        previous=previous,
+        emphasis=plan.emphasis.prompt,
+    )
 
 
 # ---------- 存进版本的快照 ----------
