@@ -5,6 +5,8 @@ import { formatDate } from "@/lib/format-poi";
 import { ApiUnavailableError, countsText, isClosed, listDistricts, listPlaces, pad2, photoUrl } from "@/lib/places";
 import type { PoiList } from "@/lib/places";
 import { SCENES } from "@/lib/scenes";
+import { getLang } from "@/lib/i18n-server";
+import { makeT } from "@/lib/i18n";
 import { StageToggle } from "@/components/stage/StageProvider";
 import { rollsFrame } from "@/lib/scene3d/data";
 import type { RollsData } from "@/lib/scene3d/data";
@@ -12,7 +14,9 @@ import { RollsStage } from "./RollsStage";
 import { ApiDown } from "./PlaceParts";
 import s from "./places.module.css";
 
-export const metadata: Metadata = { title: "地点档案" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: makeT(await getLang())("地点档案", "Places") };
+}
 // 状态和日期有关，每次请求现取
 export const dynamic = "force-dynamic";
 
@@ -25,15 +29,17 @@ const TILT = [-1.2, 0.8, 1.4, -0.8, 1, -1.4];
  */
 export default async function Page({ searchParams }: { searchParams: Promise<{ district?: string | string[]; at?: string | string[]; debug?: string | string[] }> }) {
   const params = await searchParams;
+  const lang = await getLang();
+  const t = makeT(lang);
 
   let data: PoiList;
   try {
-    data = await listPlaces();
+    data = await listPlaces(lang);
   } catch (err) {
     if (!(err instanceof ApiUnavailableError)) throw err;
     return (
-      <Scene scene={SCENES.places} title="地点档案" kicker="胶卷">
-        <ApiDown message={err.message} />
+      <Scene scene={SCENES.places} title={t("地点档案", "Places")} kicker={t("胶卷", "The film roll")}>
+        <ApiDown message={err.message} t={t} />
       </Scene>
     );
   }
@@ -49,32 +55,38 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
   // 开发时地址带 ?debug=nophoto：假装没有照片，看公开模式下（占位照片不对外）胶卷是什么样子。正式运行时不认
   const noPhoto = process.env.NODE_ENV !== "production" && params.debug === "nophoto";
   const stageData: RollsData = {
-    frames: shown.map((p) => rollsFrame(noPhoto ? { ...p, coverPhoto: null } : p, all.indexOf(p) + 1)),
+    frames: shown.map((p) => rollsFrame(noPhoto ? { ...p, coverPhoto: null } : p, all.indexOf(p) + 1, lang)),
     total: all.length,
     district: district ?? null,
-    at: typeof params.at === "string" ? params.at : null
+    at: typeof params.at === "string" ? params.at : null,
+    lang
   };
 
   return (
     <Scene
       scene={SCENES.places}
-      count={`共 ${pad2(all.length)} 格`}
-      title="地点档案"
-      kicker="胶卷"
-      intro={all.length ? `每张卡上的章按 ${formatDate(data.asOf)} 的日期计算。` : undefined}
+      count={t(`共 ${pad2(all.length)} 格`, `${pad2(all.length)} frames`)}
+      title={t("地点档案", "Places")}
+      kicker={t("胶卷", "The film roll")}
+      intro={all.length ? t(`每张卡上的章按 ${formatDate(data.asOf)} 的日期计算。`, `The stamp on each card is as of ${formatDate(data.asOf)}.`) : undefined}
       corner={<StageToggle />}
     >
       {all.length === 0 ? (
         <Paper className={s.notice}>
-          <PaperTitle level={3}>还没有景点资料</PaperTitle>
-          <p>景点资料放在 data/pois/ 里，每个景点一个文件。录入并通过数据检查后，景点会出现在这里。</p>
+          <PaperTitle level={3}>{t("还没有景点资料", "No place data yet")}</PaperTitle>
+          <p>
+            {t(
+              "景点资料放在 data/pois/ 里，每个景点一个文件。录入并通过数据检查后，景点会出现在这里。",
+              "Place data lives in data/pois/, one file per place. Once a place is entered and passes the data check, it shows up here."
+            )}
+          </p>
         </Paper>
       ) : (
         <>
-          {shown.length > 0 && <RollsStage data={stageData} stageKey={`rolls:${district ?? "all"}`} />}
-          <nav className={s.filter} aria-label="按区域筛选" data-stage-show>
+          {shown.length > 0 && <RollsStage data={stageData} stageKey={`rolls:${district ?? "all"}:${lang}`} />}
+          <nav className={s.filter} aria-label={t("按区域筛选", "Filter by district")} data-stage-show>
             <TextLink href="/places" current={!district}>
-              全部 {all.length}
+              {t("全部", "All")} {all.length}
             </TextLink>
             {districts.map((d) => (
               <TextLink key={d.name} href={`/places?district=${encodeURIComponent(d.name)}`} current={district === d.name}>
@@ -98,20 +110,20 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ d
                         // eslint-disable-next-line @next/next/no-img-element
                         <img className={s.frameImg} src={src} alt={cover.caption} loading="lazy" />
                       ) : (
-                        <PencilNote>照片待补充</PencilNote>
+                        <PencilNote>{t("照片待补充", "Photo to come")}</PencilNote>
                       )}
-                      {cover?.placeholder && <span className={s.frameTag}>占位</span>}
+                      {cover?.placeholder && <span className={s.frameTag}>{t("占位", "Placeholder")}</span>}
                     </span>
-                    <PaperMark>第 {pad2(no)} 格</PaperMark>
+                    <PaperMark>{t(`第 ${pad2(no)} 格`, `Frame ${pad2(no)}`)}</PaperMark>
                     <PaperTitle level={3}>{p.name}</PaperTitle>
                     <span className={s.foot}>
                       <Soft>
                         {p.district}
-                        {isClosed(p) && " · 暂停开放"}
+                        {isClosed(p) && t(" · 暂停开放", " · Temporarily closed")}
                       </Soft>
                       <Stamp status={p.status} />
                     </span>
-                    {countsText(p.counts) && <span className={s.cardCounts}>{countsText(p.counts)}</span>}
+                    {countsText(p.counts, t) && <span className={s.cardCounts}>{countsText(p.counts, t)}</span>}
                   </Paper>
                 </li>
               );

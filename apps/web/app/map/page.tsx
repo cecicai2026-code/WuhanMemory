@@ -5,22 +5,24 @@ import { ApiUnavailableError, listPlaces } from "@/lib/places";
 import { SCENES } from "@/lib/scenes";
 import { PlannerCorner, PlannerStateProvider } from "./PlannerState";
 import { Workbench } from "./Workbench";
-import { getT } from "@/lib/i18n-server";
+import { getLang } from "@/lib/i18n-server";
+import { makeT } from "@/lib/i18n";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getT();
+  const t = makeT(await getLang());
   return { title: t("地图工作台", "Map Workbench") };
 }
 
 /** 地图工作台：正好占满一屏。这一页自己就是"开始规划"的目的地，所以右下角不放那个按钮。
  * 右上角的标注是当前模型和当前行程的校验结果（设计规范第 7 节）。 */
 export default async function Page() {
-  const t = await getT();
+  const lang = await getLang();
+  const t = makeT(lang);
   // 景点从后端取（板块 2 的接口）。后端没开时地图照样显示，只是没有图钉
   let pois: PoiSummary[] = [];
   let poisError: string | null = null;
   try {
-    pois = (await listPlaces()).pois;
+    pois = (await listPlaces(lang)).pois;
     if (pois.length === 0) poisError = t(
         "后端没有返回景点。运行 corepack pnpm check:data 看看景点资料有没有错误。",
         "The backend returned no places. Run corepack pnpm check:data to check the place data for errors."

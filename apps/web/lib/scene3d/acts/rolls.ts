@@ -49,7 +49,7 @@ function coverCrop(t: THREE.Texture, aspect: number) {
 }
 
 /** 没有照片时：没曝光的空白底片，印着景点名和区（设计规范第 15 节第 3 条） */
-function blankNegative(f: RollsFrame, square = false) {
+function blankNegative(f: RollsFrame, en: boolean, square = false) {
   const w = 640,
     h = square ? 640 : Math.round((640 * FH) / FW);
   return tex(w, h, (g) => {
@@ -77,13 +77,15 @@ function blankNegative(f: RollsFrame, square = false) {
     g.fillText(f.name, w / 2, h / 2 - 14);
     g.font = `26px ${MONO}`;
     g.fillStyle = "rgba(240,200,150,.6)";
-    g.fillText(`${f.district} · 照片待补`, w / 2, h / 2 + (square ? 70 : 52));
+    g.fillText(`${f.district} · ${en ? "photo to come" : "照片待补"}`, w / 2, h / 2 + (square ? 70 : 52));
   });
 }
 
 export function createRolls(env: ActEnv, req0: StageRequest): Act {
   let req = req0 as StageRequest<RollsData>;
   let data = req.data;
+  // 换了语言时 key 跟着变（app/places/page.tsx），引擎重搭这一幕
+  const en = data.lang === "en";
   const frames0 = data.frames;
   const N = frames0.length;
   const GROUPS = Math.max(1, Math.ceil(N / G));
@@ -120,7 +122,8 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
   scene.add(wall);
 
   /* ---------- 胶卷罐 ---------- */
-  const canParts = makeCanister(data.district ? data.district.replace(/区$/, "") : "武汉", rollLabel(data));
+  // 罐身竖排两三个字；英文版的区名放不下，罐身写"武汉"，区名在下面那行小字里
+  const canParts = makeCanister(data.district && !en ? data.district.replace(/区$/, "") : "武汉", rollLabel(data));
   const can = canParts.group;
   can.position.set(CAN_X, 0, 0.35);
   scene.add(can);
@@ -184,8 +187,8 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
   }
   const owned: THREE.Texture[] = [];
   const slots: Slot[] = frames0.map((f, i) => {
-    const frameTex = blankNegative(f);
-    const squareTex = blankNegative(f, true);
+    const frameTex = blankNegative(f, en);
+    const squareTex = blankNegative(f, en, true);
     owned.push(frameTex, squareTex);
     const mat = new THREE.MeshStandardMaterial({ map: frameTex, emissiveMap: frameTex, emissive: 0xffffff, emissiveIntensity: 0.2, roughness: 0.4, color: 0xff7755 });
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(FW, FH), mat);
@@ -484,12 +487,12 @@ export function createRolls(env: ActEnv, req0: StageRequest): Act {
 
   /* ---------- 准备：字体加载好再画铭牌和空白底片，当前组的照片取到（或超时） ---------- */
   const ready = (async () => {
-    await ensureFonts(frames0.map((f) => f.name + f.district).join("") + "照片待补WUHAN MEMORY0123456789·EXP");
+    await ensureFonts(frames0.map((f) => f.name + f.district).join("") + (en ? "photo to come" : "照片待补") + "WUHAN MEMORY0123456789·EXP");
     // 字体到了以后重画一遍用到字的贴图
     for (const s of slots) {
       if (s.photo === "done" && s.f.photoUrl) continue;
-      const a = blankNegative(s.f),
-        b = blankNegative(s.f, true);
+      const a = blankNegative(s.f, en),
+        b = blankNegative(s.f, en, true);
       s.frameTex.dispose();
       s.squareTex.dispose();
       s.frameTex = a;

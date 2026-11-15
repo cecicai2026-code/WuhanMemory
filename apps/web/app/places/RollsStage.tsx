@@ -13,6 +13,7 @@ import { createPortal } from "react-dom";
 import { StageScene, useStage, useStageState } from "@/components/stage/StageProvider";
 import type { RollsData } from "@/lib/scene3d/data";
 import { pad2 } from "@/lib/places";
+import { makeT } from "@/lib/i18n";
 import { Grain, typingInto, useSlideTitle } from "@/components/stage/StageBits";
 import s from "@/components/stage/stage.module.css";
 
@@ -28,6 +29,7 @@ function placeIdOf(el: EventTarget | null): string | null {
 }
 
 export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: string }) {
+  const t = makeT(data.lang);
   const stage = useStage();
   const st = useStageState();
   const on = stage?.mode === "on" && st?.kind === "rolls";
@@ -122,19 +124,19 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
           <div className={s.vignette} aria-hidden="true" data-entering={entering || undefined} />
           <Grain />
           <div className={s.head} aria-hidden="true" data-entering={entering || undefined}>
-            <div className={s.no}>{titleFrame ? `第 ${pad2(titleFrame.no)} 格 / ${pad2(data.total)}` : ""}</div>
+            <div className={s.no}>{titleFrame ? t(`第 ${pad2(titleFrame.no)} 格 / ${pad2(data.total)}`, `Frame ${pad2(titleFrame.no)} / ${pad2(data.total)}`) : ""}</div>
             <div className={s.title}>
               <span className={title.className}>{titleFrame?.name}</span>
             </div>
             {titleFrame && (
               <div className={s.sub}>
-                {[titleFrame.district, titleFrame.closed && "暂停开放", titleFrame.counts].filter(Boolean).join(" · ")}
+                {[titleFrame.district, titleFrame.closed && t("暂停开放", "Temporarily closed"), titleFrame.counts].filter(Boolean).join(" · ")}
                 {titleFrame.credit && <span className={s.credit}>{titleFrame.credit}</span>}
               </div>
             )}
           </div>
           <div className={s.pager} data-entering={entering || undefined}>
-            <button type="button" className={`${s.btn} ${s.prev}`} aria-label="上一组景点" disabled={group === 0} onClick={() => stage?.command({ type: "page", dir: -1 })}>
+            <button type="button" className={`${s.btn} ${s.prev}`} aria-label={t("上一组景点", "Previous places")} disabled={group === 0} onClick={() => stage?.command({ type: "page", dir: -1 })}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M19 12H5M11 6l-6 6 6 6" />
               </svg>
@@ -152,7 +154,7 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
                 ))}
               </div>
             </div>
-            <button type="button" className={`${s.btn} ${s.next}`} aria-label="下一组景点" disabled={group >= groups - 1} onClick={() => stage?.command({ type: "page", dir: 1 })}>
+            <button type="button" className={`${s.btn} ${s.next}`} aria-label={t("下一组景点", "Next places")} disabled={group >= groups - 1} onClick={() => stage?.command({ type: "page", dir: 1 })}>
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
@@ -160,7 +162,7 @@ export function RollsStage({ data, stageKey }: { data: RollsData; stageKey: stri
           </div>
           <div className={s.enter} aria-hidden="true" data-entering={entering || undefined}>
             <div className={s.enterName}>{frame?.name}</div>
-            <div className={s.enterSub}>进入晾片</div>
+            <div className={s.enterSub}>{t("进入晾片", "To the drying line")}</div>
           </div>
           <div className={s.curtain} aria-hidden="true" data-entering={entering || undefined} />
         </div>,
