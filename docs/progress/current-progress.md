@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 2 完成）
+最后更新: 2026-11-15（板块 3 进行中）
 
 ## 当前阶段
 
@@ -16,6 +16,24 @@
 板块 1A 是在分支 `block-1a-shell` 上做的，已合进 main。
 
 **板块 2（已完成，2026-11-15 合进 main）**：景点数据格式、数据检查脚本、SQLite 导入和接口、地点档案接真实接口。10 个景点的资料全部是占位（官网、旅游平台、媒体），实地核实等 Cecilia 以后去了再补。分支 `block-2-poi-data` 保留。
+
+**板块 3（进行中，分支 `block-3-amap-routes`）**：高德地图和路线。代码写完了，等 Cecilia 装依赖、启动网站看页面。
+
+## 板块 3 完成情况
+
+- [x] 开工前讲清楚 key 怎么放、坐标系、缓存过期、调用限额；Cecilia 用临时脚本验证了三个高德 key 都能用（2026-11-15：Web 服务 key 步行、公交、驾车三次调用 status=1；JS key 加载地图成功；安全密钥让地点搜索返回了黄鹤楼）。
+- [x] Cecilia 的选择（2026-11-15）：安全密钥走后端代理；用高德官方加载器 `@amap/amap-jsapi-loader`；配色用自带的"幻影黑"；点图钉出跟着图钉的气泡卡片；缓存方案 A（步行 30 天、公交地铁 7 天、驾车 1 天）。
+- [x] 后端安全密钥代理 `/_AMapService`，测试 6 个。
+- [x] `packages/map-core` 接口改成图钉、卡片、路线三类操作；高德 provider `apps/web/lib/map/amap-provider.ts`。
+- [x] `/map` 灯箱接上地图：10 个景点图钉、打开时框住全部景点、点图钉出卡片能跳到档案页、2D/3D 拨杆（手机默认 2D）、没有 key 或加载失败时的说明。
+- [x] 后端路线：高德路径规划 2.0 三种方式，SQLite 缓存 `route_cache`，接口 `GET /api/routes/compare`、`GET /api/routes`。后端测试 77 个通过。
+- [x] `/map` 上临时的"两点之间怎么走"。
+- [x] 文档：`api-contracts.md`、`data-model.md` 第 10 节、`system-architecture.md`、`frontend-ux.md`。
+- [ ] Cecilia 安装 `@amap/amap-jsapi-loader`（装好之前前端类型检查会报找不到这个包）。
+- [ ] 启动网站看 `/map`：地图、图钉、卡片、拨杆、两点之间的路线。
+- [ ] 用真实返回核对公交路线的折线和线路名（官方文档没写清公交折线的结构，解析写得比较宽，高德原始返回存在 `route_cache.raw_json`）。
+- [ ] Cecilia 在地图上看汉口江滩的点对不对（板块 2 留下的）。
+- [ ] `pnpm build`、合进 main。
 
 ## 板块 2 完成情况
 
@@ -153,7 +171,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 3：高德地图和路线。开工前新建分支。
+板块 3 收尾：装依赖、看页面、核对公交路线、看汉口江滩的点、`pnpm build`。然后是板块 4。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
