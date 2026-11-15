@@ -33,17 +33,20 @@ from app.schemas.itinerary import (
     RoundPlan,
     StopFacts,
 )
-from app.schemas.planning import PlanDraft, TravelerPreferences, TripFrame, ValidationReport
+from pydantic import BaseModel
+
+from app.schemas.planning import PlanDraft, PlanOutline, TravelerPreferences, TripFrame, ValidationReport
 from app.schemas.poi import Fact, PoiFile
 from app.schemas.poi_api import SourceOut
 from app.services.llm.errors import LLMError
 from app.services.llm.gateway import LLMGateway
 from app.services.planning import prompts
-from app.services.planning.candidates import Candidates, candidate_brief, distance_table, select_candidates
+from app.services.planning.candidates import Candidates, candidate_brief, select_candidates
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
 from app.services.planning.preferences import PACE_LABELS, TRANSPORT_LABELS, Frame, frame_for, merge, question_for
-from app.services.planning.transport import MODE_LABELS, choose_leg
+from app.services.planning.schedule import schedule
+from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
 from app.services.poi_view import fact_status
 from app.services.routing.service import RouteService
@@ -77,7 +80,21 @@ class PlanOutcome:
 
 
 @dataclass
+class SingleOutcome:
+    """plan_single 的结果：排出来了有 version；模型排行程时出错只有 error。"""
+
+    provider: str
+    version: ItineraryVersion | None = None
+    error: str | None = None
+    # 修正时模型出错（版本照样存，按没通过处理）
+    repair_error: str | None = None
+    defaults: list[str] = field(default_factory=list)
+
+
+@dataclass
 class _Round:
+    # 模型给的（出发时间、顺序、停留时长）和程序推出钟点后的行程（板块 6C）
+    outline: PlanOutline
     draft: PlanDraft
     legs: list[ItineraryLeg]
     report: ValidationReport
@@ -173,11 +190,7 @@ class PlanningPipeline:
         trip = frame_for(prefs)
         library = self.pois.list_pois()
         base = select_candidates(library, prefs)
-        defaults = list(trip.defaults_used)
-        if base.not_in_library:
-            defaults.append(f"你提到的{'、'.join(base.not_in_library)}不在景点库里，没有安排")
-        if base.closed_requested:
-            defaults.append(f"你提到的{'、'.join(base.closed_requested)}现在暂停开放，没有安排")
+        defaults = _defaults(trip, base)
 
         previous_rounds = self.rounds.list_rounds(conversation_id)
         previous = previous_rounds[-1] if previous_rounds else None
@@ -198,29 +211,9 @@ class PlanningPipeline:
         # ④ 三份同时生成
         await stage("generating")
         for plan in plans:
-            plan.prompt = prompts.generate_user_prompt(
-                message=message,
-                prefs=prefs,
-                frame=plan.trip.frame,
-                transport_label=TRANSPORT_LABELS[trip.transport],
-                candidates=candidate_brief(plan.candidates, prefs),
-                distances=distance_table(plan.candidates),
-                previous=self._previous_draft(previous, plan.emphasis.id),
-                emphasis=plan.emphasis.prompt,
-            )
+            plan.prompt = _generate_prompt(plan, message, prefs, self._previous_draft(previous, plan.emphasis.id), self._transit(plan))
         generated = await asyncio.gather(
-            *(
-                self.gateway.complete_json(
-                    task="generate_itinerary",
-                    system_prompt=prompts.GENERATE_SYSTEM,
-                    user_prompt=plan.prompt,
-                    schema=PlanDraft,
-                    provider=provider_name,
-                    # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
-                    retry_on_timeout=False,
-                )
-                for plan in plans
-            ),
+            *(self._generate(plan, provider_name) for plan in plans),
             return_exceptions=True,
         )
         errors = [g for g in generated if isinstance(g, BaseException)]
@@ -229,7 +222,7 @@ class PlanningPipeline:
                 raise g
         if len(errors) == len(plans):
             raise errors[0]
-        drafts: dict[int, tuple[PlanDraft, str | None]] = {}
+        drafts: dict[int, tuple[PlanOutline, str | None]] = {}
         for i, (plan, g) in enumerate(zip(plans, generated)):
             if isinstance(g, LLMError):
                 plan.removed = f"模型没排出来：{g.message}"
@@ -249,25 +242,10 @@ class PlanningPipeline:
         if to_repair:
             await stage("repairing")
             repaired = await asyncio.gather(
-                *(
-                    self.gateway.complete_json(
-                        task="repair_itinerary",
-                        system_prompt=prompts.REPAIR_SYSTEM,
-                        user_prompt=prompts.repair_user_prompt(
-                            generate_prompt=p.prompt,
-                            draft=p.first.draft,  # type: ignore[union-attr]
-                            errors=[i.message for i in p.first.report.errors],  # type: ignore[union-attr]
-                            legs=_leg_lines(p.first.legs, p.candidates),  # type: ignore[union-attr]
-                        ),
-                        schema=PlanDraft,
-                        provider=provider_name,
-                        retry_on_timeout=False,
-                    )
-                    for p in to_repair
-                ),
+                *(self._repair(p, provider_name) for p in to_repair),
                 return_exceptions=True,
             )
-            fixed: dict[int, tuple[PlanDraft, str | None]] = {}
+            fixed: dict[int, tuple[PlanOutline, str | None]] = {}
             for p, r in zip(to_repair, repaired):
                 if isinstance(r, BaseException):
                     if not isinstance(r, LLMError):
@@ -334,16 +312,136 @@ class PlanningPipeline:
         )
         return PlanOutcome(kind=kind, reply=reply, provider=provider_name, version=first, round=saved_round, versions=versions)
 
+    async def plan_single(
+        self,
+        *,
+        message: str,
+        prefs: TravelerPreferences,
+        emphasis: str,
+        provider: str,
+        on_stage: OnStage | None = None,
+        transit: list[str] | None = None,
+    ) -> SingleOutcome:
+        """板块 6：拿给定的偏好，按一种侧重、用指定的模型排一份。不抽偏好、不反问、不进对话。
+
+        和 handle 里的每一份走同样的步骤：筛候选 → 生成 → 查交通 → 校验（含侧重规则）→ 有错误修正一次 → 保存版本。
+        双模型对比时两边各调用一次，偏好、候选、侧重都一样，只有 provider 不同。
+        模型出错不抛出，写在 SingleOutcome.error 里（另一边照常排）。
+        transit：给模型看的真实交通表。双模型对比时由调用方先算好一份、两边共用（transit_for）：
+        两边同时跑，后开始的一边可能读到先开始的一边刚查进缓存的路线，各算各的提示词就不一样了。
+        """
+
+        async def stage(name: Stage) -> None:
+            if on_stage is not None:
+                result = on_stage(name)
+                if result is not None:
+                    await result
+
+        if prefs.days is None:
+            raise ValueError("偏好里没有天数")
+        if prefs.startDate is None and not prefs.dateUndecided:
+            prefs = prefs.model_copy(update={"dateUndecided": True})
+        today = self.today()
+        labels = {p.id: p.label for p in self.gateway.providers()}
+
+        await stage("selecting")
+        plan, defaults = self._single_plan(prefs, emphasis)
+        plan.prompt = _generate_prompt(plan, message, prefs, None, transit if transit is not None else self._transit(plan))
+
+        await stage("generating")
+        try:
+            g = await self._generate(plan, provider)
+        except LLMError as exc:
+            return SingleOutcome(provider=provider, error=f"排行程时模型出错：{exc.message}", defaults=defaults)
+        await self._check_all([plan], {0: (g.parsed, g.model)}, today, stage)  # type: ignore[dict-item]
+        plan.final = plan.first
+
+        repair_error: str | None = None
+        if plan.first is not None and plan.first.report.status == "failed":
+            await stage("repairing")
+            try:
+                r = await self._repair(plan, provider)
+            except LLMError as exc:
+                # 修正没回来：保留第一版，按没通过处理（和 handle 一样）
+                repair_error = f"修正时模型出错：{exc.message}"
+            else:
+                await self._check_all([plan], {0: (r.parsed, r.model)}, today, stage, into="final")  # type: ignore[dict-item]
+
+        await stage("saving")
+        data = self._version_data(plan, prefs, provider, labels, today)
+        version = self.itineraries.add_version(self.itineraries.create_itinerary(None), data)
+        return SingleOutcome(provider=provider, version=version, defaults=defaults, repair_error=repair_error)
+
+    def _single_plan(self, prefs: TravelerPreferences, emphasis: str) -> tuple[_Plan, list[str]]:
+        trip = frame_for(prefs)
+        library = self.pois.list_pois()
+        base = select_candidates(library, prefs)
+        defaults = _defaults(trip, base)
+        e = EMPHASES[emphasis]
+        plan = _Plan(
+            emphasis=e,
+            candidates=candidates_for(e, base, library),
+            trip=Frame(
+                frame=emphasis_frame(e, trip.frame),
+                transport=trip.transport,
+                # 和 handle 里的每一份一样：侧重改了节奏时写这份按什么节奏排（main 上 d08e962 的规则）
+                defaults_used=_plan_defaults(e, emphasis_frame(e, trip.frame), trip.frame, prefs, defaults),
+            ),
+            walk_max=walk_limit(e),
+        )
+        return plan, plan.trip.defaults_used
+
+    def transit_for(self, prefs: TravelerPreferences, emphasis: str) -> list[str]:
+        """plan_single 会给模型看的真实交通表。双模型对比先算一份，两边共用。"""
+        if prefs.startDate is None and not prefs.dateUndecided:
+            prefs = prefs.model_copy(update={"dateUndecided": True})
+        return self._transit(self._single_plan(prefs, emphasis)[0])
+
+    def _transit(self, plan: _Plan) -> list[str]:
+        """候选两两之间的真实交通（只读缓存，不调用高德；板块 6B）。按这份方案的交通偏好和步行上限选方式，和校验一样。"""
+        return transit_table(self.routes, list(plan.candidates.pois.values()), plan.trip.transport, walk_max=plan.walk_max)
+
+    async def _generate(self, plan: _Plan, provider: str):  # type: ignore[no-untyped-def]
+        return await self.gateway.complete_json(
+            task="generate_itinerary",
+            system_prompt=prompts.GENERATE_SYSTEM,
+            user_prompt=plan.prompt,
+            schema=PlanOutline,
+            provider=provider,
+            # 排行程是慢请求：超时直接报错，不重试（2026-11-15 Cecilia 定的）
+            retry_on_timeout=False,
+        )
+
+    async def _repair(self, p: _Plan, provider: str):  # type: ignore[no-untyped-def]
+        assert p.first is not None
+        return await self.gateway.complete_json(
+            task="repair_itinerary",
+            system_prompt=prompts.REPAIR_SYSTEM,
+            user_prompt=prompts.repair_user_prompt(
+                generate_prompt=p.prompt,
+                outline=p.first.outline,
+                scheduled=p.first.draft,
+                errors=[i.message for i in p.first.report.errors],
+                legs=_leg_lines(p.first.legs, p.candidates),
+            ),
+            schema=PlanOutline,
+            provider=provider,
+            retry_on_timeout=False,
+        )
+
     # ---------- 小步骤 ----------
 
-    def _previous_draft(self, previous: PlanningRound | None, emphasis: str) -> PlanDraft | None:
+    def _previous_draft(self, previous: PlanningRound | None, emphasis: str) -> BaseModel | None:
         if previous is None:
             return None
         plan = next((p for p in previous.plans if p.emphasis == emphasis and p.versionId), None)
         if plan is None or plan.versionId is None:
             return None
         version = self.itineraries.get_version(plan.versionId)
-        return version.draft if version else None
+        if version is None:
+            return None
+        # 板块 6C 之后存的版本有模型给的 outline；之前的只有带钟点的 draft
+        return version.outline or version.draft
 
     def _itinerary_for(self, previous: PlanningRound | None, emphasis: str, conversation_id: str) -> str:
         """同一侧重沿用上一轮的行程（新的一轮是它的下一个版本）；没有就新建。"""
@@ -356,7 +454,7 @@ class PlanningPipeline:
     async def _check_all(
         self,
         plans: list[_Plan],
-        drafts: dict[int, tuple[PlanDraft, str | None]],
+        drafts: dict[int, tuple[PlanOutline, str | None]],
         today: date,
         stage: Callable[[Stage], Awaitable[None]],
         into: Literal["first", "final"] = "first",
@@ -364,18 +462,20 @@ class PlanningPipeline:
         # 交通一份一份查：高德请求本来就排队一个一个发，三份用到的路线大多相同，缓存里有的不再查
         await stage("routing")
         legs: dict[int, list[ItineraryLeg]] = {}
-        for i, (draft, _) in drafts.items():
-            legs[i] = await self._route(plans[i], draft)
+        for i, (outline, _) in drafts.items():
+            legs[i] = await self._route(plans[i], outline)
         await stage("validating")
-        for i, (draft, model) in drafts.items():
+        for i, (outline, model) in drafts.items():
             plan = plans[i]
             leg_map = {(leg.fromPoiId, leg.toPoiId): leg.route for leg in legs[i]}
+            # 板块 6C：钟点由程序按真实交通推出来，再照常校验
+            draft, timing = schedule(outline, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame)
             report = validate_itinerary(draft, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame, today=today)
             extra = check_emphasis(plan.emphasis, draft, candidates=plan.candidates, legs=leg_map, frame=plan.trip.frame)
-            result = _Round(draft=draft, legs=legs[i], report=merge_issues(report, extra), model=model)
+            result = _Round(outline=outline, draft=draft, legs=legs[i], report=merge_issues(report, [*timing, *extra]), model=model)
             setattr(plan, into, result)
 
-    async def _route(self, plan: _Plan, draft: PlanDraft) -> list[ItineraryLeg]:
+    async def _route(self, plan: _Plan, draft: PlanOutline | PlanDraft) -> list[ItineraryLeg]:
         out: list[ItineraryLeg] = []
         pois = plan.candidates.pois
         for day in draft.days:
@@ -429,9 +529,37 @@ class PlanningPipeline:
             draft=final.draft,
             dataAsOf=today,
             emphasis=p.emphasis.id,
+            firstValidation=first.report,
+            firstDraft=first.draft if final is not first else None,
+            outline=final.outline,
+            firstOutline=first.outline if final is not first else None,
         )
         data.metrics = plan_metrics(data)
         return data
+
+
+def _defaults(trip: Frame, base: Candidates) -> list[str]:
+    defaults = list(trip.defaults_used)
+    if base.not_in_library:
+        defaults.append(f"你提到的{'、'.join(base.not_in_library)}不在景点库里，没有安排")
+    if base.closed_requested:
+        defaults.append(f"你提到的{'、'.join(base.closed_requested)}现在暂停开放，没有安排")
+    return defaults
+
+
+def _generate_prompt(
+    plan: _Plan, message: str, prefs: TravelerPreferences, previous: BaseModel | None, transit: list[str]
+) -> str:
+    return prompts.generate_user_prompt(
+        message=message,
+        prefs=prefs,
+        frame=plan.trip.frame,
+        transport_label=TRANSPORT_LABELS[plan.trip.transport],
+        candidates=candidate_brief(plan.candidates, prefs),
+        transit=transit,
+        previous=previous,
+        emphasis=plan.emphasis.prompt,
+    )
 
 
 def _plan_defaults(

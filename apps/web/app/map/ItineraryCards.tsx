@@ -103,7 +103,7 @@ function Stop({ stop, issues }: { stop: ItineraryStop; issues: ValidationIssue[]
   return (
     <li className={s.stop}>
       <p className={s.stopTime}>
-        {stop.arrive}–{stop.leave}
+        {stop.arrive ? `${stop.arrive}–${stop.leave}` : "没排出时间"}
       </p>
       <p className={s.stopName}>
         <TextLink href={`/places/${stop.poiId}`} onPaper>

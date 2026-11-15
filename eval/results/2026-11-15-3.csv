@@ -1,0 +1,21 @@
+request_id,repeat,emphasis,request,provider,model,error,first_passed,first_errors,first_warnings,first_error_codes,repaired,final_passed,final_errors,final_warnings,final_error_codes,fabricated_pois,off_list_pois,stops,transport_minutes,unknown_legs,walking_meters,day_ends,model_seconds,wall_seconds,calls,requests_sent,retried_calls,reasked_calls,input_tokens,output_tokens,comparison_id
+r01,1,classic,武汉两天，喜欢历史和美食，坐地铁，11 月 28 日出发,qwen,qwen-plus,,0,1,8,emphasis-must-5ax1,1,1,0,8,,,,6,183,0,6913,17:45;17:35,21.6,21.7,2,2,0,0,7968,902,cmp_4055c2c7684a45058732ac9762a4481a
+r01,1,classic,武汉两天，喜欢历史和美食，坐地铁，11 月 28 日出发,doubao,doubao-seed-2-1-pro-260915,,0,2,10,after-closex1;day-too-longx1,1,1,0,10,,,,8,233,0,9014,18:20;19:25,20.6,20.7,2,2,0,0,8366,798,cmp_4055c2c7684a45058732ac9762a4481a
+r02,1,culture,一个人，11 月 23 日在武汉待一天，想看博物馆和老建筑,qwen,qwen-plus,,0,1,5,closed-dayx1,1,1,0,3,,,,2,37,0,1383,14:50,14.9,14.9,2,2,0,0,5413,617,cmp_5083deb13f454b1883ba6feb29a5966a
+r02,1,culture,一个人，11 月 23 日在武汉待一天，想看博物馆和老建筑,doubao,doubao-seed-2-1-pro-260915,,1,0,3,,0,1,0,3,,,,2,37,0,1360,14:20,4.1,4.1,1,1,0,0,2399,138,cmp_5083deb13f454b1883ba6feb29a5966a
+r03,1,relaxed,12 月 5 日带爸妈在武汉轻松玩一天，他们走不了太多路，可以打车,qwen,qwen-plus,,1,0,5,,0,1,0,5,,,,3,37,0,699,16:30,6.3,6.3,1,1,0,0,3308,261,cmp_0ce4788dcfd146158ecd01ca104c0bfa
+r03,1,relaxed,12 月 5 日带爸妈在武汉轻松玩一天，他们走不了太多路，可以打车,doubao,doubao-seed-2-1-pro-260915,,1,0,5,,0,1,0,5,,,,3,37,0,699,16:15,7.9,7.9,1,1,0,0,3338,197,cmp_0ce4788dcfd146158ecd01ca104c0bfa
+r04,1,classic,武汉三天，12 月 4 日到，想拍照、看老建筑和江边夜景，节奏紧凑一点,qwen,qwen-plus,,1,0,10,,0,1,0,10,,,,8,238,0,8135,18:05;17:05;12:50,15.3,15.4,1,1,0,0,3652,670,cmp_a29d564f15f84a69a6750a46afcfc868
+r04,1,classic,武汉三天，12 月 4 日到，想拍照、看老建筑和江边夜景，节奏紧凑一点,doubao,doubao-seed-2-1-pro-260915,,0,1,12,after-closex1,1,1,0,12,,,,9,279,0,11089,17:25;17:30;17:35,22.1,22.1,2,2,0,0,8557,996,cmp_a29d564f15f84a69a6750a46afcfc868
+r05,1,classic,和对象来武汉两天，想城市漫步、拍拍照，尽量走路，日期还没定,qwen,qwen-plus,,0,2,13,day-too-longx1;emphasis-must-5ax1,1,1,0,12,,,,6,148,0,6224,17:20;17:25,22.2,22.2,2,2,0,0,7985,941,cmp_02228fbefe7e4659a06ace9436273825
+r05,1,classic,和对象来武汉两天，想城市漫步、拍拍照，尽量走路，日期还没定,doubao,doubao-seed-2-1-pro-260915,,1,0,12,,0,1,0,12,,,,6,161,0,7282,18:00;17:25,10.7,10.8,1,1,0,0,3577,361,cmp_02228fbefe7e4659a06ace9436273825
+r06,1,relaxed,一家三口带 6 岁孩子，11 月 29 日到武汉玩两天，想看看湖和博物馆,qwen,qwen-plus,,0,1,3,closed-dayx1,1,1,0,2,,,,2,0,0,0,11:00;11:30,13.5,13.5,2,2,0,0,7867,541,cmp_36a2c55e3b734e53b77de139fd9d0a5a
+r06,1,relaxed,一家三口带 6 岁孩子，11 月 29 日到武汉玩两天，想看看湖和博物馆,doubao,doubao-seed-2-1-pro-260915,,1,0,5,,0,1,0,5,,,,4,70,0,2713,15:15;13:50,8.4,8.4,1,1,0,0,3677,265,cmp_36a2c55e3b734e53b77de139fd9d0a5a
+r07,1,classic,和两个大学同学 12 月 1 日在武汉玩一天，一定要去武汉大学，想吃小吃，黄鹤楼就不去了,qwen,qwen-plus,,0,2,4,emphasis-must-5ax2,1,0,1,5,emphasis-must-5ax1,,,3,104,0,3328,17:40,10.2,10.3,2,2,0,0,6436,408,cmp_8f441fbcbdb14d31b84933214a233682
+r07,1,classic,和两个大学同学 12 月 1 日在武汉玩一天，一定要去武汉大学，想吃小吃，黄鹤楼就不去了,doubao,doubao-seed-2-1-pro-260915,,0,1,6,day-too-longx1,1,0,1,6,day-too-longx1,,,4,155,0,5765,18:40,12.2,12.2,2,2,0,0,6681,473,cmp_8f441fbcbdb14d31b84933214a233682
+r08,1,culture,12 月 6 日想去古德寺和黎黄陂路转一天，看看老建筑,qwen,qwen-plus,,1,0,3,,0,1,0,3,,,,2,59,0,2204,13:40,4.6,4.6,1,1,0,0,2303,182,cmp_44428bd557804a6487b88fde056a2c8b
+r08,1,culture,12 月 6 日想去古德寺和黎黄陂路转一天，看看老建筑,doubao,doubao-seed-2-1-pro-260915,,1,0,2,,0,1,0,2,,,,2,28,0,1289,15:10,4.7,4.7,1,1,0,0,2396,161,cmp_44428bd557804a6487b88fde056a2c8b
+r09,1,classic,12 月 10 日开始在武汉慢慢玩四天，什么都想看看,qwen,qwen-plus,,0,2,13,day-too-longx1;duplicate-poix1,1,1,0,12,,,,9,227,0,8730,15:15;15:20;18:00;13:40,29.6,29.7,2,2,0,0,8437,1275,cmp_39f4f26ea1fa431d988e95fb4648aea6
+r09,1,classic,12 月 10 日开始在武汉慢慢玩四天，什么都想看看,doubao,doubao-seed-2-1-pro-260915,,0,1,12,day-too-longx1,1,1,0,12,,,,9,139,0,6109,16:00;14:45;17:05;12:30,21.4,21.4,2,2,0,0,8358,1036,cmp_39f4f26ea1fa431d988e95fb4648aea6
+r10,1,classic,11 月 21 日到武汉两天，预算不多，就想吃东西逛街，晚上看夜景，打车,qwen,qwen-plus,,0,2,8,day-windowx1;emphasis-must-5ax1,1,0,4,9,after-closex1;day-overflowx1;day-windowx1;time-orderx1,,,7,138,0,0,16:40;23:59,25.0,25.6,2,2,0,0,7550,1077,cmp_3d0d29e01438441eadcaeae0df7075c5
+r10,1,classic,11 月 21 日到武汉两天，预算不多，就想吃东西逛街，晚上看夜景，打车,doubao,doubao-seed-2-1-pro-260915,,0,1,10,day-too-longx1,1,1,0,10,,,,8,143,0,699,18:30;19:30,20.2,20.4,2,2,0,0,7627,815,cmp_3d0d29e01438441eadcaeae0df7075c5

@@ -14,7 +14,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.schemas.planning import PlanDraft, TravelerPreferences, TripFrame, ValidationReport
+from app.schemas.planning import PlanDraft, PlanOutline, TravelerPreferences, TripFrame, ValidationReport
 from app.schemas.poi import Coordinates, OpeningHours, Payment, Reservation, Ticket
 from app.schemas.poi_api import FactOut
 from app.schemas.route import RouteOut
@@ -161,6 +161,12 @@ class ItineraryVersionData(BaseModel):
     emphasis: str | None = None
     # 程序算的数字，比较方案用；之前存的版本为 null
     metrics: PlanMetrics | None = None
+    # 板块 6：第一版的完整校验报告和模型第一版的原始输出（修正过时和最终版不同）。之前存的版本为 null
+    firstValidation: ValidationReport | None = None
+    firstDraft: PlanDraft | None = None
+    # 板块 6C：模型给的行程（出发时间、顺序、停留时长），draft 是程序从它推出钟点后的样子。之前存的版本为 null
+    outline: PlanOutline | None = None
+    firstOutline: PlanOutline | None = None
 
 
 class ItineraryVersion(ItineraryVersionData):

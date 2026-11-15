@@ -151,8 +151,9 @@ def test_share_not_implemented_yet() -> None:
 def test_planning_round_with_comparison(api) -> None:
     from tests.test_planning_rounds import ALL, CLASSIC, CULTURE, POIS, WALKS
 
-    dup = plan([("a", "09:30", "11:30"), ("b", "12:00", "14:10")])  # 和经典的几乎一样
-    client, s = api([prefs(**DATED), CLASSIC, dup, CULTURE], routes=WALKS, pois=POIS, emphases=ALL)
+    # 和经典的几乎一样。钟点由程序推：轻松那份走 12 分钟超过 10 分钟，坐地铁 20 分钟，b 12:00–14:10（经典的 b 11:55–13:55）
+    dup = plan([("a", "09:30", "11:30"), ("b", "12:00", "14:10")])
+    client, s = api([prefs(**DATED), CLASSIC, dup, CULTURE], routes={**WALKS, ("a", "b", "transit"): 20}, pois=POIS, emphases=ALL)
     conv = start(client)
     job_id = client.post(f"/api/conversations/{conv}/messages", json={"content": "下周二去一天"}).json()["planningJobId"]
     job = client.get(f"/api/planning-jobs/{job_id}").json()
@@ -168,7 +169,8 @@ def test_planning_round_with_comparison(api) -> None:
     assert rnd["comparison"]["labels"] == ["经典必去", "深度文化"]
     rows = {r["key"]: r for r in rnd["comparison"]["rows"]}
     assert rows["places"]["texts"] == ["测试景点a、测试景点b", "测试景点a、测试景点b"]
-    assert rows["end-day-1"]["texts"] == ["14:00", "16:30"]
+    # 经典：b 11:55 到、待 120 分钟；深度文化：a 09:00–11:00，走 12 分钟 + 10 → 11:25 到 b、待 210 分钟
+    assert rows["end-day-1"]["texts"] == ["13:55", "14:55"]
 
     convo = client.get(f"/api/conversations/{conv}").json()
     assert convo["messages"][-1]["planningRoundId"] == round_id

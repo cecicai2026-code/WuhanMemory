@@ -131,6 +131,14 @@ CREATE TABLE IF NOT EXISTS planning_rounds (
     data_json       TEXT NOT NULL,     -- 整轮（PlanningRoundData）
     UNIQUE (conversation_id, round_number)
 );
+
+-- 双模型对比（板块 6）：同一个请求、同一份偏好和侧重，两个模型各排一份。两份行程各是一个行程版本，这里存数字、差异和对比表。
+CREATE TABLE IF NOT EXISTS model_comparisons (
+    id              TEXT PRIMARY KEY,
+    created_at      TEXT NOT NULL,
+    eval_request_id TEXT,              -- 批量评测时是请求的 id（例如 r01），页面上发起的为空
+    data_json       TEXT NOT NULL      -- 整次对比（ModelComparisonData）
+);
 """
 
 

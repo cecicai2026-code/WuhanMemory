@@ -91,6 +91,14 @@ class RouteService:
         same = (cached.origin, cached.destination) == (_coord(origin.location), _coord(destination.location))
         return same and cached.expiresAt > self.now()
 
+    def cached_route(self, origin: RoutePlace, destination: RoutePlace, mode: RouteMode) -> RouteOut | None:
+        """只读缓存：有没过期、坐标没变的结果就返回，否则返回 None。不调用高德（板块 6B：排行程前给模型看的交通表用）。"""
+        if not self.has_fresh_cache(origin, destination, mode):
+            return None
+        cached = self.cache.get(origin.id, destination.id, mode)
+        assert cached is not None
+        return cached.route.model_copy(update={"cache": "cached", "warning": None})
+
     async def route(self, origin: RoutePlace, destination: RoutePlace, mode: RouteMode) -> RouteOut:
         now = self.now()
         o, d = _coord(origin.location), _coord(destination.location)

@@ -320,6 +320,8 @@ GET /api/itinerary-versions/{versionId}
 
 没有这个版本时 404。
 
+- 板块 6C：版本里多了 `outline`（模型给的行程：每天 `start`，每站 `poiId`、`stayMinutes`、`reason`）和 `firstOutline`（修正过时模型的第一版）。`days` 里的到达、离开时间是程序按真实交通推出来的。之前存的版本没有这两项。
+
 ### 获取一轮方案（板块 5B）
 
 ```http
@@ -356,6 +358,101 @@ GET /api/planning-rounds/{roundId}
 - `versions`：只有展示的几份，顺序和 `plans` 里 `shown` 的一致。没展示的版本也存着，用 `GET /api/itinerary-versions/{id}` 取得到。
 - `comparison`：展示的几份之间的对比表，每格是程序写好的文字（`texts`），能比大小的行另有 `values`。行的 key：`places`、`stopCount`、`transportMinutes`、`byMode`、`walkingMeters`、`tickets`、`end-day-1`…`end-day-N`、`validation`。一份都没展示时为 null。上面例子里的数字只是示意格式，不是真实结果。
 - 没有这一轮时 404。
+
+## 双模型对比（板块 6）
+
+代码在 `apps/api/app/api/comparisons.py`，做法见 `ai-planning-pipeline.md` 的"双模型对比"和 ADR 0006。
+
+### 发起对比
+
+```http
+POST /api/comparisons
+```
+
+```json
+{ "request": "武汉两天，喜欢历史和美食，坐地铁，11 月 28 日出发", "emphasis": "classic" }
+```
+
+返回 202：`{ "jobId": "cjob_…", "status": "queued" }`。
+
+- `emphasis`：`classic` 经典必去（默认）/ `relaxed` 轻松少走路 / `culture` 深度文化。
+- 400：请求是空的、侧重不对、千问或豆包有一个没配置。409：上一次对比还在跑（一次只跑一个，免得重复花 token）。
+- 后台：默认模型抽一次偏好，两边共用；千问和豆包同时排同一种侧重。调用模型 3 到 5 次。
+
+### 查询对比任务
+
+```http
+GET /api/comparison-jobs/{jobId}
+```
+
+```json
+{
+  "jobId": "cjob_…",
+  "status": "running",
+  "request": "…",
+  "emphasis": "classic",
+  "stages": [{ "id": "understanding", "label": "理解需求（抽一次偏好，两边共用）" }],
+  "sides": [
+    { "provider": "qwen", "label": "通义千问", "stages": [{ "id": "selecting", "label": "从景点库挑候选" }, { "id": "generating", "label": "…" }] },
+    { "provider": "doubao", "label": "豆包", "stages": [] }
+  ],
+  "comparisonId": null,
+  "error": null
+}
+```
+
+- `stages` 是共用的步骤（抽偏好、保存），`sides` 是每边各自走过的步骤，最后一步是 `done`。
+- `status` 是 `completed` 时 `comparisonId` 有值。`failed` 时 `error.code` 是 `needs_days`（偏好里没有天数，请用户把天数写进请求）、模型的错误码（抽偏好时出错），或 `internal_error`。一边排行程时模型出错不算任务失败，写在那一边的结果里。
+- 任务只在内存里，后端重启会丢（结果已经存进 SQLite 的不丢）。
+
+### 历次对比
+
+```http
+GET /api/comparisons?limit=50
+```
+
+新的在前。每条：`id`、`createdAt`、`request`、`emphasisLabel`、`evalRequestId`（批量评测的请求 id，页面上发起的为 null）、`sides`（每边的 `providerLabel`、`model`、`error`、`firstPassed`、`finalPassed`；没排出来时两个 passed 为 null）。
+
+### 获取一次对比
+
+```http
+GET /api/comparisons/{id}
+```
+
+```json
+{
+  "id": "cmp_…",
+  "createdAt": "…",
+  "request": "…",
+  "preferences": { "days": 2, "startDate": "2026-11-28", "interests": ["历史文化", "美食"], "transport": "metro", "…": "…" },
+  "preferencesSource": "extracted",
+  "extractor": "qwen",
+  "extractorCalls": { "callCount": 1, "…": "…" },
+  "emphasis": "classic",
+  "emphasisLabel": "经典必去",
+  "defaultsUsed": ["节奏：适中（你没说，按默认）"],
+  "sides": [
+    {
+      "provider": "qwen", "providerLabel": "通义千问", "model": "…", "versionId": "ver_…", "error": null,
+      "quality": { "firstPassed": false, "firstErrorCount": 2, "firstErrorCodes": { "overlap": 1, "closed-day": 1 }, "repaired": true,
+                   "finalPassed": true, "firstFabricatedPoiIds": [], "firstOffListPoiIds": [], "…": "…" },
+      "plan": { "…5B 的 PlanMetrics…": "" },
+      "calls": { "callCount": 2, "requestCount": 2, "modelMs": 0, "inputTokens": 0, "outputTokens": 0, "byTask": { "generate_itinerary": 1, "repair_itinerary": 1 }, "…": "…" },
+      "wallMs": 0
+    },
+    { "provider": "doubao", "…": "…" }
+  ],
+  "diff": { "onlyLeft": [], "onlyRight": [], "both": [], "days": [], "moved": [], "nearDuplicate": null },
+  "table": { "labels": ["通义千问", "豆包"], "rows": [ { "key": "firstCheck", "label": "第一版校验", "texts": ["…", "…"], "values": [2, 0], "note": "…" } ] },
+  "evalRequestId": null,
+  "versions": [ "…左边的 ItineraryVersion…", "…右边的，没排出来为 null…" ]
+}
+```
+
+- 上面的数字只示意格式，不是真实结果。
+- `table.rows` 的 key：`firstCheck`、`firstCodes`、`repair`、`fabricated`、`offList`，然后是 5B 对比表的各行（`places` … `end-day-N`，`validation` 改名"最终校验"），最后是 `modelTime`、`wallTime`、`calls`、`tokens`。没排出来的一边写原因或"—"。
+- `diff`：两边都排出来时才有。`days[].orders` 是两边这一天的景点（第一个是左边），`sameOrder` 在都有的景点不到 2 个时为 null。
+- 没有这次对比时 404。
 
 ## 以后的接口（设计草案）
 

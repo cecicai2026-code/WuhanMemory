@@ -33,6 +33,7 @@ from app.services.llm.base import (
     ProviderInfo,
     ProviderReply,
 )
+from app.services.llm.collect import note_call
 from app.services.llm.errors import (
     LLMError,
     LLMNotConfiguredError,
@@ -212,6 +213,7 @@ class LLMGateway:
                 output_tokens=stats.output_tokens,
             )
             _log_record(record)
+            note_call(record)
             if self._recorder is not None:
                 try:
                     self._recorder(record)

@@ -55,9 +55,10 @@ async def test_three_plans_are_generated_checked_and_shown(tmp_path: Path) -> No
 
 
 async def test_near_duplicate_is_dropped_before_repair(tmp_path: Path) -> None:
-    # 轻松的和经典的景点相同、结束时间一样，而且有错误（空档 5 分钟，走路要 12 分钟）：去掉，不花修正
-    dup = plan([("a", "09:30", "11:30"), ("b", "11:35", "14:00")])
-    s = setup(tmp_path, [prefs(**DATED), CLASSIC, dup, CULTURE])
+    # 轻松的和经典的几乎一样（多了一个不存在的景点 zzz，算差 1 个；最后都是 13:55 离开），而且有错误：去掉，不花修正。
+    # 钟点由程序推：zzz 08:00–08:30，a 等到 09:00 开门、待到 11:00；轻松那份走 12 分钟超过 10 分钟，坐地铁 20 分钟，b 11:30–13:55
+    dup = plan([("zzz", "08:00", "08:30"), ("a", "09:00", "11:00"), ("b", "11:30", "13:55")])
+    s = setup(tmp_path, [prefs(**DATED), CLASSIC, dup, CULTURE], routes={("a", "b", "transit"): 20})
     out = await s.send("去")
     relaxed = by_emphasis(out)["relaxed"]
     assert not relaxed.shown and relaxed.removedReason.startswith("和「经典必去」几乎一样")

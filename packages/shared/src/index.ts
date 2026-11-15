@@ -18,3 +18,5 @@ export * from "./route";
 export * from "./llm";
 // 对话、规划、行程（板块 5）
 export * from "./planning";
+// 双模型对比（板块 6）
+export * from "./comparison";

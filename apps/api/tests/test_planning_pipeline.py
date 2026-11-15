@@ -89,12 +89,24 @@ def prefs(**fields: Any) -> str:
     return json.dumps(base, ensure_ascii=False)
 
 
+def _minutes(hhmm: str) -> int:
+    h, m = hhmm.split(":")
+    return int(h) * 60 + int(m)
+
+
 def plan(*days: list[tuple[str, str, str]], title: str = "测试行程") -> str:
+    """假模型的回答（板块 6C 的格式）：每天出发时间 = 第一站的 arrive，每站停留 = leave - arrive。
+    写成 (景点, arrive, leave) 方便读；后面几站的 arrive 不起作用，钟点由程序按真实交通推。"""
     return json.dumps(
         {
             "title": title,
             "days": [
-                {"dayNumber": i, "theme": f"第{i}天主题", "stops": [{"poiId": p, "arrive": a, "leave": l, "reason": "测试"} for p, a, l in s]}
+                {
+                    "dayNumber": i,
+                    "theme": f"第{i}天主题",
+                    "start": s[0][1] if s else "09:00",
+                    "stops": [{"poiId": p, "stayMinutes": _minutes(l) - _minutes(a), "reason": "测试"} for p, a, l in s],
+                }
                 for i, s in enumerate(days, start=1)
             ],
         },
@@ -201,7 +213,7 @@ async def test_candidates_reach_the_model_with_ids(tmp_path: Path) -> None:
     prompt = s.prompt(1)
     for poi_id in ("a", "b", "c"):
         assert f'"id": "{poi_id}"' in prompt
-    assert "a—b" in prompt  # 直线距离表
+    assert "【两站之间的真实交通】" in prompt and "a—b 没查到真实时间，直线" in prompt  # 缓存还是空的
 
 
 # ---------- 交通方式 ----------
@@ -223,12 +235,16 @@ async def test_no_transit_falls_back_to_walk(tmp_path: Path) -> None:
     assert leg.route.mode == "walk" and "改步行" in leg.choice
 
 
-async def test_route_error_becomes_warning(tmp_path: Path) -> None:
+async def test_route_error_means_times_cannot_be_scheduled(tmp_path: Path) -> None:
+    # 板块 6C：交通没查到，程序推不出后面的钟点，是错误（不再只是警告），这份不展示
     routes = {("a", "c", "walk"): "error", ("a", "c", "transit"): "error"}
-    s = Setup(tmp_path, [prefs(**DATED), plan([("a", "09:30", "11:30"), ("c", "12:30", "15:00")])], routes=routes)
-    v = (await s.send("去")).version
-    assert v is not None and v.validation.status == "warning"
-    assert [i.code for i in v.validation.issues] == ["route-unknown"]
+    same = plan([("a", "09:30", "11:30"), ("c", "12:30", "15:00")])
+    s = Setup(tmp_path, [prefs(**DATED), same, same], routes=routes)
+    out = await s.send("去")
+    v = out.version
+    assert v is not None and v.validation.status == "failed" and out.kind == "failed"
+    assert "transport-unknown" in [i.code for i in v.validation.errors]
+    assert "交通没查到，没法排后面的时间" in s.prompt(2)
 
 
 async def test_routes_are_cached(tmp_path: Path) -> None:
@@ -247,7 +263,7 @@ async def test_errors_go_back_to_model_once_and_get_fixed(tmp_path: Path) -> Non
     routes = {("a", "c", "walk"): 50, ("a", "c", "transit"): 40}
     s = Setup(tmp_path, [
         prefs(**DATED),
-        plan([("a", "09:30", "11:30"), ("c", "11:40", "14:00")]),  # 只留 10 分钟
+        plan([("a", "09:30", "11:30"), ("c", "12:30", "17:30")]),  # c 停留 300 分钟：12:20 到，17:20 走，晚于 17:00 关门
         plan([("a", "09:30", "11:30"), ("c", "12:30", "14:30")]),
     ], routes=routes)
     out = await s.send("去")
@@ -256,11 +272,12 @@ async def test_errors_go_back_to_model_once_and_get_fixed(tmp_path: Path) -> Non
     assert v.planner.rounds == 2 and v.planner.firstRoundStatus == "failed" and v.planner.firstRoundErrors == 1
     assert "repairing" in s.stages
     repair = s.prompt(2)
-    assert "公交地铁要 40 分钟，行程只留了 10 分钟" in repair  # 具体错误
+    assert "17:20 离开，晚于关门时间 17:00" in repair  # 具体错误
     assert "公交地铁 40 分钟" in repair  # 真实交通时间
-    assert '"arrive":"11:40"' in repair  # 上一次的行程
+    assert '"stayMinutes":300' in repair  # 上一次模型给的行程
+    assert "c 12:20–17:20" in repair  # 程序推出来的钟点：11:30 离开 + 40 + 10
     system = [m.content for m in s.model.calls[2] if m.role == "system"][0]
-    assert "真实交通时间 + 10 分钟" in system
+    assert "钟点照样由程序重新推" in system
     assert "修正" in out.reply
 
 

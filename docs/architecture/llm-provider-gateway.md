@@ -119,6 +119,8 @@ result.record    # 这次调用的记录
 
 每次 `complete_json` 写一行：用途、模型、真实模型名、开始时间、总耗时、一共发了几次请求、是否重试过、是否让模型重答过、成功或错误类型、token 数。表结构见 `data-model.md` 第 11 节。板块 6 的双模型对比从这里取数。
 
+板块 6：网关每次调用结束时，除了写 `llm_calls`，还把记录交给 `collect.py` 的 `note_call`。外面用 `with collect_calls() as calls:` 包住的代码（包括它里面 `asyncio.gather` 出去的子任务）的每次调用，成功失败都会进 `calls`。双模型对比用它分清哪次调用算哪一边：两个模型在两个任务里同时跑，各自的收集互不干扰（contextvars），不用按时间或模型名去表里猜。
+
 ## 配置
 
 ```text
