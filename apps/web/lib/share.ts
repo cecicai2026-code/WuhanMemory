@@ -4,7 +4,7 @@
 import type { ItineraryVersion, ShareLink, SharePage } from "@wuhanmemory/shared";
 import { ApiUnavailableError } from "./places";
 
-const API_BASE = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+import { SERVER_API_BASE as API_BASE } from "./backend";
 
 export type ShareResult = { kind: "ok"; page: SharePage } | { kind: "revoked" } | { kind: "missing" };
 

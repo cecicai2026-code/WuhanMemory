@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { LlmProviderId, LlmProviders } from "@wuhanmemory/shared";
+import { backendDownMessage } from "@/lib/backend";
 import { API_BASE, ApiError } from "@/lib/planning-client";
 import s from "./map.module.css";
 
@@ -31,7 +32,7 @@ async function loadProviders(): Promise<LlmProviders> {
   try {
     res = await fetch(`${API_BASE}/api/llm/providers`, { cache: "no-store" });
   } catch {
-    throw new ApiError(`连不上后端 ${API_BASE}。先启动后端：corepack pnpm dev:api`, null);
+    throw new ApiError(backendDownMessage(), null);
   }
   if (!res.ok) throw new ApiError(`后端返回 ${res.status}`, res.status);
   return (await res.json()) as LlmProviders;

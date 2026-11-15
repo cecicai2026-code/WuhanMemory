@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 7 主体已合进 main；下一个是板块 1B）
+最后更新: 2026-11-15（板块 7 主体和上线准备都已合进 main；等 Cecilia 推送并照 `deploy-hk.md` 部署；之后是板块 1B）
 
 ## 当前阶段
 
@@ -56,7 +56,15 @@
 - [x] Cecilia 同意，合进 main（2026-11-15，合并提交 `02bdf32`）。合并后在 main 上后端测试 419 个通过，前端类型检查通过。
 - [x] Cecilia 在 GitHub Desktop 推送了 main；决定公开仓库（2026-11-15）。公开前 Claude 只读检查了本地全部 14 个分支、174 次提交：没有提交过 `.env` 或数据库文件；现在后端 `.env`、前端 `.env.local` 和旧仓库 `.env` 里的 key 在所有提交里都出现 0 次；提交过的图片只有测试用的 12 个 `sample.jpg`（同一个 23 字节的文本占位），官网照片只记了图片地址。要知道的两处：所有提交的作者邮箱是 QQ 邮箱（改要重写历史，不改）；文档里写明了申请港理工和文书内容。Cecilia 用 `cecicai2026-code` 登录后改成公开，没登录时打开仓库页面返回 200。
 - [ ] 提交作者是 `1667294353-debug`，仓库主人是 `cecicai2026-code`，两个 GitHub 账号。项目说明里要不要写明两个都是本人的，等 Cecilia 定（导出给老师的版本时一起改）。
-- [ ] 还要 Cecilia 定的：上线办法（`docs/operations/hosting-options.md`）、截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
+- [x] 上线办法：Cecilia 选了 D，香港轻量服务器（2026-11-15）。在分支 `deploy-hk` 上准备（从 main 的 `6a94f9b` 分出来）：
+  - [x] 浏览器只连网站一个地址：`/api`、`/_AMapService`、`/media` 由网站转给后端（本机靠 `next.config.ts` 的 rewrites，服务器上靠 Caddy）。前端类型检查通过；Claude 在浏览器面板看过地图工作台、照片、分享页、我的行程，浏览器的请求都只到 localhost:3000。
+  - [x] 部署的五个选择 Cecilia 都按推荐（2026-11-15）：内存 2G 以上的 Ubuntu 24.04、买域名、只读部署密钥从 GitHub 拉代码、Caddy、两个 systemd 服务。
+  - [x] 部署说明 `docs/operations/deploy-hk.md` 和 `infra/deploy/`（Caddyfile、两个服务文件、`update.sh`）。脚本做过语法检查；Caddy 和 systemd 的配置本机没法跑，要在服务器上才验证得了。
+  - [x] 自查时发现：服务器 `.env` 打开公开模式后，17 个测试会被口令和次数限制拦住，更新脚本会停在测试那一步。加了 `tests/conftest.py`，测试默认用本机模式；用 `PUBLIC_MODE=true` 和平常各跑一遍，都是 419 个通过。
+  - [x] Cecilia 同意，`deploy-hk` 合进 main（2026-11-15）。合并时进度文档和开发日志和 main 上"仓库公开前的检查"那次提交冲突，两边内容都保留。
+  - [ ] Cecilia 在 GitHub Desktop 推送 main（服务器拉的是 GitHub 上的 main）。
+  - [ ] Cecilia 买服务器和域名，照 `deploy-hk.md` 部署，把每一步的结果告诉 Claude。
+- [ ] 还要 Cecilia 定的：截图、读项目说明；全站检查 8 到 14 项和"点名必去"本身的校验规则以后再定。
 
 开发数据库里现在有两个分享链接：`xvywna3u`（经典必去第 2 版，没撤回）和 `usu6dye6`（轻松少走路第 2 版，测试撤回用，已撤回）。
 
@@ -390,7 +398,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 7 主体已合进 main（`02bdf32`）。Cecilia 推送 main、选上线办法、截图。下一个板块是 1B（立体场景）；上线办法选定后，先做"浏览器只连网站一个地址"的代码改动和部署步骤。
+板块 7 主体和上线准备（`deploy-hk`）都已合进 main。Cecilia 推送 main，买香港轻量服务器和域名，照 `docs/operations/deploy-hk.md` 部署；截图。下一个板块是 1B（立体场景）。
 
 r07 的冲突已定（板块 7，点名必去优先）。5B 没做的几项（见上面）以后再排。
 

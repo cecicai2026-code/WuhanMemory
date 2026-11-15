@@ -1,0 +1,17 @@
+# 武汉记忆的后端（FastAPI）。复制到 /etc/systemd/system/，见 docs/operations/deploy-hk.md。
+# 只监听本机 127.0.0.1:8000，外面通过 Caddy 访问。
+# 只开 1 个进程：规划任务的进度存在进程的内存里，开多个进程会查不到进度。
+[Unit]
+Description=WuhanMemory API (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=wuhan
+WorkingDirectory=/opt/wuhanmemory/apps/api
+ExecStart=/opt/wuhanmemory/apps/api/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

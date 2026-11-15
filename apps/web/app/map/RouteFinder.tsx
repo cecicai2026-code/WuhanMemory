@@ -3,9 +3,9 @@
 import { useState } from "react";
 import type { PoiSummary, Route, RouteCompare, RouteMode } from "@wuhanmemory/shared";
 import { BrassButton, Paper, PaperMark, PaperTitle, PencilNote, Stamp } from "@/components/ui";
+import { backendDownMessage } from "@/lib/backend";
 import s from "./map.module.css";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 const MODE_TEXT: Record<RouteMode, string> = { walk: "步行", transit: "公交地铁", drive: "驾车 / 打车" };
 
@@ -59,14 +59,14 @@ export function RouteFinder({ pois, shown, onShow }: Props) {
     onShow(null);
     let res: Response;
     try {
-      res = await fetch(`${API_BASE}/api/routes/compare?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+      res = await fetch(`/api/routes/compare?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
     } catch {
-      setState({ kind: "error", message: `连不上后端 ${API_BASE}。先启动后端：corepack pnpm dev:api` });
+      setState({ kind: "error", message: backendDownMessage() });
       return;
     }
     if (!res.ok) {
       const detail = await res.json().then((b: { detail?: string }) => b.detail).catch(() => null);
-      setState({ kind: "error", message: detail ?? `后端返回 ${res.status}` });
+      setState({ kind: "error", message: detail ?? (res.status >= 500 ? backendDownMessage() : `后端返回 ${res.status}`) });
       return;
     }
     const data = (await res.json()) as RouteCompare;

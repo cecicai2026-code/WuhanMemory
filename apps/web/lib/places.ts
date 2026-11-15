@@ -2,14 +2,12 @@
  * 地点档案的数据入口：从后端接口 GET /api/pois、GET /api/pois/{id} 取真实景点数据。
  * 景点资料的原始文件是 data/pois/*.json，后端启动时检查并导入 SQLite（ADR 0003）。
  *
- * 只在服务器端调用（页面是服务器组件），后端地址不会出现在浏览器的请求里，
- * 照片地址除外：照片由浏览器直接从后端的 /media/ 取。
+ * 只在服务器端调用（页面是服务器组件），直接连后端（lib/backend.ts）。
+ * 照片地址是 /media/… 的相对路径，浏览器从网站自己的地址取，由网站转给后端。
  */
 import type { PoiDetail, PoiDetailResponse, PoiList, PoiSummary } from "@wuhanmemory/shared";
 
-const API_BASE = (process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
-/** 浏览器取照片用的后端地址 */
-const PUBLIC_API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+import { SERVER_API_BASE as API_BASE } from "./backend";
 
 /** 后端连不上或返回错误 */
 export class ApiUnavailableError extends Error {}
@@ -36,7 +34,8 @@ export async function getPlace(id: string): Promise<PoiDetailResponse | null> {
 }
 
 export function photoUrl(url: string | null): string | null {
-  return url ? `${PUBLIC_API_BASE}${url}` : null;
+  // 照片是 /media/… 的相对路径，浏览器从网站自己的地址取，由网站转给后端
+  return url;
 }
 
 /** 有哪些区、每个区几个景点，按清单里出现的顺序 */

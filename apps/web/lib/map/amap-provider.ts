@@ -37,7 +37,7 @@ const ROUTE_COLOR: Record<RouteColor, string> = {
 
 export interface AmapProviderOptions {
   jsKey: string;
-  /** 后端代理地址，例如 http://localhost:8000/_AMapService */
+  /** 安全密钥代理的完整地址，例如 http://localhost:3000/_AMapService（网站转给后端） */
   serviceHost: string;
   /** 图钉的样式类名，由页面的 CSS 模块提供 */
   classes: { pin: string; pinHead: string; pinLabel: string };

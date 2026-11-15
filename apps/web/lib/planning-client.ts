@@ -14,9 +14,11 @@ import type {
   TripConversation,
 } from "@wuhanmemory/shared";
 
+import { backendDownMessage } from "./backend";
 import { getOwnerPasscode } from "./owner-passcode";
 
-export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
+/** 浏览器里用相对路径，由网站转给后端（lib/backend.ts） */
+export const API_BASE = "";
 
 /** 后端连不上，或返回了错误 */
 export class ApiError extends Error {
@@ -38,10 +40,12 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
     if (passcode) headers["X-Owner-Passcode"] = passcode;
     res = await fetch(`${API_BASE}${path}`, { cache: "no-store", ...init, headers });
   } catch {
-    throw new ApiError(`连不上后端 ${API_BASE}。先启动后端：corepack pnpm dev:api`, null);
+    throw new ApiError(backendDownMessage(), null);
   }
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as { detail?: unknown } | null;
+    // 后端没开时，网站的转发返回 5xx 而且不是后端的 JSON
+    if (!body && res.status >= 500) throw new ApiError(backendDownMessage(), null);
     const detail = body?.detail;
     const message =
       typeof detail === "string"

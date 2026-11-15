@@ -34,7 +34,8 @@
 - `components/ui/`：基础组件，只管长相，不含业务数据。
 - `components/shell/`：`Scene`（四角标注）、`Menu`（菜单）、`Blank`（空页面的信纸）。
 - `lib/scenes.ts`：全部页面的编号、名称和路径，菜单从这里生成。
-- `lib/places.ts`：景点数据的入口，在服务器端调用后端的 `GET /api/pois` 和 `GET /api/pois/{id}`（地址取 `API_BASE_URL`，没有就用 `NEXT_PUBLIC_API_BASE_URL`）。后端连不上时页面显示启动命令。
+- `lib/backend.ts`（2026-11-15，为上线改的）：浏览器只连网站自己的地址，请求都用相对路径；`/api`、`/_AMapService`（高德安全密钥代理）、`/media`（照片）由网站转给后端：本机开发靠 `next.config.ts` 的 rewrites，服务器上靠 Caddy。服务器端取数据直接连 `API_BASE_URL`（默认 `http://localhost:8000`）。`NEXT_PUBLIC_API_BASE_URL` 不再用。连不上后端时，开发时显示启动命令，正式运行时只说稍后再试。
+- `lib/places.ts`：景点数据的入口，在服务器端调用后端的 `GET /api/pois` 和 `GET /api/pois/{id}`。
 - `lib/format-poi.ts`：把开放时间、票价等结构化内容写成纸上的文字。
 - `app/places/PlaceParts.tsx`：纸上的条目、来源和核实日期那一行、图册。
 - `lib/map/amap-provider.ts`：高德地图 provider，实现 `packages/map-core` 的接口；`lib/map/amap-types.ts` 是用到的高德对象的类型。

@@ -214,9 +214,15 @@ export function ApiDown({ message }: { message: string }) {
   return (
     <Paper className={s.notice}>
       <PaperTitle level={3}>景点资料暂时取不到</PaperTitle>
-      <p>{message}。景点数据由后端提供，请先启动后端：</p>
-      <pre className={s.command}>cd ~/WuhanMemory-project2 && corepack pnpm dev:api</pre>
-      <Soft>启动后刷新这一页。</Soft>
+      {process.env.NODE_ENV === "development" ? (
+        <>
+          <p>{message}。景点数据由后端提供，请先启动后端：</p>
+          <pre className={s.command}>cd ~/WuhanMemory-project2 && corepack pnpm dev:api</pre>
+          <Soft>启动后刷新这一页。</Soft>
+        </>
+      ) : (
+        <p>网站的后台暂时连不上，请稍后刷新这一页。</p>
+      )}
     </Paper>
   );
 }
