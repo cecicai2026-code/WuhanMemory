@@ -1,17 +1,19 @@
 # Current Progress
 
-最后更新: 2026-11-15（板块 5B 进行中：多份方案和比较的代码写完，等 Cecilia 预热路线、在界面上试）
+最后更新: 2026-11-15（板块 5B 等 Cecilia 在界面上试；板块 6 提到 1B 前面，开工讨论中）
 
 ## 当前阶段
 
 板块 0（准备）已完成。板块 1 在 2026-11-15 拆成两半：
 
 - **板块 1A（已完成，2026-11-15 合进 main）**：界面外壳、地图工作台 `/map` 的布局、地点档案的普通网页版（`/places` 和 `/places/[id]`）、`/compare` 和 `/trips` 的空页面，删除旧的浅色 mock 界面。不用 three.js。
-- **板块 1B（板块 5 完成之后）**：把立体三幕（胶卷、晾片、纸页）和首页桌面场景搬进正式网站。
+- **板块 1B（板块 6 完成之后）**：把立体三幕（胶卷、晾片、纸页）和首页桌面场景搬进正式网站。
 
 拆的原因：文书里写的功能（数据质量规则、千问和豆包切换、行程校验、双模型对比）一个都还没开始，要先保证它们做出来。
 
-做的顺序：0 → 1A → 2 → 3 → 4 → 5 → 1B → 6 → 7。分板块计划见 `docs/kickoff/claude-code-kickoff.md`。
+做的顺序：0 → 1A → 2 → 3 → 4 → 5（含 5B）→ 6 → 1B → 7。2026-11-15 Cecilia 把板块 6 提到 1B 前面（原来是 5 → 1B → 6），理由同上：双模型对比是文书里写的，先做。分板块计划见 `docs/kickoff/claude-code-kickoff.md`。
+
+**板块 6（开工中，分支 `block-6-compare`，从 `block-5b-planning` 分出来）**：双模型并排对比和批量评测。要复用 5B 的比较计算，而 5B 还没合进 main，所以从 5B 的分支上开。开工前先和 Cecilia 讨论指标、评测请求草稿和分步计划，确认后再写代码。
 
 板块 1A 是在分支 `block-1a-shell` 上做的，已合进 main。
 
@@ -275,7 +277,7 @@ cd ~/WuhanMemory-project2 && python3 -m http.server 4173 --bind 127.0.0.1 --dire
 
 ## 下一步
 
-板块 5B 收尾：Cecilia 推送 main（GitHub Desktop，main 比 GitHub 多 23 个提交）、跑路线预热、在 `/map` 上试真实请求、`pnpm build`，然后合进 main。之后是板块 1B；5B 没做的几项（见上面）以后再排。
+板块 5B 收尾：Cecilia 推送 main（GitHub Desktop，main 比 GitHub 多 23 个提交）、跑路线预热、在 `/map` 上试真实请求、`pnpm build`，然后合进 main。同时开始板块 6（双模型对比），之后才是板块 1B；5B 没做的几项（见上面）以后再排。
 
 `three.js`、`@react-three/fiber`、`motion`、`lenis` 留到板块 1B 再确认。
 
