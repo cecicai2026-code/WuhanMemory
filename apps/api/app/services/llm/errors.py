@@ -43,6 +43,12 @@ class LLMBadConfigError(LLMError):
     code = "bad_config"
 
 
+class LLMQuotaError(LLMError):
+    """额度用完了或账户欠费。和限流不同，等一会儿再试也没用，所以不重试。"""
+
+    code = "quota_exhausted"
+
+
 class LLMTimeoutError(LLMError):
     """在规定时间内没有等到回答。"""
 

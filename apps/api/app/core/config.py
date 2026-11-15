@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     doubao_api_key: str | None = None
     doubao_base_url: str = "https://ark.cn-beijing.volces.com/api/v3"
     doubao_model: str | None = None
+    # 豆包的深度思考开关：留空用模型自己的默认值，enabled 强制思考，disabled 不思考
+    doubao_thinking: str = ""
 
     llm_request_timeout_seconds: int = 60
     llm_max_retries: int = 2
