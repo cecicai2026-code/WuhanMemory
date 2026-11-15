@@ -4,46 +4,49 @@
 import type { ItineraryVersion, ShareLink, SharePage } from "@wuhanmemory/shared";
 import { ApiUnavailableError } from "./places";
 
-import { SERVER_API_BASE as API_BASE } from "./backend";
+import { SERVER_API_BASE as API_BASE, backendStatusMessage } from "./backend";
+import { makeT, type Lang } from "./i18n";
+
+const downMessage = (lang: Lang) => makeT(lang)(`连不上后端 ${API_BASE}`, `Can't reach the backend at ${API_BASE}`);
 
 export type ShareResult = { kind: "ok"; page: SharePage } | { kind: "revoked" } | { kind: "missing" };
 
-export async function getSharePage(slug: string): Promise<ShareResult> {
+export async function getSharePage(slug: string, lang: Lang): Promise<ShareResult> {
   let res: Response;
   try {
     res = await fetch(`${API_BASE}/api/share/${encodeURIComponent(slug)}`, { cache: "no-store" });
   } catch {
-    throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
+    throw new ApiUnavailableError(downMessage(lang));
   }
   if (res.status === 404) return { kind: "missing" };
   if (res.status === 410) return { kind: "revoked" };
-  if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
+  if (!res.ok) throw new ApiUnavailableError(backendStatusMessage(res.status, lang));
   return { kind: "ok", page: (await res.json()) as SharePage };
 }
 
 /** 一个版本，服务器端取（/trips/[versionId] 用）。没有这个版本时返回 null。 */
-export async function getVersionOnServer(versionId: string): Promise<ItineraryVersion | null> {
+export async function getVersionOnServer(versionId: string, lang: Lang): Promise<ItineraryVersion | null> {
   let res: Response;
   try {
     res = await fetch(`${API_BASE}/api/itinerary-versions/${encodeURIComponent(versionId)}`, { cache: "no-store" });
   } catch {
-    throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
+    throw new ApiUnavailableError(downMessage(lang));
   }
   if (res.status === 404) return null;
-  if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
+  if (!res.ok) throw new ApiUnavailableError(backendStatusMessage(res.status, lang));
   return (await res.json()) as ItineraryVersion;
 }
 
 /** 这个版本现在没撤回的分享链接，服务器端取；没有时返回 null。 */
-export async function getActiveShareOnServer(versionId: string): Promise<ShareLink | null> {
+export async function getActiveShareOnServer(versionId: string, lang: Lang): Promise<ShareLink | null> {
   let res: Response;
   try {
     res = await fetch(`${API_BASE}/api/itinerary-versions/${encodeURIComponent(versionId)}/share`, { cache: "no-store" });
   } catch {
-    throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
+    throw new ApiUnavailableError(downMessage(lang));
   }
   // 404：还没有链接。401、403：公开模式下要口令（服务器端没有口令），先当作没有，点"生成"时再要
   if (res.status === 404 || res.status === 401 || res.status === 403) return null;
-  if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
+  if (!res.ok) throw new ApiUnavailableError(backendStatusMessage(res.status, lang));
   return (await res.json()) as ShareLink;
 }

@@ -6,6 +6,7 @@ import { NoteButton, Soft, TextLink } from "@/components/ui";
 import { ApiError, publishShare, revokeShare } from "@/lib/planning-client";
 import { OwnerPasscodeForm } from "./OwnerPasscodeForm";
 import s from "./trip.module.css";
+import { useT } from "@/components/i18n/LangProvider";
 
 interface Props {
   versionId: string;
@@ -29,9 +30,10 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
   // 公开模式下后端要口令：先输口令，再重做刚才那一步
   const [needPasscode, setNeedPasscode] = useState<{ retry: () => void; wrong: boolean } | null>(null);
 
+  const t = useT();
   useEffect(() => setOrigin(window.location.origin), []);
 
-  if (failed) return <Soft className={s.shareHint}>没通过校验，不能分享</Soft>;
+  if (failed) return <Soft className={s.shareHint}>{t("没通过校验，不能分享", "Didn't pass the checks, so it can't be shared")}</Soft>;
 
   async function run(action: () => Promise<ShareLink | null>, triedPasscode = false) {
     setBusy(true);
@@ -60,12 +62,20 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
       await navigator.clipboard.writeText(url);
       setCopied(true);
     } catch {
-      setError("没能复制，请手动选中网址复制");
+      setError(t("没能复制，请手动选中网址复制", "Couldn't copy. Please select the address and copy it by hand."));
     }
   }
 
   function revoke(slug: string) {
-    if (!window.confirm("撤回后，拿到这个链接的人就打不开了。撤回后再分享会换一个新链接。确定撤回？")) return;
+    if (
+      !window.confirm(
+        t(
+          "撤回后，拿到这个链接的人就打不开了。撤回后再分享会换一个新链接。确定撤回？",
+          "Once withdrawn, anyone with this link can no longer open it. Sharing again later makes a new link. Withdraw it?"
+        )
+      )
+    )
+      return;
     void run(async () => {
       await revokeShare(slug);
       return null;
@@ -75,7 +85,7 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
   if (!link) {
     return (
       <div className={s.share}>
-        <NoteButton onClick={() => void run(() => publishShare(versionId))}>{busy ? "正在生成……" : "生成分享链接"}</NoteButton>
+        <NoteButton onClick={() => void run(() => publishShare(versionId))}>{busy ? t("正在生成……", "Making…") : t("生成分享链接", "Make a share link")}</NoteButton>
         {error && (
           <span className={s.shareError} role="alert">
             {error}
@@ -89,16 +99,16 @@ export function ShareControls({ versionId, failed, initial, onChange }: Props) {
   return (
     <div className={s.share}>
       <label className={s.shareUrl}>
-        <span className="sr-only">分享链接</span>
+        <span className="sr-only">{t("分享链接", "Share link")}</span>
         <input readOnly value={url} onFocus={(e) => e.currentTarget.select()} />
       </label>
-      <NoteButton onClick={() => void copy(url)}>{copied ? "已复制" : "复制"}</NoteButton>
+      <NoteButton onClick={() => void copy(url)}>{copied ? t("已复制", "Copied") : t("复制", "Copy")}</NoteButton>
       <TextLink href={link.path} onPaper>
-        打开分享页 →
+        {t("打开分享页 →", "Open the shared page →")}
       </TextLink>
-      <NoteButton onClick={() => revoke(link.slug)}>{busy ? "正在撤回……" : "撤回"}</NoteButton>
+      <NoteButton onClick={() => revoke(link.slug)}>{busy ? t("正在撤回……", "Withdrawing…") : t("撤回", "Withdraw")}</NoteButton>
       <span className="sr-only" role="status">
-        {copied ? "链接已复制" : ""}
+        {copied ? t("链接已复制", "Link copied") : ""}
       </span>
       {error && (
         <span className={s.shareError} role="alert">

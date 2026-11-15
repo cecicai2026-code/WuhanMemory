@@ -7,32 +7,32 @@
  */
 import type { PoiDetail, PoiDetailResponse, PoiList, PoiSummary } from "@wuhanmemory/shared";
 
-import { SERVER_API_BASE as API_BASE } from "./backend";
-import type { Lang, T } from "./i18n";
+import { SERVER_API_BASE as API_BASE, backendStatusMessage } from "./backend";
+import { makeT, type Lang, type T } from "./i18n";
 
 /** 后端连不上或返回错误 */
 export class ApiUnavailableError extends Error {}
 
-async function getJson<T>(path: string): Promise<T | null> {
+async function getJson<T>(path: string, lang: Lang): Promise<T | null> {
   let res: Response;
   try {
     // 状态和日期有关（过没过期），每次都现取，不缓存
     res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
   } catch {
-    throw new ApiUnavailableError(`连不上后端 ${API_BASE}`);
+    throw new ApiUnavailableError(makeT(lang)(`连不上后端 ${API_BASE}`, `Can't reach the backend at ${API_BASE}`));
   }
   if (res.status === 404) return null;
-  if (!res.ok) throw new ApiUnavailableError(`后端返回 ${res.status}`);
+  if (!res.ok) throw new ApiUnavailableError(backendStatusMessage(res.status, lang));
   return (await res.json()) as T;
 }
 
 /** lang 是 en 时，后端把景点资料里的文字换成英文译文（data/pois/en/，没有译文的条目保留中文） */
 export async function listPlaces(lang: Lang): Promise<PoiList> {
-  return (await getJson<PoiList>(`/api/pois?lang=${lang}`)) ?? { asOf: "", pois: [] };
+  return (await getJson<PoiList>(`/api/pois?lang=${lang}`, lang)) ?? { asOf: "", pois: [] };
 }
 
 export async function getPlace(id: string, lang: Lang): Promise<PoiDetailResponse | null> {
-  return getJson<PoiDetailResponse>(`/api/pois/${encodeURIComponent(id)}?lang=${lang}`);
+  return getJson<PoiDetailResponse>(`/api/pois/${encodeURIComponent(id)}?lang=${lang}`, lang);
 }
 
 export function photoUrl(url: string | null): string | null {
