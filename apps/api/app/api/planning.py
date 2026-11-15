@@ -102,15 +102,17 @@ async def create_conversation(request: CreateConversationRequest, conversations:
 
 
 @router.get("/conversations/{conversation_id}", response_model=ConversationOut)
-async def get_conversation(conversation_id: str, conversations: Conversations) -> ConversationOut:
+async def get_conversation(conversation_id: str, conversations: Conversations, jobs: Jobs) -> ConversationOut:
     conv = conversations.get(conversation_id)
     if conv is None:
         raise HTTPException(status_code=404, detail=f"没有这段对话：{conversation_id}")
+    running = jobs.running_for(conv.id)
     return ConversationOut(
         conversationId=conv.id,
         preferences=conv.preferences,
         itineraryId=conv.itineraryId,
         messages=[MessageOut(**m.model_dump()) for m in conversations.messages(conv.id)],
+        runningJobId=running.id if running else None,
     )
 
 

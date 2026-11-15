@@ -132,9 +132,12 @@ def test_bad_requests(api) -> None:
 def test_one_job_per_conversation(api) -> None:
     client, _ = api([])
     conv = start(client)
+    assert client.get(f"/api/conversations/{conv}").json()["runningJobId"] is None
     store = app.dependency_overrides[get_job_store]()
-    store.create(conv, None)  # 假装上一条还在跑
+    job = store.create(conv, None)  # 假装上一条还在跑
     assert client.post(f"/api/conversations/{conv}/messages", json={"content": "去"}).status_code == 409
+    # 刷新页面后，前端从这里拿到还在跑的任务，接着显示进度
+    assert client.get(f"/api/conversations/{conv}").json()["runningJobId"] == job.id
 
 
 def test_share_not_implemented_yet() -> None:

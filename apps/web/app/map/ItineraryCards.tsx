@@ -217,7 +217,7 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay }:
     <>
       <Paper kind="card" tilt={-1} as="section" aria-label="行程总卡">
         <div className={s.cardHead}>
-          <PaperMark>索引卡 · 行程 第 {v.versionNumber} 版</PaperMark>
+          <PaperMark>行程 · 第 {v.versionNumber} 版</PaperMark>
           {stamp}
         </div>
         <PaperTitle level={3}>{failed ? "这份行程没通过校验" : v.title}</PaperTitle>

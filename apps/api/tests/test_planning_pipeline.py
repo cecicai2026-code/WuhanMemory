@@ -256,6 +256,8 @@ async def test_errors_go_back_to_model_once_and_get_fixed(tmp_path: Path) -> Non
     assert "公交地铁要 40 分钟，行程只留了 10 分钟" in repair  # 具体错误
     assert "公交地铁 40 分钟" in repair  # 真实交通时间
     assert '"arrive":"11:40"' in repair  # 上一次的行程
+    system = [m.content for m in s.model.calls[2] if m.role == "system"][0]
+    assert "真实交通时间 + 10 分钟" in system
     assert "修正" in out.reply
 
 

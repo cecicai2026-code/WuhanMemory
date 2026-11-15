@@ -135,6 +135,8 @@ export interface Conversation {
   preferences: TravelerPreferences;
   itineraryId: string | null;
   messages: ConversationMessage[];
+  /** 还在规划中的任务；刷新页面后接着显示进度 */
+  runningJobId: string | null;
 }
 
 export interface SendMessageResponse {

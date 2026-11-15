@@ -34,6 +34,8 @@ class ConversationOut(BaseModel):
     preferences: TravelerPreferences
     itineraryId: str | None
     messages: list[MessageOut]
+    # 这段对话还在规划中的任务（刷新页面后接着显示进度）；没有时为 None
+    runningJobId: str | None = None
 
 
 class SendMessageRequest(BaseModel):

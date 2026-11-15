@@ -57,6 +57,8 @@ export function ChatPaper({ onVersion, onReset }: Props) {
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [problem, setProblem] = useState<string | null>(null);
+  // 最后一条是用户的话、却没有回复，后端也没有在跑的任务：多半是规划中途后端重启了
+  const [orphan, setOrphan] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   // 打开页面时接着上次的对话
@@ -71,6 +73,14 @@ export function ChatPaper({ onVersion, onReset }: Props) {
         setLines(conv.messages.map((m) => ({ ...m, key: `m${m.id}` })));
         const last = [...conv.messages].reverse().find((m) => m.itineraryVersionId);
         if (last?.itineraryVersionId) onVersion(last.itineraryVersionId);
+        if (conv.runningJobId) {
+          // 刷新前发的那条还在规划中：接着显示进度
+          setStartedAt(Date.now());
+          setElapsed(0);
+          void follow(conv.runningJobId);
+        } else if (conv.messages.at(-1)?.role === "user") {
+          setOrphan(true);
+        }
       })
       .catch((err: unknown) => {
         // 后端换了数据库等情况下找不到这段对话：当作新对话
@@ -95,29 +105,15 @@ export function ChatPaper({ onVersion, onReset }: Props) {
     setLines((cur) => [...cur, { ...line, key: `l${Date.now()}-${cur.length}` }]);
   }
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    const text = draft.trim();
-    if (!text || busy) return;
+  /** 跟着一个规划任务，直到它完成或出错。发消息后、刷新页面发现还有任务在跑时都用它 */
+  async function follow(jobId: string) {
     setBusy(true);
-    setProblem(null);
-    setDraft("");
-    add({ role: "user", content: text, kind: null, provider: null });
-    setStartedAt(Date.now());
-    setElapsed(0);
     try {
-      let id = conversationId;
-      if (!id) {
-        id = (await createConversation()).conversationId;
-        setConversationId(id);
-        store(id);
-      }
-      const sent = await sendMessage(id, text, provider);
-      let current = await getJob(sent.planningJobId);
+      let current = await getJob(jobId);
       setJob(current);
       while (current.status === "queued" || current.status === "running") {
         await sleep(POLL_MS);
-        current = await getJob(sent.planningJobId);
+        current = await getJob(jobId);
         setJob(current);
       }
       if (current.status === "failed") {
@@ -135,8 +131,38 @@ export function ChatPaper({ onVersion, onReset }: Props) {
     }
   }
 
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setProblem(null);
+    setDraft("");
+    setOrphan(false);
+    add({ role: "user", content: text, kind: null, provider: null });
+    setStartedAt(Date.now());
+    setElapsed(0);
+    let jobId: string;
+    try {
+      let id = conversationId;
+      if (!id) {
+        id = (await createConversation()).conversationId;
+        setConversationId(id);
+        store(id);
+      }
+      jobId = (await sendMessage(id, text, provider)).planningJobId;
+    } catch (err) {
+      setProblem(err instanceof Error ? err.message : String(err));
+      setBusy(false);
+      setStartedAt(null);
+      return;
+    }
+    await follow(jobId);
+  }
+
   function restart() {
     store(null);
+    setOrphan(false);
     setConversationId(null);
     setLines([]);
     setProblem(null);
@@ -166,7 +192,7 @@ export function ChatPaper({ onVersion, onReset }: Props) {
         {busy && (
           <div className={s.progress} role="status">
             <p className={s.progressHead}>
-              规划中 · {elapsed} 秒{provider && labels[provider] ? ` · ${labels[provider]}` : ""}
+              规划中 · 已等 {elapsed} 秒{provider && labels[provider] ? ` · ${labels[provider]}` : ""}
             </p>
             <ol className={s.stages}>
               {(job?.stages ?? []).map((st, i, all) => (
@@ -177,6 +203,11 @@ export function ChatPaper({ onVersion, onReset }: Props) {
               {!job?.stages.length && <li data-current>…发给后端</li>}
             </ol>
           </div>
+        )}
+        {orphan && !busy && (
+          <p className={s.routeError} role="status">
+            最后这条没有回复：规划中途后端重启过，这次规划丢了。可以再发一次。
+          </p>
         )}
         {problem && (
           <p className={s.routeError} role="alert">

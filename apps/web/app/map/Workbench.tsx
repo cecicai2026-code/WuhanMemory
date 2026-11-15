@@ -45,7 +45,7 @@ export function Workbench({ pois, poisError }: { pois: PoiSummary[]; poisError: 
         setVersion(v);
         setShownDay(v.days[0]?.dayNumber ?? null);
         setShownRoute(null);
-        setValidation(v.validation.status);
+        setValidation(v.validation.status, v.planner.providerLabel);
         // 手机上：排好了就切到行程
         setTab("plan");
       })
