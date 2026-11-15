@@ -402,7 +402,8 @@ export function CompareDesk() {
       </div>
 
       <aside className={s.history} aria-label="历次对比">
-        <p className={s.historyHead}>历次对比 · {history.length} 次</p>
+        {/* 接口最多返回最近 50 条（GET /api/comparisons 的默认 limit），这里只写显示了几条，不当成总数 */}
+        <p className={s.historyHead}>历次对比 · 最近 {history.length} 条</p>
         {history.length === 0 ? (
           <p className={s.historyEmpty}>还没有</p>
         ) : (
