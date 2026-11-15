@@ -20,3 +20,5 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# async 的测试函数不用一个个加 @pytest.mark.asyncio
+asyncio_mode = "auto"
