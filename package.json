@@ -15,6 +15,7 @@
     "amap:lookup": "cd apps/api && .venv/bin/python -m app.tools.amap_lookup",
     "llm:smoke": "cd apps/api && .venv/bin/python -m app.tools.llm_smoke",
     "plan:thinking": "cd apps/api && .venv/bin/python -m app.tools.thinking_compare",
+    "routes:prewarm": "cd apps/api && .venv/bin/python -m app.tools.route_prewarm",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {

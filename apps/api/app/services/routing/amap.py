@@ -59,6 +59,7 @@ class ProviderRoute:
     raw: dict[str, Any]
     durationMinutes: int | None = None
     distanceMeters: int | None = None
+    walkingDistanceMeters: int | None = None
     cost: RouteCost | None = None
     summary: str | None = None
     reason: str | None = None
@@ -143,6 +144,28 @@ def transit_summary(segments: list[Any]) -> str | None:
     return " → ".join(names) if names else None
 
 
+def transit_walking_distance(plan: dict[str, Any]) -> int | None:
+    """公交地铁方案里要走的路（米）：换乘和进出站。先用高德给的 walking_distance，没有就把每段的步行距离加起来。"""
+    total = _int(plan.get("walking_distance"))
+    if total is not None:
+        return total
+    parts = [_int((seg.get("walking") or {}).get("distance")) for seg in plan.get("segments") or [] if isinstance(seg, dict)]
+    known = [p for p in parts if p is not None]
+    return sum(known) if known else None
+
+
+def walking_distance_from_raw(mode: RouteMode, payload: dict[str, Any]) -> int | None:
+    """从高德的原始返回里读出要走的路。给旧缓存补字段用，不发请求。"""
+    route = payload.get("route") or {}
+    if mode == "transit":
+        plans = route.get("transits") or []
+        return transit_walking_distance(plans[0]) if plans else None
+    paths = route.get("paths") or []
+    if not paths:
+        return None
+    return _int(paths[0].get("distance")) if mode == "walk" else 0
+
+
 def parse_route(mode: RouteMode, payload: dict[str, Any]) -> ProviderRoute:
     api = PATHS[mode]
     if payload.get("status") != "1":
@@ -165,6 +188,7 @@ def parse_route(mode: RouteMode, payload: dict[str, Any]) -> ProviderRoute:
             raw=payload,
             durationMinutes=_minutes(cost.get("duration")),
             distanceMeters=_int(plan.get("distance")),
+            walkingDistanceMeters=transit_walking_distance(plan),
             cost=RouteCost(kind="fare", amountCny=fare, note="高德估算的票价" if fare is not None else "高德没有给出票价"),
             summary=transit_summary(segments),
             polyline=collect_polyline(segments),
@@ -181,6 +205,7 @@ def parse_route(mode: RouteMode, payload: dict[str, Any]) -> ProviderRoute:
         raw=payload,
         durationMinutes=_minutes(cost.get("duration", path.get("duration"))),
         distanceMeters=_int(path.get("distance")),
+        walkingDistanceMeters=_int(path.get("distance")) if mode == "walk" else 0,
         polyline=collect_polyline(path.get("steps") or []),
     )
     if mode == "walk":
