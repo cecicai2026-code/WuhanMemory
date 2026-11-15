@@ -50,6 +50,8 @@ ERROR_LABELS: dict[str, str] = {
     "transport-too-short": "交通时间不够",
     "day-window": "超出 08:00 到 22:00",
     "day-too-long": "一天太长",
+    "transport-unknown": "交通没查到，排不出时间",
+    "day-overflow": "推到午夜还没排完",
     "emphasis-must-5a": "漏了 5A 景点（经典必去）",
     "emphasis-too-many-stops": "一天站数太多（轻松少走路）",
     "emphasis-ends-late": "结束太晚（轻松少走路）",

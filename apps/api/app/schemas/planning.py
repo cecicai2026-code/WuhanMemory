@@ -59,10 +59,39 @@ class PlanDay(BaseModel):
 
 
 class PlanDraft(BaseModel):
-    """模型输出的行程草稿。"""
+    """带钟点的行程草稿：校验、比较、保存都用它。
+
+    板块 6C 起不再由模型直接写，而是由程序从模型的 PlanOutline 推出来（schedule.py）。
+    """
 
     title: str = ""
     days: list[PlanDay] = Field(default_factory=list)
+
+
+class OutlineStop(BaseModel):
+    poiId: str
+    # 在这个景点停留多少分钟
+    stayMinutes: int = Field(ge=1, le=720)
+    reason: str = ""
+
+
+class OutlineDay(BaseModel):
+    dayNumber: int
+    theme: str = ""
+    # 这天几点到第一站，"HH:MM"。格式由 schedule.py 检查，错了是一条具体错误
+    start: str
+    stops: list[OutlineStop] = Field(default_factory=list)
+
+
+class PlanOutline(BaseModel):
+    """模型输出的行程（板块 6C，2026-11-15 Cecilia 定）：每天几点出发、按顺序去哪几站、每站待多久、为什么。
+
+    不写钟点。到达和离开时间由程序按"上一站离开 + 真实交通时间 + 10 分钟"推出来（schedule.py），
+    所以"交通时间不够""时间重叠"不会出现；模型的本事体现在选站、排顺序、定停留时长上。
+    """
+
+    title: str = ""
+    days: list[OutlineDay] = Field(default_factory=list)
 
 
 class TripFrame(BaseModel):
