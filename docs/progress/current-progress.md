@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-15（先用 cpolar 临时网址，步骤见 `docs/operations/tunnel-cpolar.md`；中英双语已合进 main，合并提交 `e8cb18b`）
+最后更新: 2026-11-16（加了英文项目说明 `docs/project-statement-en.html`；先用 cpolar 临时网址，步骤见 `docs/operations/tunnel-cpolar.md`；中英双语已合进 main，合并提交 `e8cb18b`）
 
 ## 当前阶段
 
@@ -101,7 +101,8 @@ Cecilia 要求网站出中英双语版本，右上角一个按钮切换。开工
 - [x] Cecilia 在 `block-7-share` 上运行 `pnpm build`，通过（2026-11-15）：编译、类型检查和 10 个页面（含 `/s/[slug]`、`/trips/[versionId]`、自定义 404）都没有报错。
 - [x] Cecilia 同意，合进 main（2026-11-15，合并提交 `02bdf32`）。合并后在 main 上后端测试 419 个通过，前端类型检查通过。
 - [x] Cecilia 在 GitHub Desktop 推送了 main；决定公开仓库（2026-11-15）。公开前 Claude 只读检查了本地全部 14 个分支、174 次提交：没有提交过 `.env` 或数据库文件；现在后端 `.env`、前端 `.env.local` 和旧仓库 `.env` 里的 key 在所有提交里都出现 0 次；提交过的图片只有测试用的 12 个 `sample.jpg`（同一个 23 字节的文本占位），官网照片只记了图片地址。要知道的两处：所有提交的作者邮箱是 QQ 邮箱（改要重写历史，不改）；文档里写明了申请港理工和文书内容。Cecilia 用 `cecicai2026-code` 登录后改成公开，没登录时打开仓库页面返回 200。
-- [ ] 提交作者是 `1667294353-debug`，仓库主人是 `cecicai2026-code`，两个 GitHub 账号。项目说明里要不要写明两个都是本人的，等 Cecilia 定（导出给老师的版本时一起改）。
+- [x] 提交作者是 `1667294353-debug`，仓库主人是 `cecicai2026-code`，两个 GitHub 账号。2026-11-16 Cecilia 定：写明两个都是本人的，写进了英文项目说明。
+- [x] 2026-11-16：给学校的英文项目说明 `docs/project-statement-en.html`（单个文件，截图嵌在里面，按文书九条逐条对应）。等 Cecilia 对照文书原文改措辞。
 - [x] 上线办法：Cecilia 选了 D，香港轻量服务器（2026-11-15）。在分支 `deploy-hk` 上准备（从 main 的 `6a94f9b` 分出来）：
   - [x] 浏览器只连网站一个地址：`/api`、`/_AMapService`、`/media` 由网站转给后端（本机靠 `next.config.ts` 的 rewrites，服务器上靠 Caddy）。前端类型检查通过；Claude 在浏览器面板看过地图工作台、照片、分享页、我的行程，浏览器的请求都只到 localhost:3000。
   - [x] 部署的五个选择 Cecilia 都按推荐（2026-11-15）：内存 2G 以上的 Ubuntu 24.04、买域名、只读部署密钥从 GitHub 拉代码、Caddy、两个 systemd 服务。
