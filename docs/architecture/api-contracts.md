@@ -344,6 +344,7 @@ GET /api/itinerary-versions/{versionId}
 没有这个版本时 404。
 
 - 板块 6C：版本里多了 `outline`（模型给的行程：每天 `start`，每站 `poiId`、`stayMinutes`、`reason`）和 `firstOutline`（修正过时模型的第一版）。`days` 里的到达、离开时间是程序按真实交通推出来的。之前存的版本没有这两项。
+- ADR 0010：版本里多了 `routeOrder` 和 `firstRouteOrder`（每天的站点顺序：模型给的、程序按真实交通时间重排后的、两边的交通分钟数、换没换和原因）。`days` 是重排后的顺序。之前存的版本没有。
 
 ### 获取一轮方案（板块 5B）
 
