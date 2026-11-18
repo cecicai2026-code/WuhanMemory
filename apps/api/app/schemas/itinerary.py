@@ -141,6 +141,23 @@ class PlanComparison(BaseModel):
     rows: list[ComparisonRow]
 
 
+class DayOrder(BaseModel):
+    """一天的站点顺序：模型给的和程序按真实交通时间重排后的（ADR 0010）。"""
+
+    dayNumber: int
+    modelOrder: list[str]
+    order: list[str]
+    # 相邻两站交通分钟数之和；模型顺序里有一段没查到时为 null
+    modelTransportMinutes: int | None
+    transportMinutes: int | None
+    changed: bool
+    # shorter 换了；already-shortest 模型的顺序已经最省；more-errors 更省的顺序都会多出错误；
+    # too-few-stops 不到 2 站；too-many-stops 超过 8 站没穷举；invalid-stops 有不在候选里或重复的站；travel-unknown 交通没查到
+    reason: Literal[
+        "shorter", "already-shortest", "more-errors", "too-few-stops", "too-many-stops", "invalid-stops", "travel-unknown"
+    ]
+
+
 class ItineraryVersionData(BaseModel):
     """一个版本的内容。存进 itinerary_versions.data_json。"""
 
@@ -167,6 +184,9 @@ class ItineraryVersionData(BaseModel):
     # 板块 6C：模型给的行程（出发时间、顺序、停留时长），draft 是程序从它推出钟点后的样子。之前存的版本为 null
     outline: PlanOutline | None = None
     firstOutline: PlanOutline | None = None
+    # ADR 0010：每天的顺序由程序按真实交通时间重排。outline 是模型原样给的顺序，draft 和 days 是重排后的。之前存的版本为 null
+    routeOrder: list[DayOrder] | None = None
+    firstRouteOrder: list[DayOrder] | None = None
 
 
 class ItineraryVersion(ItineraryVersionData):

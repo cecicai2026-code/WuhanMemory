@@ -252,8 +252,11 @@ async def test_routes_are_cached(tmp_path: Path) -> None:
                          prefs(**DATED), plan([("a", "09:30", "11:30"), ("b", "12:00", "14:00")])],
               routes={("a", "b", "walk"): 10})
     await s.send("一")
+    first = list(s.routes.calls)
     await s.send("再来")
-    assert s.routes.calls == [("a", "b", "walk")]
+    # ADR 0010 起排顺序要查两个方向；每一段只向高德查一次，第二次全部走缓存
+    assert ("a", "b", "walk") in first and len(set(first)) == len(first)
+    assert s.routes.calls == first
 
 
 # ---------- 修正 ----------
@@ -386,3 +389,24 @@ async def test_generation_timeout_is_not_retried(tmp_path: Path) -> None:
     with pytest.raises(LLMTimeoutError):
         await s.send("去")
     assert len(s.model.calls) == 2  # 抽偏好一次、排行程一次，超时后没有再发
+
+
+# ---------- ADR 0010：顺序由程序按真实交通时间重排 ----------
+
+
+async def test_program_reorders_stops_by_real_travel_time(tmp_path: Path) -> None:
+    # 模型排 a → c → b；真实交通 a-b、b-c 各 5 分钟，a-c 40 分钟（打车），所以 a → b → c 或 c → b → a 更省
+    routes = {("a", "b", "walk"): 5, ("b", "a", "walk"): 5, ("b", "c", "walk"): 5, ("c", "b", "walk"): 5,
+              ("a", "c", "transit"): 40, ("c", "a", "transit"): 40}
+    s = Setup(tmp_path, [prefs(**DATED), plan([("a", "09:30", "10:30"), ("c", "11:00", "12:00"), ("b", "12:30", "13:30")])],
+              routes=routes)
+    out = await s.send("去")
+    v = out.version
+    assert v is not None and v.routeOrder is not None
+    note = v.routeOrder[0]
+    assert note.changed and note.modelOrder == ["a", "c", "b"]
+    assert note.modelTransportMinutes == 45 and note.transportMinutes == 10
+    assert [stop.poiId for stop in v.days[0].stops] in (["a", "b", "c"], ["c", "b", "a"])
+    assert [stop.poiId for stop in v.outline.days[0].stops] == ["a", "c", "b"]  # outline 保留模型原样给的
+    # 钟点按新顺序推：09:30 到第一站，停 60 分钟，5 分钟路 + 10 分钟余量 → 10:45
+    assert v.days[0].stops[1].arrive == "10:45"

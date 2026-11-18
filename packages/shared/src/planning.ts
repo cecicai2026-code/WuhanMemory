@@ -122,6 +122,20 @@ export interface ItineraryVersion {
   metrics?: PlanMetrics | null;
   /** 板块 6：第一版的完整校验报告；之前存的版本为 null */
   firstValidation?: ValidationReport | null;
+  /** ADR 0010：每天的顺序由程序按真实交通时间重排；之前存的版本为 null */
+  routeOrder?: DayOrder[] | null;
+}
+
+/** 一天的站点顺序：模型给的和程序重排后的（ADR 0010） */
+export interface DayOrder {
+  dayNumber: number;
+  modelOrder: string[];
+  order: string[];
+  /** 相邻两站交通分钟数之和；没查到为 null */
+  modelTransportMinutes: number | null;
+  transportMinutes: number | null;
+  changed: boolean;
+  reason: "shorter" | "already-shortest" | "more-errors" | "too-few-stops" | "too-many-stops" | "invalid-stops" | "travel-unknown";
 }
 
 /** 三种侧重：经典必去、轻松少走路、深度文化 */

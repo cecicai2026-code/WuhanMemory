@@ -23,6 +23,7 @@ from app.repositories.itinerary_repository import ItineraryRepository
 from app.repositories.planning_round_repository import PlanningRoundRepository
 from app.repositories.poi_repository import PoiRepository
 from app.schemas.itinerary import (
+    DayOrder,
     ItineraryDay,
     ItineraryLeg,
     ItineraryStop,
@@ -39,6 +40,7 @@ from pydantic import BaseModel
 from app.schemas.planning import PlanDraft, PlanOutline, TravelerPreferences, TripFrame, ValidationReport
 from app.schemas.poi import Fact, PoiFile
 from app.schemas.poi_api import SourceOut
+from app.schemas.route import RouteOut
 from app.services.llm.errors import LLMError
 from app.services.llm.gateway import LLMGateway
 from app.services.planning import prompts
@@ -46,6 +48,7 @@ from app.services.planning.candidates import Candidates, candidate_brief, select
 from app.services.planning.emphasis import EMPHASES, Emphasis, candidates_for, check_emphasis, emphasis_frame, merge_issues, walk_limit
 from app.services.planning.metrics import near_duplicate, plan_metrics
 from app.services.planning.preferences import PACE_EN, PACE_LABELS, PACE_PREFIXES, TRANSPORT_LABELS, Frame, frame_for, merge, question_for
+from app.services.planning.order import apply_order, optimize_outline, pairs_needed
 from app.services.planning.schedule import schedule
 from app.services.planning.transport import MODE_LABELS, choose_leg, transit_table
 from app.services.planning.validate import day_date, validate_itinerary
@@ -111,6 +114,9 @@ class _Round:
     legs: list[ItineraryLeg]
     report: ValidationReport
     model: str | None
+    # ADR 0010：程序按真实交通时间重排每天顺序后的 outline，和每天的说明。draft 是从 ordered 推出来的
+    ordered: PlanOutline | None = None
+    order: list[DayOrder] = field(default_factory=list)
 
 
 @dataclass
@@ -432,7 +438,7 @@ class PlanningPipeline:
             system_prompt=prompts.REPAIR_SYSTEM + prompts.language_rule(),
             user_prompt=prompts.repair_user_prompt(
                 generate_prompt=p.prompt,
-                outline=p.first.outline,
+                outline=p.first.ordered or p.first.outline,
                 scheduled=p.first.draft,
                 errors=[i.message for i in p.first.report.errors],
                 legs=_leg_lines(p.first.legs, p.candidates),
@@ -453,8 +459,10 @@ class PlanningPipeline:
         version = self.itineraries.get_version(plan.versionId)
         if version is None:
             return None
-        # 板块 6C 之后存的版本有模型给的 outline；之前的只有带钟点的 draft
-        return version.outline or version.draft
+        # 板块 6C 之后存的版本有模型给的 outline；之前的只有带钟点的 draft。ADR 0010 之后套上程序重排的顺序
+        if version.outline is not None:
+            return apply_order(version.outline, version.routeOrder)
+        return version.draft
 
     def _itinerary_for(self, previous: PlanningRound | None, emphasis: str, conversation_id: str) -> str:
         """同一侧重沿用上一轮的行程（新的一轮是它的下一个版本）；没有就新建。"""
@@ -475,18 +483,45 @@ class PlanningPipeline:
         # 交通一份一份查：高德请求本来就排队一个一个发，三份用到的路线大多相同，缓存里有的不再查
         await stage("routing")
         legs: dict[int, list[ItineraryLeg]] = {}
+        ordered: dict[int, tuple[PlanOutline, list[DayOrder]]] = {}
         for i, (outline, _) in drafts.items():
-            legs[i] = await self._route(plans[i], outline)
+            # ADR 0010：先查每天两两之间的交通，程序按真实交通时间重排顺序，再查重排后相邻两站的交通（都走缓存）
+            ordered[i] = await self._order(plans[i], outline, today)
+            legs[i] = await self._route(plans[i], ordered[i][0])
         await stage("validating")
         for i, (outline, model) in drafts.items():
             plan = plans[i]
+            new_outline, notes = ordered[i]
             leg_map = {(leg.fromPoiId, leg.toPoiId): leg.route for leg in legs[i]}
             # 板块 6C：钟点由程序按真实交通推出来，再照常校验
-            draft, timing = schedule(outline, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame)
-            report = validate_itinerary(draft, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame, today=today)
-            extra = check_emphasis(plan.emphasis, draft, candidates=plan.candidates, legs=leg_map, frame=plan.trip.frame)
-            result = _Round(outline=outline, draft=draft, legs=legs[i], report=merge_issues(report, [*timing, *extra]), model=model)
+            report = self._check(plan, new_outline, leg_map, today)
+            result = _Round(outline=outline, draft=report[0], legs=legs[i], report=report[1], model=model,
+                            ordered=new_outline, order=notes)
             setattr(plan, into, result)
+
+    def _check(
+        self, plan: _Plan, outline: PlanOutline, leg_map: dict[tuple[str, str], RouteOut], today: date
+    ) -> tuple[PlanDraft, ValidationReport]:
+        """推钟点 + 通用校验 + 侧重规则。"""
+        draft, timing = schedule(outline, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame)
+        report = validate_itinerary(draft, pois=plan.candidates.pois, legs=leg_map, frame=plan.trip.frame, today=today)
+        extra = check_emphasis(plan.emphasis, draft, candidates=plan.candidates, legs=leg_map, frame=plan.trip.frame)
+        return draft, merge_issues(report, [*timing, *extra])
+
+    async def _order(self, plan: _Plan, outline: PlanOutline, today: date) -> tuple[PlanOutline, list[DayOrder]]:
+        """ADR 0010：每天的站按真实交通时间重排，错误不能比模型的顺序多。"""
+        known = set(plan.candidates.pois)
+        pair_legs: dict[tuple[str, str], RouteOut] = {}
+        for a, b in pairs_needed(outline, known):
+            leg = await choose_leg(self.routes, a, b, plan.trip.transport, walk_max=plan.walk_max)
+            pair_legs[(a, b)] = leg.route
+        travel = {k: (r.durationMinutes if r.status == "ok" else None) for k, r in pair_legs.items()}
+
+        def day_errors(candidate: PlanOutline, day_number: int) -> int:
+            _, report = self._check(plan, candidate, pair_legs, today)
+            return sum(1 for issue in report.errors if issue.dayNumber == day_number)
+
+        return optimize_outline(outline, known=known, travel=travel, day_errors=day_errors)
 
     async def _route(self, plan: _Plan, draft: PlanOutline | PlanDraft) -> list[ItineraryLeg]:
         out: list[ItineraryLeg] = []
@@ -546,6 +581,8 @@ class PlanningPipeline:
             firstDraft=first.draft if final is not first else None,
             outline=final.outline,
             firstOutline=first.outline if final is not first else None,
+            routeOrder=final.order,
+            firstRouteOrder=first.order if final is not first else None,
         )
         data.metrics = plan_metrics(data)
         return data

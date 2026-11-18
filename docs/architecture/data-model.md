@@ -452,6 +452,7 @@ CREATE TABLE model_comparisons (
 - 两份行程各是一个行程版本（`itineraries` 的 `conversation_id` 为空，不属于任何对话）。对比存下后不再修改。
 - 版本的 `data_json` 里多了 `firstValidation`（第一版的完整校验报告）和 `firstDraft`（修正过时模型的第一版输出，没修正过为 null）。板块 6 之后存的版本都有（`/map` 的也有）；之前存的为 null。
 - 板块 6C：版本里再多 `outline`（模型给的行程：每天出发时间、站点顺序、停留时长）和 `firstOutline`（修正过时模型的第一版，没修正过为 null）。`draft` 和 `firstDraft` 从这时起是程序推出钟点后的行程。之前存的版本没有 `outline`。
+- ADR 0010（2026-11-18）：版本里再多 `routeOrder`（每天一条：`dayNumber`、`modelOrder` 模型的顺序、`order` 程序的顺序、`modelTransportMinutes` 和 `transportMinutes`、`changed`、`reason`）和 `firstRouteOrder`（修正过时第一版的）。`outline` 仍是模型原样给的顺序，`draft` 和 `days` 是重排后的。之前存的版本没有这两项。
 - 代码：`apps/api/app/repositories/model_comparison_repository.py`。
 
 ## 13. 分享链接（板块 7）
