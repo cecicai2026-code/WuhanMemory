@@ -1,6 +1,6 @@
 # Current Progress
 
-最后更新: 2026-11-18（分支 `route-order`：每天顺序由程序按真实交通时间重排，ADR 0010；加了英文项目说明 `docs/project-statement-en.html`；先用 cpolar 临时网址，步骤见 `docs/operations/tunnel-cpolar.md`；中英双语已合进 main，合并提交 `e8cb18b`）
+最后更新: 2026-11-18（顺序优化已合进 main，合并提交 `a4e456a`，ADR 0010；项目说明改投港科大；加了英文项目说明 `docs/project-statement-en.html`；先用 cpolar 临时网址，步骤见 `docs/operations/tunnel-cpolar.md`；中英双语已合进 main，合并提交 `e8cb18b`）
 
 ## 当前阶段
 
@@ -31,7 +31,7 @@
 
 **板块 5B（已完成，2026-11-15 合进 main）**：同一个请求按三种侧重排三份方案，并且能比较。这次只做多份方案和比较两项（2026-11-15 Cecilia 定）。
 
-## 顺序优化（2026-11-18，分支 `route-order`，从 main 的 `04f468e` 分出来；ADR 0010）
+## 顺序优化（已完成，2026-11-18 合进 main，合并提交 `a4e456a`；分支 `route-order` 保留，从 main 的 `04f468e` 分出来；ADR 0010）
 
 Cecilia 要先把"按真实交通时间优化每天的顺序"做进网站，再按新文本改项目说明。四个选择都按推荐：程序直接重排、最小化总交通分钟数、第一站不固定、用已存行程量效果。
 
@@ -39,7 +39,7 @@ Cecilia 要先把"按真实交通时间优化每天的顺序"做进网站，再�
 - [x] 行程卡每天写明顺序是否由程序重排、少了多少分钟（中英）。
 - [x] `corepack pnpm eval:order`：199 天里换了 124 天，路上分钟数合计少 10.1%（结果 `eval/results/route-order-2026-11-18.md`）。
 - [x] 后端测试 461 个通过，前端类型检查通过。
-- [ ] Cecilia 启动网站，用真实模型排一次，看行程卡上的说明；`pnpm build`；同意后合进 main。
+- [x] Cecilia 启动网站用真实模型试过，同意合进 main（2026-11-18）。合并后 main 上后端测试 461 个通过，前端类型检查通过。
 - [ ] 三次批量评测都在重排之前，要不要重跑由 Cecilia 定。
 
 ## 中英双语（已完成，2026-11-15 合进 main，合并提交 `e8cb18b`；分支 `bilingual` 保留，从 main 的 `aea363f` 分出来；ADR 0009）
