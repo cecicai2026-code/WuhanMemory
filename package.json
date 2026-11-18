@@ -19,6 +19,7 @@
     "plan:thinking": "cd apps/api && .venv/bin/python -m app.tools.thinking_compare",
     "routes:prewarm": "cd apps/api && .venv/bin/python -m app.tools.route_prewarm",
     "eval:run": "cd apps/api && .venv/bin/python -m app.tools.model_eval",
+    "eval:order": "cd apps/api && .venv/bin/python -m app.tools.order_eval",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\""
   },
   "devDependencies": {

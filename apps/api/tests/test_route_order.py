@@ -154,3 +154,18 @@ def test_apply_order_restores_the_program_order() -> None:
     new, notes = optimize_outline(model, known=KNOWN, travel=travel, day_errors=no_errors)
     assert apply_order(model, notes) == new
     assert apply_order(model, None) == model
+
+
+def test_order_eval_rebuilds_the_model_order_from_an_old_draft() -> None:
+    from app.schemas.planning import PlanDay, PlanDraft, PlanStop
+    from app.tools.order_eval import _from_draft
+
+    draft = PlanDraft(title="旧", days=[PlanDay(dayNumber=1, stops=[
+        PlanStop(poiId="a", arrive="09:30", leave="11:00"),
+        PlanStop(poiId="b", arrive="11:30", leave="12:00"),
+    ])])
+    o = _from_draft(draft)
+    assert o is not None and o.days[0].start == "09:30"
+    assert [(s.poiId, s.stayMinutes) for s in o.days[0].stops] == [("a", 90), ("b", 30)]
+    bad = PlanDraft(days=[PlanDay(dayNumber=1, stops=[PlanStop(poiId="a", arrive="", leave="")])])
+    assert _from_draft(bad) is None
