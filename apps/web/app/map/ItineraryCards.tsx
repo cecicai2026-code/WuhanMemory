@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import type {
+  DayOrder,
   FactStatus,
   ItineraryDay,
   ItineraryLeg,
@@ -148,7 +149,32 @@ function Stop({ stop, issues }: { stop: ItineraryStop; issues: ValidationIssue[]
  * 每天一张的卡片放平，不歪：卡片常有两三千像素高，歪 1 度时上下两头会横着偏出二十多像素，
  * 左边的字被右栏的滚动框裁掉（2026-11-15 Cecilia 反馈字贴边、被切）。短的总卡照旧歪。
  */
-function DayCard({ day, issues }: { day: ItineraryDay; issues: ValidationIssue[] }) {
+/** ADR 0010：这一天的顺序是不是程序按真实交通时间重排过 */
+function OrderNote({ order }: { order: DayOrder | undefined }) {
+  const t = useTr();
+  if (!order) return null;
+  const before = order.modelTransportMinutes;
+  const after = order.transportMinutes;
+  if (order.changed && before != null && after != null) {
+    return (
+      <p className={s.routeMeta}>
+        {t(
+          `顺序由程序按真实交通时间重排：路上 ${after} 分钟，模型原来的顺序要 ${before} 分钟（少 ${before - after} 分钟）。`,
+          `Order rearranged by the program using real travel times: ${after} min on the road, versus ${before} min in the model's order (${before - after} min less).`
+        )}
+      </p>
+    );
+  }
+  if (order.reason === "already-shortest") {
+    return <p className={s.routeMeta}>{t("程序比较过所有顺序，模型的顺序已经是路上最省的。", "The program checked every order; the model's order already has the least travel time.")}</p>;
+  }
+  if (order.reason === "more-errors") {
+    return <p className={s.routeMeta}>{t("有更省路的顺序，但会多出校验错误，所以保留模型的顺序。", "Shorter orders exist but would add check errors, so the model's order is kept.")}</p>;
+  }
+  return null;
+}
+
+function DayCard({ day, issues, order }: { day: ItineraryDay; issues: ValidationIssue[]; order?: DayOrder }) {
   const t = useTr();
   const mine = issues.filter((i) => i.dayNumber === day.dayNumber);
   const dayWide = mine.filter((i) => !i.poiId);
@@ -177,6 +203,7 @@ function DayCard({ day, issues }: { day: ItineraryDay; issues: ValidationIssue[]
         <Stamp status={hasWarning ? "pending" : "verified"}>{hasWarning ? t("有警告", "Warnings") : t("通过", "Passed")}</Stamp>
       </div>
       <PaperTitle level={3}>{day.theme || t(`第 ${day.dayNumber} 天`, `Day ${day.dayNumber}`)}</PaperTitle>
+      <OrderNote order={order} />
       <Issues issues={dayWide} />
       <ol className={s.timeline}>{items}</ol>
     </Paper>
@@ -374,7 +401,7 @@ export function ItineraryCards({ version, loading, error, shownDay, onShowDay, s
             </ul>
           )}
           {v.days.map((day) => (
-            <DayCard key={day.dayNumber} day={day} issues={report.issues} />
+            <DayCard key={day.dayNumber} day={day} issues={report.issues} order={v.routeOrder?.find((o) => o.dayNumber === day.dayNumber)} />
           ))}
         </>
       )}
